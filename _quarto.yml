@@ -20,7 +20,7 @@ project:
 
 website:
   title: "Protein binder design workshop: RFdiffusion and BindCraft"
-  site-url: https://australian-protein-design-initiative.github.io/workshop-2025/
+  site-url: https://australian-protein-design-initiative.github.io/binder-design-workshop/
   sidebar:
     style: "docked"
     search: false
