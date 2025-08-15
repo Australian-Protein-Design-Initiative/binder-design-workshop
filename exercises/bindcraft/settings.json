@@ -1,0 +1,12 @@
+{
+    "design_path": "bindcraft_results",
+    "binder_name": "pdl1_binder",
+    "starting_pdb": "./input/PDL1.pdb",
+    "chains": "A",
+    "target_hotspot_residues": "A56",
+    "lengths": [
+        55,
+        120
+    ],
+    "number_of_final_designs": 1
+}
