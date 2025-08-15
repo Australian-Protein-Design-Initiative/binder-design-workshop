@@ -1,0 +1,17 @@
+---
+title: "RFdiffusion background"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+# RFdiffusion
+
+## Background
+
+- Diffusion models (also image diffusion example) and SE(3) diffusion models.
+
+- Bennett paper, RFdiffusion model.
+
+- Rogues gallery of things that have been successfully designed with RFdiffusion.

@@ -1,0 +1,17 @@
+---
+title: "About this workshop"
+format:
+  html:
+    author: "Andrew Perry <andrew.perry@monash.edu>"
+    license: CC BY
+    embed-resources: true
+---
+
+This workshop was created by:
+
+- Andrew Perry <andrew.perry@monash.edu>
+- ... your name here ...
+
+The text is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+
+Software dependencies are covered by their own licenses.

@@ -1,0 +1,60 @@
+project:
+  type: website
+  output-dir: _book
+  resources:
+    - "exercises/**"
+    - "assets/**"
+  render:
+    - index.qmd
+    - introduction.qmd
+    - structure_prediction.qmd
+    - target_preparation.qmd
+    - rfdiffusion_background.qmd
+    - rfdiffusion_exercise.qmd
+    - rfdiffusion_scoring.qmd
+    - bindcraft_background.qmd
+    - bindcraft_exercise.qmd
+    - bindcraft_real_data.qmd
+    - hardware_and_software.qmd
+    - experimental_validation.qmd
+
+website:
+  title: "Protein binder design workshop: RFdiffusion and BindCraft"
+  site-url: https://australian-protein-design-initiative.github.io/workshop-2025/
+  sidebar:
+    style: "docked"
+    search: false
+    contents:
+      - section: "Workshop"
+        contents:
+          - index.qmd
+          - introduction.qmd
+      - section: "Target Preparation"
+        contents:
+          - target_preparation.qmd
+      - section: "RFdiffusion"
+        contents:
+          - rfdiffusion_background.qmd
+          - rfdiffusion_exercise.qmd
+          - rfdiffusion_scoring.qmd
+      - section: "BindCraft"
+        contents:
+          - bindcraft_background.qmd
+          - bindcraft_exercise.qmd
+          - bindcraft_scoring.qmd
+      - section: "Next steps"
+        contents:
+          - experimental_validation.qmd
+      - section: "Harware & Software"
+        contents:
+          - hardware_and_software.qmd
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+
+execute:
+  freeze: auto
+

@@ -1,0 +1,30 @@
+---
+title: "RFdiffusion : analysing a full design run"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+> TODO: A "here's one we prepared earlier" section, with the results of a ~1000 trajectory nf-binder-design RFDiffusion run for PDL1.
+
+# Design run summary and scoring
+
+- `pae_interaction > 10`
+- binder `pLDDT > 80`
+
+## What is pLDDT ?
+
+> TODO: Alphafold2 pLDDT (also include original LDDT paper citation)
+
+## What is PAE, and PAE interaction ?
+
+> TODO:  Alphafold2 PAE, relationship to pTM, and ipTM ?
+
+## Other scores
+
+> TODO: Rosetta gG energy ?
+
+# Resources
+
+- [EBI Alphafold tutorial](https://www.ebi.ac.uk/training/online/courses/alphafold/): good overviews of pLDDT, PAE, TM, pTM, ipTM.

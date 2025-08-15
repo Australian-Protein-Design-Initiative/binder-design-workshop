@@ -1,0 +1,72 @@
+---
+title: "Target preparation"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+_So, you want to de novo design a binder for a target protein ..._
+
+## Things to consider
+
+- Do I have an experimental structure of the target ?
+  - Is it high quality / well defined **in the regions required** ?
+  - If I don't have an experimental structure, are computational models (eg Alphafold) reliable for this target - **do I believe them based on other data, biology** ?
+- Is this a good experimental/clinical target ?
+    - What characteristics should be designed binders have to be better/cheaper/safer/unique relative to existing tools or therapies ?
+    - In the assay or biological system, **will the target surfaces be accessible**, or how will my binder get there ?
+- How will produce and test my _de novo_ binders ?
+  - Do I have a reliable medium-high throughput assay ?
+
+
+## Truncation, trimming, cropping
+
+> "Truncating a target is an art." -- Nathaniel Bennett, RFdiffusion README.md
+
+For RFdiffusion, runtime scales at O(N^2) where N is the number of residues.
+
+For BindCraft, 500 residues (target+binder) uses ~30Gb GPU memory.
+
+It is very common, and good practise, to remove parts of the target coordinates to speed up computation of bindings, and make better use of in-demand GPU resources. Sometimes truncation is the difference between _practical_ (24G VRAM), _possible_ (A100-80G or GH200-96G) and _not (yet) possible_ ( >100G VRAM on a single device).
+
+- Try to keep distinct (sub)domains intact
+- Try to avoid exposing the hydrophobic core
+- Don't truncate too close to your proposed binding interface and hotspots (keep ~X angstroms away)
+
+::: {.callout-caution}
+
+### Challenge - truncate PD-L1
+
+Grab the cooridinates for the PD-1/PD-L1 complex [3BIK](https://www.rcsb.org/structure/3BIK) (legacy PDB format).
+
+We want to use PD-L1 (chain A) as our target and block the binding of PD-1 (chain B).
+
+Propose a truncated version of PD-L1 (chain A) we could use to design a _de novo_ binder against.
+
+(Save the truncated coordinates as `PDL1.pdb`)
+
+:::
+
+### Hotspot selection
+
+In the context of _de novo_ binder design, a 'hotspot' is residue on the target that is likely to make favourable interactions with residues on the _de novo_ binder. Hotspots help _guide_ the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on _in silico_ success rates.
+
+For RFdiffusion, 3 - 6 hotspots are recommended (the potential attempts to put between 0 and 20% of these hotspots, at random, within 10A of a binder Cbeta atom, while making any other contacts that appear statisically plausible to the model).
+
+For BindCraft, zero to X hotspots. Starting with a small number (1 - 3 ?) hotspots is probably best.
+
+*Aromatic* (and hydrophobic) residues tend to make the best hotspots, but you don't need to restrict your choices to _only_ these residue types.
+
+
+::: {.callout-caution}
+
+### Challenge - PD-L1 hotspots
+
+Look at the residues at the interface of PD-1/PD-L1 in 3BIK.
+
+Propose three residues on PD-L1 (chain A) we might choose as hotspots to design a _de novo_ binder to block interaction of PD-1.
+
+:::
+
+{{< mol-rcsb 3bik layoutShowSequence=true layoutShowLeftPanel=false >}}

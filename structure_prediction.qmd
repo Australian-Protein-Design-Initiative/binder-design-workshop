@@ -1,0 +1,19 @@
+---
+title: "Structure prediction"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+# Structure prediction
+
+Once sequences have been generated for the backbone design via inverse folding, we want to predict more accurately if this binder sequence is likely to fold into the correct structure.
+
+This allows us to assess the quality of the proposed protein-protein interface.
+
+- Alphafold scores: pLDDT, PAE, pae_interaction, TM, pTM, ipTM, oh my !
+  - https://www.ebi.ac.uk/training/online/courses/alphafold/
+
+
+af2_initial_guess vs. Alphafold2 (vs. ColabFold modes vs. other structure prediction tools)

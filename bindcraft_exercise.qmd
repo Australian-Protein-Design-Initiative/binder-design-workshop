@@ -1,0 +1,52 @@
+---
+title: "BindCraft Exercise"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+# BindCraft
+
+## Configuration
+
+BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as `settings.json`:
+
+```json
+{
+    "design_path": "bindcraft_results",
+    "binder_name": "pdl1_binder",
+    "starting_pdb": "./input/PDL1.pdb",
+    "chains": "A",
+    "target_hotspot_residues": "A56",
+    "lengths": [
+        55,
+        120
+    ],
+    "number_of_final_designs": 1
+}
+```
+
+## Run BindCraft
+
+```bash
+export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/
+
+PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 "
+
+#    # Ensure that BindCraft finds the correct version of ffmpeg
+#    export PATH=/opt/conda/envs/BindCraft/bin/:\$PATH
+
+$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \
+    /app/BindCraft/bindcraft.py \
+        --settings settings.json \
+        --filters /app/BindCraft/settings_filters/default_filters.json \
+        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json
+
+# 
+#         --filters /app/BindCraft/settings_filters/default_filters.json \
+```
+
+## Resources
+
+- The official BindCraft (wiki) docs: [De novo binder design with BindCraft](https://github.com/martinpacesa/BindCraft/wiki/De-novo-binder-design-with-BindCraft)

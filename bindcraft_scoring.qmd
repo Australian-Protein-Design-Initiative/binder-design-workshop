@@ -1,0 +1,9 @@
+---
+title: "BindCraft : analysing a full design run "
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+> TODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)

@@ -1,0 +1,22 @@
+---
+title: "Protein binder design workshop: RFdiffusion and BindCraft"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+# Schedule
+
+| Time | Event |
+|------|-------|
+| 1:00 | Welcome and introduction |
+| 1:30 | RFdiffusion |
+| 2:30 | Break |
+| 2:45 | BindCraft |
+| 3:45 | Break |
+| 4:00 | Experimental validation |
+| 4:30 | Wrap-up and discussion |
+| 4:45 | End 🎉 |
+
+----

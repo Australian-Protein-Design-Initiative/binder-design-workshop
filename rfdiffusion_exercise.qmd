@@ -1,0 +1,209 @@
+---
+title: "RFdiffusion Exercise"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+molstar: embed
+---
+
+# RFdiffusion binder design 
+
+We will start with the 'manual' way, running each of the steps in the RFdiffusion -> ProteinMPNN -> Alphafold2 initial guess workflow individually.
+
+Then, we will run the `nf-binder-design` workflow that combines these steps into a single pipeline more suitable for immediate 'production' use.
+
+## The target
+
+[PDL1](exercises/rfd/input/PDL1.pdb)
+
+{{< mol-url ./exercises/rfd/input/PDL1.pdb layoutShowSequence=true layoutShowLeftPanel=false >}}
+
+_(press the spanner icon to see the sequence, )_
+
+
+## Running RFdiffusion binder design
+
+RFdiffusion is a general tool for hallucinating protein structures - not only _de novo binder_ design.
+
+We run RFdiffusion with parameters specific for generating a small _de novo_ binder chains, hopefully with good shape complementarity to our target, and near our hotspots.
+
+Let's start by running the command, and while things are running we can break down what each part does:
+
+```bash
+PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules docker://ghcr.io/australian-protein-design-initiative/containers/rfdiffusion:pytorch2407 "
+
+mkdir -p output/rfdiffusion
+
+$PREFIX_RFD /app/RFdiffusion/scripts/run_inference.py \
+  inference.input_pdb=input/PDL1.pdb \
+  'contigmap.contigs=[A18-132/0 65-120]' \
+  'ppi.hotspot_res=[A56]' \
+  inference.output_prefix=output/rfdiffusion/pdl1_test \
+  inference.num_designs=4 \
+  denoiser.noise_scale_ca=0 \
+  denoiser.noise_scale_frame=0
+```
+
+### RFdiffusion options
+
+- `inference.input_pdb`: our target PDB file- this should contain (possibly cropped) target coordinates
+
+- `contigmap.contigs`: define the regions of the target we want to include (`A18-132/0`), and a length range for the new chain to generate (`65-120`)
+
+- `ppi.hotspot_res`: our hotspot residues
+
+- `inference.output_prefix`: the prefix for the output files (can be {directory}/{filename} prefix)
+
+- `inference.num_designs`: the number of designs (trajectories) to generate - we generate just a small number here - normally this might be 1000 or more
+
+- `denoiser.noise_scale_ca` and `denoiser.noise_scale_frame`: the noise scale for the translations and rotations - set to zero, since this is reported to improve the quality of the models as the expense of diversity (`0.5` might also be a reasonable value)
+
+
+#### More on the contig syntax
+
+The contig syntax is a way of specifying existing residues in the target to include, and new residues / chains to add by hallucination. 
+
+`A18-132` says 'include the existing chain A, residues 18-132' - we could exclude an N-terminal region like `A27-132` - this would be equivalent to deleting those `ATOM` records.
+
+The `/0` at the end of `A18-132/0` specifies a chain break. **This is important** - if you exclude it, the new generated residues will be fused to the C-terminal end of your target !
+
+If we had a second chain `B` in the target, we might have something like: `A18-132/0 B33-148/0 65-120`
+
+If we had a missing loop in our target spanning residues 73-83, we would need: `A18-72/A84-132/0 65-120` (RFdiffusion will complain with an error if you include residues in a contig that don't exist)
+
+If a segment does not have a chain ID specfied, like `65-120`, this is treated as a **new chain** to hallicinate, with a lower and upper length range.
+
+
+::: {.callout-caution}
+
+### Challenge - defining contigs
+
+How would we generate binders to our PDL1 domain that are **exactly** 100 residues long ?
+
+:::
+
+You can see the full list of configuration options for RFdiffusion with:
+
+```bash
+$PREFIX /app/RFdiffusion/scripts/run_inference.py --help
+```
+
+... most should probably be left as the defaults. 
+
+Some, like `inference.ckpt_override_path` are automatically set for you to select the correct model weights based on other config options in use.
+
+For binder design, manually setting `inference.ckpt_override_path=/models/rfdiffusion/Complex_beta_ckpt.pt` can be useful to increase the beta-strand content of designs (this model is reportedly less well tested - YMMV !).
+
+::: {.callout-info}
+
+`/models/rfdiffusion/` corresponds to the path where your RFdiffusion model weights were downloaded to - `/models/rfdiffusion/` is a valid path in the context of the containers we are using here but may be different for other installations of RFdiffusion.
+
+:::
+
+### Viewing the results
+
+```bash
+
+```
+
+## ProteinMPNN inverse folding
+
+> TODO
+
+```bash
+PREFIX_PMPNN="apptainer exec --nv docker://ghcr.io/australian-protein-design-initiative/containers/proteinmpnn_dl_binder_design:latest "
+
+mkdir -p output/proteinmpnn
+
+$PREFIX_PMPNN /app/dl_binder_design/mpnn_fr/dl_interface_design.py \
+    -pdbdir input/ \
+    -relax_cycles 0 \
+    -seqs_per_struct 2 \
+    -outpdbdir output/proteinmpnn/ \
+    -omit_AAs C
+```
+
+Other useful options:
+
+- `-checkpoint_path`
+- `-temperature`
+- `-augment_eps`
+
+
+## Alphafold2 initial guess - scoring by prediction
+
+Once sequences have been generated for the backbone design via inverse folding, we want to predict more accurately if this binder sequence is likely to fold into the correct structure.
+
+> TODO
+
+```bash
+PREFIX_AF2IG="apptainer exec --nv docker://ghcr.io/australian-protein-design-initiative/containers/af2_initial_guess:nv-cuda12 "
+
+mkdir -p output/af2_initial_guess/pdbs
+
+$PREFIX_AF2IG python /app/dl_binder_design/af2_initial_guess/predict.py \
+    -pdbdir output/proteinmpnn \
+    -outpdbdir output/af2_initial_guess/pdbs/ \
+    -recycle 3 \
+    -scorefilename output/af2_initial_guess/pdl1_test.scores.cs
+```
+
+# nf-binder-design : putting it all together
+
+To do a more realistic _de novo_ binder design campaign, you'll need to generate several 1000s of RFdiffusion trajectories, at least one (probably 2 or 3) proposed sequences for each backbone design with ProteinMPNN, and then run Alphafold2 initial guess on each of these to generate scores and putative complex structures (`2 seqs * 1000 backbones = 2000`).
+
+You could write some shell script loops, get fancy with SLURM array jobs, write some Python/R/awk/Perl to bring it all together, and turn the commands above into a workflow.
+
+Rather than cobble something together, we suggest you use [`nf-binder-design`](https://github.com/Australian-Protein-Design-Initiative/nf-binder-design) a Nextflow pipeline designed to do this. Nextflow is particularly well suited to running workflows like this, and automatically handles software installation (reproducibly across systems via containers), handles HPC queue submission and retries, and generally automates many manual steps as much as practical.
+
+<img src="assets/images/nf-binder-design.drawio.png" />
+
+## De novo binders against PDL1 with nf-binder-design
+
+Here's our example above, using the nf-binder-design RFdiffusion workflow:
+
+```bash
+nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design  \
+  --input_pdb 'input/*.pdb' \
+  --outdir results \
+  --contigs "[A18-132/0 65-120]" \
+  --hotspot_res "A56" \
+  --rfd_n_designs=4 \
+  --rfd_batch_size=1 \
+  --pmpnn_seqs_per_struct=2 \
+  --pmpnn_relax_cycles=1 \
+  -profile local \
+  -resume
+
+#   --rfd_filters="rg<=20" \
+```
+
+> (this is actually a slightly simiplified version of one of the [examples in the nf-binder-design Github repository](https://github.com/Australian-Protein-Design-Initiative/nf-binder-design/blob/main/examples/pdl1-rfd/run-local.sh))
+
+
+You can see all the options available with:
+
+```bash
+nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design --help
+```
+
+::: {.callout-tip}
+
+As a general rule, parameters are named to match the underlying tool, with an `rfd_`, `pmpnn_` or `af2fig` prefix. Extra parameters can be configured via `--rfd_extra_args` or a `nextflow.config` file:
+
+```groovy
+// nextflow.config
+process {
+    withName: RFDIFFUSION {
+        ext.args = 'potentials.guiding_potentials=[\"type:binder_ROG,weight:7,min_dist:10\"] potentials.guide_decay="quadratic"'
+    }
+}
+```
+
+`-r 0.1.4` above specifies the 'release' to run (version 0.1.4 in this case). If you omit this, you'll get the latest development version - keep in mind some settings might change between versions.
+
+:::
+
+
+

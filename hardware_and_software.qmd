@@ -1,0 +1,73 @@
+---
+title: "Hardware and software requirements"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+# Hardware and software requirements
+
+Or, _"how can I run this at home ?"_
+
+## Compute resources
+
+_What kind of hardware do I need ?_
+
+> TODO: GPUs, the more the better. Local workstation example, HPC example, cloud example.
+
+# Software 
+
+## Licensing
+
+The foundation of these tools are available under under permissive open source licenses and can be used freely for _non-commercial use_. However, **NOTE** that PyRosetta, a component of both RFDiffusion and BindCraft, requires a license from the University of Washington for commercial use.
+
+## Installation
+
+::: {.callout-warning}
+
+**For this workshop, you don't need to install anything.** We've set things up to run in Apptainer containers that are already downloaded.
+
+Installing these packges typically takes hours, and troubleshooting research software installation is a topic for an entirely different wokshop.
+
+:::
+
+You'll want a Linux based operating system. You do not nessecarily need admin / sudo permissions.
+
+Methods, roughly in order of preference:
+
+## 1. Engage your local HPC or research cloud admins to help create a shared installation everyone can use. 
+
+They are often experienced in troubleshooting installation and dependency issues that can be specific to the systems they maintain.
+
+## 2. Use a container
+
+[Apptainer](https://apptainer.org/) (formerly known as Singularity) simplifies deployment of software by bundling up the software and its dependencies, including a simple Linux system image, into a single container.
+
+Docker is another popular alternative, but isn't usually available on HPC systems due to security constraints.
+
+Apptainer can run Docker images, so you rarely need Docker to run research software.
+
+All the container images used in this workshop are available [here](https://github.com/orgs/Australian-Protein-Design-Initiative/packages?repo_name=containers) and the Dockerfile recipes used to build them are available [here](https://github.com/Australian-Protein-Design-Initiative/containers).
+
+## 3. Use a pipeline
+
+A Nextflow pipeline [like nf-binder-design](https://github.com/australian-protein-design-initiative/nf-binder-design) can help manage running all the steps in an RFdiffusion - ProteinMPNN - Alphafold2 (or BindCraft) workflow.
+
+The best pipelines typically use publically available Apptainer containers by default, so you don't need to think about installing each of the tools yourself.
+
+## 4. Install yourself
+
+Follow the instrucions at https://github.com/RosettaCommons/RFdiffusion and https://github.com/martinpacesa/BindCraft - the installation steps are well documented, but don't always work perfectly in every environment without some troubleshooting.
+
+_(or see step 1 above)_
+
+# At Monash
+
+`nf-binder-design` has a configuration profile for the M3 HPC cluster.
+
+> TODO: Detail (or see README.md)
+
+# At Unimelb
+
+> TODO: Spartan ?
