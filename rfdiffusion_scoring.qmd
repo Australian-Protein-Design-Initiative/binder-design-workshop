@@ -10,7 +10,7 @@ format:
 
 # Design run summary and scoring
 
-- `pae_interaction > 10`
+- `pae_interaction < 10`
 - binder `pLDDT > 80`
 
 ## What is pLDDT ?

@@ -26,11 +26,17 @@ _(press the spanner icon to see the sequence, )_
 
 RFdiffusion is a general tool for hallucinating protein structures - not only _de novo binder_ design.
 
-We run RFdiffusion with parameters specific for generating a small _de novo_ binder chains, hopefully with good shape complementarity to our target, and near our hotspots.
+Here, we are going to run RFdiffusion with parameters specific for generating a small _de novo_ binder chains, hopefully with good shape complementarity to our target and near our hotspots.
 
 Let's start by running the command, and while things are running we can break down what each part does:
 
 ```bash
+# This prefix `PREFIX_RFD` is here to run RFDiffusion via an Apptainer container. 
+# It should work anywhere where Apptainer is installed. You'll need an NVIDIA GPU. 
+# The first time it's run there's an initial delay while the container image is downloaded.
+# NOTE: We _may_ change this prior to the in-person workshop to be a simpler but realistic command,
+# and configure the VMs to transparently use the Apptainer containers. The specific apptainer commandlines
+# for running anywhere can be moved to an appendix section
 PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules docker://ghcr.io/australian-protein-design-initiative/containers/rfdiffusion:pytorch2407 "
 
 mkdir -p output/rfdiffusion
@@ -53,7 +59,7 @@ $PREFIX_RFD /app/RFdiffusion/scripts/run_inference.py \
 
 - `ppi.hotspot_res`: our hotspot residues
 
-- `inference.output_prefix`: the prefix for the output files (can be {directory}/{filename} prefix)
+- `inference.output_prefix`: the prefix for the output files (can be `{directory}/{filename}` prefix)
 
 - `inference.num_designs`: the number of designs (trajectories) to generate - we generate just a small number here - normally this might be 1000 or more
 

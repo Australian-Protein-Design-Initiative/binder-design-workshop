@@ -14,7 +14,7 @@ project:
     - rfdiffusion_scoring.qmd
     - bindcraft_background.qmd
     - bindcraft_exercise.qmd
-    - bindcraft_real_data.qmd
+    - bindcraft_scoring.qmd
     - hardware_and_software.qmd
     - experimental_validation.qmd
 
