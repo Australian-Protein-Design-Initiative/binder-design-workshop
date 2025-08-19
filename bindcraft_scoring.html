@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>RFdiffusion : analysing a full design run – Protein binder design workshop: RFdiffusion and BindCraft</title>
+<title>BindCraft : analysing a full design run – Protein binder design workshop: RFdiffusion and BindCraft</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -3810,7 +3810,7 @@ vertical-align: -.125em;
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./rfdiffusion_background.html">RFdiffusion</a></li><li class="breadcrumb-item"><a href="./rfdiffusion_scoring.html">RFdiffusion : analysing a full design run</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./bindcraft_background.html">BindCraft</a></li><li class="breadcrumb-item"><a href="./bindcraft_scoring.html">BindCraft : analysing a full design run</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -3890,7 +3890,7 @@ vertical-align: -.125em;
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./rfdiffusion_scoring.html" class="sidebar-item-text sidebar-link active">
+  <a href="./rfdiffusion_scoring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">RFdiffusion : analysing a full design run</span></a>
   </div>
 </li>
@@ -3919,7 +3919,7 @@ vertical-align: -.125em;
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./bindcraft_scoring.html" class="sidebar-item-text sidebar-link">
+  <a href="./bindcraft_scoring.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">BindCraft : analysing a full design run</span></a>
   </div>
 </li>
@@ -3968,9 +3968,9 @@ vertical-align: -.125em;
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./rfdiffusion_background.html">RFdiffusion</a></li><li class="breadcrumb-item"><a href="./rfdiffusion_scoring.html">RFdiffusion : analysing a full design run</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./bindcraft_background.html">BindCraft</a></li><li class="breadcrumb-item"><a href="./bindcraft_scoring.html">BindCraft : analysing a full design run</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">RFdiffusion : analysing a full design run</h1>
+<h1 class="title">BindCraft : analysing a full design run</h1>
 </div>
 
 
@@ -3988,41 +3988,10 @@ vertical-align: -.125em;
 
 
 <blockquote class="blockquote">
-<p>TODO: A “here’s one we prepared earlier” section, with the results of a ~1000 trajectory nf-binder-design RFDiffusion run for PDL1.</p>
+<p>TODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)</p>
 </blockquote>
-<section id="design-run-summary-and-scoring" class="level1">
-<h1>Design run summary and scoring</h1>
-<ul>
-<li><code>pae_interaction &lt; 10</code></li>
-<li>binder <code>pLDDT &gt; 80</code></li>
-</ul>
-<section id="what-is-plddt" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-plddt">What is pLDDT ?</h2>
-<blockquote class="blockquote">
-<p>TODO: Alphafold2 pLDDT (also include original LDDT paper citation)</p>
-</blockquote>
-</section>
-<section id="what-is-pae-and-pae-interaction" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-pae-and-pae-interaction">What is PAE, and PAE interaction ?</h2>
-<blockquote class="blockquote">
-<p>TODO: Alphafold2 PAE, relationship to pTM, and ipTM ?</p>
-</blockquote>
-</section>
-<section id="other-scores" class="level2">
-<h2 class="anchored" data-anchor-id="other-scores">Other scores</h2>
-<blockquote class="blockquote">
-<p>TODO: Rosetta gG energy ?</p>
-</blockquote>
-</section>
-</section>
-<section id="resources" class="level1">
-<h1>Resources</h1>
-<ul>
-<li><a href="https://www.ebi.ac.uk/training/online/courses/alphafold/">EBI Alphafold tutorial</a>: good overviews of pLDDT, PAE, TM, pTM, ipTM.</li>
-</ul>
 
 
-</section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
