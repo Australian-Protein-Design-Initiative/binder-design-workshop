@@ -28,7 +28,7 @@ For RFdiffusion, runtime scales at O(N^2) where N is the number of residues.
 
 For BindCraft, 500 residues (target+binder) uses ~30Gb GPU memory.
 
-It is very common, and good practise, to remove parts of the target coordinates to speed up computation of bindings, and make better use of in-demand GPU resources. Sometimes truncation is the difference between _practical_ (24G VRAM), _possible_ (A100-80G or GH200-96G) and _not (yet) possible_ ( >100G VRAM on a single device).
+It is very common, and good practise, to remove parts of the target coordinates to speed up computation of binders, and make better use of in-demand GPU resources. Sometimes truncation is the difference between _practical_ (24G VRAM), _possible_ (A100-80G or GH200-96G) and _not (yet) possible_ ( >100G VRAM on a single device).
 
 - Try to keep distinct (sub)domains intact
 - Try to avoid exposing the hydrophobic core
