@@ -17,7 +17,7 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
       - run: |
-          quarto install extension jmbuhr/quarto-molstar
+          quarto install extension --no-prompt jmbuhr/quarto-molstar
 
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
