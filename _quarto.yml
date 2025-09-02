@@ -17,6 +17,8 @@ project:
     - bindcraft_scoring.qmd
     - hardware_and_software.qmd
     - experimental_validation.qmd
+    - bash_apptainer_crash_course.qmd
+    - nextflow_crash_course.qmd
 
 website:
   title: "Protein binder design workshop: RFdiffusion and BindCraft"
@@ -48,6 +50,10 @@ website:
       - section: "Harware & Software"
         contents:
           - hardware_and_software.qmd
+      - section: "Appendix: Foundational skills crash course"
+        contents:
+          - bash_apptainer_crash_course.qmd
+          - nextflow_crash_course.qmd
 
 format:
   html:

@@ -1,0 +1,23 @@
+---
+title: "Nextflow crash course"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+# Just enough Nextflow
+
+Nextflow is very well documented and there is some great in-depth training material available.
+
+See the official [Nextflow Training](https://training.nextflow.io/latest/), or [Introduction to Bioinformatics workflows with Nextflow and nf-core](https://carpentries-incubator.github.io/workflows-nextflow/index.html) for a comprehensive introduction and deeper dive.
+
+Here we will focus on downloading, configuring and running a Nextflow pipeline.
+
+> TODO: Downloading a pipeline
+
+> TODO: Configuring a pipeline - nextflow.config
+
+> TODO: Running a pipeline
+
+> TODO: Troubleshooting errors / failures

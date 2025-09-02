@@ -6,4 +6,15 @@ format:
     embed-resources: true
 ---
 
+> TODO: We should switch here to 'here's one we prepared earlier' with results from a ~300 (or more) trajectory BindCraft / nf-binder-design run.
+
+::: {.callout-caution}
+
+### Challenge - viewing the BindCraft results
+
+View the table `final_design_stats.csv` - do we have any accepted designs ? Which scores are most important ?
+
+View a the the PDB files in `Accepted/`. Examine the target-binder interface - designs with high and low ipTM scores.
+
+:::
 > TODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)

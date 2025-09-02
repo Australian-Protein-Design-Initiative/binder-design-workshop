@@ -27,12 +27,16 @@ BindCraft requires a JSON format configuration file to define parameters for the
 }
 ```
 
+We have chosen a single hotspot here (as `"{chain}{resnum}"`) - multiple hotspots can be comma separated like `"A56,A54,A115"`.
+
+Normally you'd like to generate more than a single design (maybe `"number_of_final_designs": 100` ?) - today we barely have time for one !
+
 ## Run BindCraft
 
 ```bash
 export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/
 
-PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 "
+PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 "
 
 #    # Ensure that BindCraft finds the correct version of ffmpeg
 #    export PATH=/opt/conda/envs/BindCraft/bin/:\$PATH
@@ -46,6 +50,74 @@ $PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \
 # 
 #         --filters /app/BindCraft/settings_filters/default_filters.json \
 ```
+
+BindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.
+
+> It's safe to Ctrl-C kill a BindCraft run, only the progress on the current trajectory is lost.
+
+`--filters` and `--advanced` are optional - in our example they point to the default config files (inside the Apptainer container). You could specify your own, based on those found in the [BindCraft Github repository](https://github.com/martinpacesa/BindCraft/).
+
+> Unless you are embarking on a study to experimentally verify the impact of different filters or advanced settings on success rates, it is safest to use the defaults which have been more heavily tested by the BindCraft authors, since these are what have been used to achieve the published wet-lab success rates.
+
+## BindCraft output
+
+We configured BindCraft to put results in the `bindcraft_results` directory.
+
+In here we have, of most interest:
+
+- `final_design_stats.csv` - a CSV file summarizing the results of the BindCraft run
+- `Accepted/` - a directory containing the PDB files of the accepted designs (missing if no designs were accepted)
+
+as well as:
+
+- `failure_csv.csv` - a CSV file summarizing the stage where a design failed to pass a filter
+- `Trajectory/` - various non-accepted trajectories
+`MPNN/` - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters
+- `trajectory_stats.csv` and `mpnn_design_stats.csv` - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage
+
+We will focus on understanding the key outputs here in the next section.
+
+# BindCraft with nf-binder-design : more convenient parallel runs
+
+In practice, rather than running a single BindCraft run, you will probably want to run multiple BindCraft runs in parallel across multiple GPUs to speed things up. We've added simple BindCraft support to `nf-binder-design` so you more easily run multiple BindCraft runs in parallel on an HPC cluster.
+
+```bash
+nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design/bindcraft.nf \
+  --input_pdb 'input/PDL1.pdb' \
+  --outdir results \
+  --target_chains "A" \
+  --hotspot_res "A56" \
+  --binder_length_range "55-120" \
+  --bindcraft_n_traj 4 \
+  --bindcraft_batch_size 1 \
+  --bindcraft_advanced_settings_preset "default_4stage_multimer" \
+  -profile local \
+  -resume
+```
+
+> We only have a single GPU on the workshop VMs, however with a few tweaks the above command will work just the same but run on many GPUs in parallel (eg, `-profile slurm`, and `-c nextflow.config` pointing to a nextflow configuation tailored to your HPC cluster and partition access etc)
+
+One difference with the `nf-binder-design` wrapper around BindCraft is that we set `--bindcraft_n_traj` as the number of trajectories (design _attempts_) we want to run, rather than the number of accepted designs to stop after (`number_of_final_designs`). This maps better to short HPC jobs where each jobs has a defined time limit.
+
+The BindCraft CSV files (eg `final_design_stats.csv`) are output to `results/bindcraft/`, along with an HTML report summarizing these results visually with some plots. Accepted structures are saved to `results/bindcraft/accepted`, and each single-trajectory BindCraft run is saved to `results/bindcraft/batches/`.
+
+## Recommendations
+
+- Choose some hotspots based on the strategies we've learned.
+- Run between 100 and 300 trajectories (`--bindcraft_n_traj 300`) to assess the 'acceptance rate'
+    - If you are getting a reasonable acceptance rate, > ~%1, do a second run setting `--bindcraft_n_traj` to a value that should generate ~100 accepted designs
+    - If you are getting less than ~1% acceptance rate, you may need to change your hotspots, modify target trimming or use a different target structure, or (cautiously) use advanced presets.
+
+The percentage acceptance rate is:
+
+$$\text{Acceptance Rate} = 100 \times \frac{n_{\text{accepted}}}{N_{\text{traj}}}$$
+
+where:
+
+- $n_{\text{accepted}}$ = number of accepted designs (excluding MPNN duplicates)
+- $N_{\text{traj}}$ = total number of trajectories
+
+As a guide, the BindCraft authors recommend generating ~100 'accepted' designs and choosing the best 20 for experimental assay. 'Best' is likely highest `Average_i_pTM`, but you may also choose additional criteria based on what you know about the target or biology.
 
 ## Resources
 

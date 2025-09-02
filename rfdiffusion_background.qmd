@@ -1,5 +1,5 @@
 ---
-title: "RFdiffusion background"
+title: "RFdiffusion Background"
 format:
   html:
     license: CC BY

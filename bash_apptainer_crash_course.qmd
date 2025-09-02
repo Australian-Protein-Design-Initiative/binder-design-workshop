@@ -1,0 +1,91 @@
+---
+title: "Bash shell and Apptainer crash course"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+# The Unix shell
+
+If you need a refresher on the basics of the Unix shell, there are already great resources available, please see one of:
+
+- ["The Shell" at Linux Journey](https://linuxjourney.com/lesson/the-shell)
+- ["Terminal basics" at sandbox.bio](https://sandbox.bio/tutorials/terminal-basics)
+- [Introduction to Unix (at Andrew Robinson / LaTrobe University)](http://andrewjrobinson.github.io/training_docs/tutorials/unix/)
+
+
+# Apptainer
+
+For an in-depth workshop, see [Reproducible computational environments using containers: Introduction to Apptainer](https://carpentries-incubator.github.io/apptainer-introduction/).
+
+Here's a crash course.
+
+Setting your cache path - this is where Apptainer will download container images to:
+```bash
+export APPTAINER_CACHEDIR=$HOME/.apptainer/apptainer_cache
+```
+
+Downloading a container image:
+```bash
+apptainer pull docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12
+```
+
+Downloading a container image to a (large) file anywhere:
+```bash
+apptainer pull bindcraft.sif docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12
+```
+
+... this will create a self-contained file called `bindcraft.sif` in your current directory. You can run things inside the container like: 
+```bash
+apptainer exec bindcraft.sif python --version
+```
+
+We will continue to use the image in APPTAIENR_CACHEDIR, instead: `rm bindcraft.sif`
+
+----
+
+Starting a shell session 'inside' a container:
+```bash
+apptainer shell docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12
+```
+
+This is useful for 'exploring' what's inside the container. For example, while 'inside' the BindCraft container, try:
+```bash
+cd /app/BindCraft
+ls settigns_advanced/
+```
+
+Type `exit` or press `Ctrl-D` to return to your regular shell.
+
+----
+
+Rather than writing the image URL every time, `docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12` every time, let's set it as a shell variable - this makes the commands below easier to read:
+
+```bash
+export BINDCRAFT_IMAGE="docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12"
+```
+
+Running a command in a container:
+```bash
+apptainer exec $BINDCRAFT_IMAGE python --version
+```
+
+Mounting ('binding') a directory so it's visible inside a container - eg `-B ~/my_data`:
+```bash
+apptainer exec -B ~/my_data $BINDCRAFT_IMAGE ls ~/my_data
+```
+
+Mounting ('binding') a directory at a different path inside a container - eg `-B ~/my_data:/data`:
+```bash
+apptainer exec -B ~/my_data:/data $BINDCRAFT_IMAGE ls ~/my_data
+```
+
+Try to pretend there is no container:
+
+```bash
+# Add this to your .bashrc or .zshrc to make it permanent
+alias bindcraft='apptainer exec $BINDCRAFT_IMAGE'
+
+bindcraft --help
+```
