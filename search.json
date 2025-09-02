@@ -1,5 +1,16 @@
 [
   {
+    "objectID": "nextflow_crash_course.html",
+    "href": "nextflow_crash_course.html",
+    "title": "Nextflow crash course",
+    "section": "",
+    "text": "Just enough Nextflow\nNextflow is very well documented and there is some great in-depth training material available.\nSee the official Nextflow Training, or Introduction to Bioinformatics workflows with Nextflow and nf-core for a comprehensive introduction and deeper dive.\nHere we will focus on downloading, configuring and running a Nextflow pipeline.\n\nTODO: Downloading a pipeline\n\n\nTODO: Configuring a pipeline - nextflow.config\n\n\nTODO: Running a pipeline\n\n\nTODO: Troubleshooting errors / failures\n\n\n\n\n\nReuseCC BY 4.0",
+    "crumbs": [
+      "Appendix: Foundational skills crash course",
+      "Nextflow crash course"
+    ]
+  },
+  {
     "objectID": "experimental_validation.html",
     "href": "experimental_validation.html",
     "title": "Experimental Validation",
@@ -37,7 +48,7 @@
     "href": "bindcraft_scoring.html",
     "title": "BindCraft : analysing a full design run",
     "section": "",
-    "text": "TODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)\n\n\n\n\nReuseCC BY 4.0",
+    "text": "TODO: We should switch here to ‘here’s one we prepared earlier’ with results from a ~300 (or more) trajectory BindCraft / nf-binder-design run.\n\n\n\n\n\n\n\nChallenge - viewing the BindCraft results\n\n\n\nView the table final_design_stats.csv - do we have any accepted designs ? Which scores are most important ?\nView a the the PDB files in Accepted/. Examine the target-binder interface - designs with high and low ipTM scores.\n\n\n\nTODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)\n\n\n\n\nReuseCC BY 4.0",
     "crumbs": [
       "BindCraft",
       "BindCraft : analysing a full design run"
@@ -185,23 +196,23 @@
   {
     "objectID": "rfdiffusion_background.html",
     "href": "rfdiffusion_background.html",
-    "title": "RFdiffusion background",
+    "title": "RFdiffusion Background",
     "section": "",
     "text": "Diffusion models (also image diffusion example) and SE(3) diffusion models.\nBennett paper, RFdiffusion model.\nOverview of the full pipeline, RFDiffusion -&gt; ProteinMPNN -&gt; Alphafold (single sequence, initial guess)\nRogues gallery of things that have been successfully designed with RFdiffusion.",
     "crumbs": [
       "RFdiffusion",
-      "RFdiffusion background"
+      "RFdiffusion Background"
     ]
   },
   {
     "objectID": "rfdiffusion_background.html#background",
     "href": "rfdiffusion_background.html#background",
-    "title": "RFdiffusion background",
+    "title": "RFdiffusion Background",
     "section": "",
     "text": "Diffusion models (also image diffusion example) and SE(3) diffusion models.\nBennett paper, RFdiffusion model.\nOverview of the full pipeline, RFDiffusion -&gt; ProteinMPNN -&gt; Alphafold (single sequence, initial guess)\nRogues gallery of things that have been successfully designed with RFdiffusion.",
     "crumbs": [
       "RFdiffusion",
-      "RFdiffusion background"
+      "RFdiffusion Background"
     ]
   },
   {
@@ -253,7 +264,7 @@
     "href": "bindcraft_exercise.html",
     "title": "BindCraft Exercise",
     "section": "",
-    "text": "BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as settings.json:\n{\n    \"design_path\": \"bindcraft_results\",\n    \"binder_name\": \"pdl1_binder\",\n    \"starting_pdb\": \"./input/PDL1.pdb\",\n    \"chains\": \"A\",\n    \"target_hotspot_residues\": \"A56\",\n    \"lengths\": [\n        55,\n        120\n    ],\n    \"number_of_final_designs\": 1\n}\n\n\n\nexport APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/\n\nPREFIX_BINDCRAFT=\"apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 \"\n\n#    # Ensure that BindCraft finds the correct version of ffmpeg\n#    export PATH=/opt/conda/envs/BindCraft/bin/:\\$PATH\n\n$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \\\n    /app/BindCraft/bindcraft.py \\\n        --settings settings.json \\\n        --filters /app/BindCraft/settings_filters/default_filters.json \\\n        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json\n\n# \n#         --filters /app/BindCraft/settings_filters/default_filters.json \\\n\n\n\n\nThe official BindCraft (wiki) docs: De novo binder design with BindCraft",
+    "text": "BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as settings.json:\n{\n    \"design_path\": \"bindcraft_results\",\n    \"binder_name\": \"pdl1_binder\",\n    \"starting_pdb\": \"./input/PDL1.pdb\",\n    \"chains\": \"A\",\n    \"target_hotspot_residues\": \"A56\",\n    \"lengths\": [\n        55,\n        120\n    ],\n    \"number_of_final_designs\": 1\n}\nWe have chosen a single hotspot here (as \"{chain}{resnum}\") - multiple hotspots can be comma separated like \"A56,A54,A115\".\nNormally you’d like to generate more than a single design (maybe \"number_of_final_designs\": 100 ?) - today we barely have time for one !\n\n\n\nexport APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/\n\nPREFIX_BINDCRAFT=\"apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 \"\n\n#    # Ensure that BindCraft finds the correct version of ffmpeg\n#    export PATH=/opt/conda/envs/BindCraft/bin/:\\$PATH\n\n$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \\\n    /app/BindCraft/bindcraft.py \\\n        --settings settings.json \\\n        --filters /app/BindCraft/settings_filters/default_filters.json \\\n        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json\n\n# \n#         --filters /app/BindCraft/settings_filters/default_filters.json \\\nBindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.\n\nIt’s safe to Ctrl-C kill a BindCraft run, only the progress on the current trajectory is lost.\n\n--filters and --advanced are optional - in our example they point to the default config files (inside the Apptainer container). You could specify your own, based on those found in the BindCraft Github repository.\n\nUnless you are embarking on a study to experimentally verify the impact of different filters or advanced settings on success rates, it is safest to use the defaults which have been more heavily tested by the BindCraft authors, since these are what have been used to achieve the published wet-lab success rates.\n\n\n\n\nWe configured BindCraft to put results in the bindcraft_results directory.\nIn here we have, of most interest:\n\nfinal_design_stats.csv - a CSV file summarizing the results of the BindCraft run\nAccepted/ - a directory containing the PDB files of the accepted designs (missing if no designs were accepted)\n\nas well as:\n\nfailure_csv.csv - a CSV file summarizing the stage where a design failed to pass a filter\nTrajectory/ - various non-accepted trajectories MPNN/ - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters\ntrajectory_stats.csv and mpnn_design_stats.csv - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage\n\nWe will focus on understanding the key outputs here in the next section.",
     "crumbs": [
       "BindCraft",
       "BindCraft Exercise"
@@ -264,7 +275,7 @@
     "href": "bindcraft_exercise.html#configuration",
     "title": "BindCraft Exercise",
     "section": "",
-    "text": "BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as settings.json:\n{\n    \"design_path\": \"bindcraft_results\",\n    \"binder_name\": \"pdl1_binder\",\n    \"starting_pdb\": \"./input/PDL1.pdb\",\n    \"chains\": \"A\",\n    \"target_hotspot_residues\": \"A56\",\n    \"lengths\": [\n        55,\n        120\n    ],\n    \"number_of_final_designs\": 1\n}",
+    "text": "BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as settings.json:\n{\n    \"design_path\": \"bindcraft_results\",\n    \"binder_name\": \"pdl1_binder\",\n    \"starting_pdb\": \"./input/PDL1.pdb\",\n    \"chains\": \"A\",\n    \"target_hotspot_residues\": \"A56\",\n    \"lengths\": [\n        55,\n        120\n    ],\n    \"number_of_final_designs\": 1\n}\nWe have chosen a single hotspot here (as \"{chain}{resnum}\") - multiple hotspots can be comma separated like \"A56,A54,A115\".\nNormally you’d like to generate more than a single design (maybe \"number_of_final_designs\": 100 ?) - today we barely have time for one !",
     "crumbs": [
       "BindCraft",
       "BindCraft Exercise"
@@ -275,7 +286,29 @@
     "href": "bindcraft_exercise.html#run-bindcraft",
     "title": "BindCraft Exercise",
     "section": "",
-    "text": "export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/\n\nPREFIX_BINDCRAFT=\"apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 \"\n\n#    # Ensure that BindCraft finds the correct version of ffmpeg\n#    export PATH=/opt/conda/envs/BindCraft/bin/:\\$PATH\n\n$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \\\n    /app/BindCraft/bindcraft.py \\\n        --settings settings.json \\\n        --filters /app/BindCraft/settings_filters/default_filters.json \\\n        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json\n\n# \n#         --filters /app/BindCraft/settings_filters/default_filters.json \\",
+    "text": "export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/\n\nPREFIX_BINDCRAFT=\"apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 \"\n\n#    # Ensure that BindCraft finds the correct version of ffmpeg\n#    export PATH=/opt/conda/envs/BindCraft/bin/:\\$PATH\n\n$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \\\n    /app/BindCraft/bindcraft.py \\\n        --settings settings.json \\\n        --filters /app/BindCraft/settings_filters/default_filters.json \\\n        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json\n\n# \n#         --filters /app/BindCraft/settings_filters/default_filters.json \\\nBindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.\n\nIt’s safe to Ctrl-C kill a BindCraft run, only the progress on the current trajectory is lost.\n\n--filters and --advanced are optional - in our example they point to the default config files (inside the Apptainer container). You could specify your own, based on those found in the BindCraft Github repository.\n\nUnless you are embarking on a study to experimentally verify the impact of different filters or advanced settings on success rates, it is safest to use the defaults which have been more heavily tested by the BindCraft authors, since these are what have been used to achieve the published wet-lab success rates.",
+    "crumbs": [
+      "BindCraft",
+      "BindCraft Exercise"
+    ]
+  },
+  {
+    "objectID": "bindcraft_exercise.html#bindcraft-output",
+    "href": "bindcraft_exercise.html#bindcraft-output",
+    "title": "BindCraft Exercise",
+    "section": "",
+    "text": "We configured BindCraft to put results in the bindcraft_results directory.\nIn here we have, of most interest:\n\nfinal_design_stats.csv - a CSV file summarizing the results of the BindCraft run\nAccepted/ - a directory containing the PDB files of the accepted designs (missing if no designs were accepted)\n\nas well as:\n\nfailure_csv.csv - a CSV file summarizing the stage where a design failed to pass a filter\nTrajectory/ - various non-accepted trajectories MPNN/ - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters\ntrajectory_stats.csv and mpnn_design_stats.csv - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage\n\nWe will focus on understanding the key outputs here in the next section.",
+    "crumbs": [
+      "BindCraft",
+      "BindCraft Exercise"
+    ]
+  },
+  {
+    "objectID": "bindcraft_exercise.html#recommendations",
+    "href": "bindcraft_exercise.html#recommendations",
+    "title": "BindCraft Exercise",
+    "section": "Recommendations",
+    "text": "Recommendations\n\nChoose some hotspots based on the strategies we’ve learned.\nRun between 100 and 300 trajectories (--bindcraft_n_traj 300) to assess the ‘acceptance rate’\n\nIf you are getting a reasonable acceptance rate, &gt; ~%1, do a second run setting --bindcraft_n_traj to a value that should generate ~100 accepted designs\nIf you are getting less than ~1% acceptance rate, you may need to change your hotspots, modify target trimming or use a different target structure, or (cautiously) use advanced presets.\n\n\nThe percentage acceptance rate is:\n\\[\\text{Acceptance Rate} = 100 \\times \\frac{n_{\\text{accepted}}}{N_{\\text{traj}}}\\]\nwhere:\n\n\\(n_{\\text{accepted}}\\) = number of accepted designs (excluding MPNN duplicates)\n\\(N_{\\text{traj}}\\) = total number of trajectories\n\nAs a guide, the BindCraft authors recommend generating ~100 ‘accepted’ designs and choosing the best 20 for experimental assay. ‘Best’ is likely highest Average_i_pTM, but you may also choose additional criteria based on what you know about the target or biology.",
     "crumbs": [
       "BindCraft",
       "BindCraft Exercise"
@@ -285,8 +318,8 @@
     "objectID": "bindcraft_exercise.html#resources",
     "href": "bindcraft_exercise.html#resources",
     "title": "BindCraft Exercise",
-    "section": "",
-    "text": "The official BindCraft (wiki) docs: De novo binder design with BindCraft",
+    "section": "Resources",
+    "text": "Resources\n\nThe official BindCraft (wiki) docs: De novo binder design with BindCraft",
     "crumbs": [
       "BindCraft",
       "BindCraft Exercise"
@@ -378,6 +411,17 @@
     "crumbs": [
       "Harware & Software",
       "Hardware and software requirements"
+    ]
+  },
+  {
+    "objectID": "bash_apptainer_crash_course.html",
+    "href": "bash_apptainer_crash_course.html",
+    "title": "Bash shell and Apptainer crash course",
+    "section": "",
+    "text": "The Unix shell\nIf you need a refresher on the basics of the Unix shell, there are already great resources available, please see one of:\n\n“The Shell” at Linux Journey\n“Terminal basics” at sandbox.bio\nIntroduction to Unix (at Andrew Robinson / LaTrobe University)\n\n\n\nApptainer\nFor an in-depth workshop, see Reproducible computational environments using containers: Introduction to Apptainer.\nHere’s a crash course.\nSetting your cache path - this is where Apptainer will download container images to:\nexport APPTAINER_CACHEDIR=$HOME/.apptainer/apptainer_cache\nDownloading a container image:\napptainer pull docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\nDownloading a container image to a (large) file anywhere:\napptainer pull bindcraft.sif docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\n… this will create a self-contained file called bindcraft.sif in your current directory. You can run things inside the container like:\napptainer exec bindcraft.sif python --version\nWe will continue to use the image in APPTAIENR_CACHEDIR, instead: rm bindcraft.sif\n\nStarting a shell session ‘inside’ a container:\napptainer shell docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\nThis is useful for ‘exploring’ what’s inside the container. For example, while ‘inside’ the BindCraft container, try:\ncd /app/BindCraft\nls settigns_advanced/\nType exit or press Ctrl-D to return to your regular shell.\n\nRather than writing the image URL every time, docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 every time, let’s set it as a shell variable - this makes the commands below easier to read:\nexport BINDCRAFT_IMAGE=\"docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\"\nRunning a command in a container:\napptainer exec $BINDCRAFT_IMAGE python --version\nMounting (‘binding’) a directory so it’s visible inside a container - eg -B ~/my_data:\napptainer exec -B ~/my_data $BINDCRAFT_IMAGE ls ~/my_data\nMounting (‘binding’) a directory at a different path inside a container - eg -B ~/my_data:/data:\napptainer exec -B ~/my_data:/data $BINDCRAFT_IMAGE ls ~/my_data\nTry to pretend there is no container:\n# Add this to your .bashrc or .zshrc to make it permanent\nalias bindcraft='apptainer exec $BINDCRAFT_IMAGE'\n\nbindcraft --help\n\n\n\n\nReuseCC BY 4.0",
+    "crumbs": [
+      "Appendix: Foundational skills crash course",
+      "Bash shell and Apptainer crash course"
     ]
   }
 ]
