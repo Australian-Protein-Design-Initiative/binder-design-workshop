@@ -10,9 +10,23 @@ format:
 
 ## Background
 
-- Diffusion models (also image diffusion example) and SE(3) diffusion models.
+We will start by using the RFdiffusion binder design protocol, as described in the following papers:
 
-- Bennett paper, RFdiffusion model.
+- Watson, J.L., Juergens, D., Bennett, N.R. et al. "De novo design of protein structure and function with RFdiffusion.", _Nature_, **620**, 1089–1100 (2023). [https://doi.org/10.1038/s41586-023-06415-8](https://doi.org/10.1038/s41586-023-06415-8) - Github: [https://github.com/RosettaCommons/RFdiffusion](https://github.com/RosettaCommons/RFdiffusion)
+
+- Bennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. _Nat Commun_, **14**, 2625 (2023). [https://doi.org/10.1038/s41467-023-38328-5](https://doi.org/10.1038/s41467-023-38328-5) - Github: [https://github.com/nrbennet/dl_binder_design](https://github.com/nrbennet/dl_binder_design)
+
+- Dauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. _Science_, **378**,49-56(2022). [https://doi.org/10.1126/science.add2187](https://doi.org/10.1126/science.add2187) - Github: [https://github.com/dauparas/ProteinMPNN](https://github.com/dauparas/ProteinMPNN)
+
+This method combines:
+
+- RFdiffusion for 'hallucinating' the backbone of a designed binder for a target structure
+- ProteinMPNN for 'inverse folding' to generate a sequence for the binder backbone
+- Alphafold2 'initial guess' structure prediction to quickly score binders _in silico_ 
+
+----
+
+- Diffusion models (also image diffusion example) and SE(3) diffusion models.
 
 - Overview of the full pipeline, RFDiffusion -> ProteinMPNN -> Alphafold (single sequence, initial guess)
 

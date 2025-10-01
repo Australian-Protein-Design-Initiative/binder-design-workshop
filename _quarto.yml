@@ -34,7 +34,7 @@ website:
       - section: "Target Preparation"
         contents:
           - target_preparation.qmd
-      - section: "RFdiffusion"
+      - section: "RFdiffusion (& ProteinMPNN)"
         contents:
           - rfdiffusion_background.qmd
           - rfdiffusion_exercise.qmd

@@ -11,16 +11,31 @@ molstar: embed
 
 We will start with the 'manual' way, running each of the steps in the RFdiffusion -> ProteinMPNN -> Alphafold2 initial guess workflow individually.
 
-Then, we will run the `nf-binder-design` workflow that combines these steps into a single pipeline more suitable for immediate 'production' use.
+Then, we will run the `nf-binder-design` workflow that combines these steps into a more streamlined pipeline to better suit 'production' use on high-performance computing.
 
 ## The target
 
-[PDL1](exercises/rfd/input/PDL1.pdb)
+
 
 {{< mol-url ./exercises/rfd/input/PDL1.pdb layoutShowSequence=true layoutShowLeftPanel=false >}}
 
 _(press the spanner icon to see the sequence, )_
 
+
+Here's version of the PDL1 domain we cropped in the previous exercise: [PDL1.pdb](exercises/rfd/input/PDL1.pdb)
+
+On your server, let's create a directory for our RFDiffusion work and upload this PDB file to `input/PDL1.pdb`:
+
+```bash
+# Start in your home directory, (or or another preferred location)
+cd ~
+
+mkdir -p exercises/rfd/input
+cd exercises/rfd
+
+# if you'd like to use a pre-prepared PDL1.pdd rather than your own, run:
+wget -O input/PDL1.pdb https://australian-protein-design-initiative.github.io/binder-design-workshop/exercises/rfd/input/PDL1.pdb
+```
 
 ## Running RFdiffusion binder design
 
