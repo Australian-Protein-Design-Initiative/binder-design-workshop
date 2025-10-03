@@ -12,12 +12,151 @@ Nextflow is very well documented and there is some great in-depth training mater
 
 See the official [Nextflow Training](https://training.nextflow.io/latest/), or [Introduction to Bioinformatics workflows with Nextflow and nf-core](https://carpentries-incubator.github.io/workflows-nextflow/index.html) for a comprehensive introduction and deeper dive.
 
-Here we will focus on downloading, configuring and running a Nextflow pipeline.
+Here we will focus on downloading, configuring and running a Nextflow pipeline for _de novo_ protein binder design.
 
-> TODO: Downloading a pipeline
+## Installing Nextflow
 
-> TODO: Configuring a pipeline - nextflow.config
+Follow [the official Nextflow installation instructions](https://www.nextflow.io/docs/latest/install.html) - they are clear, and work. You don't need `sudo` to install Nextflow.
 
-> TODO: Running a pipeline
+> Tip: Java 17+, a dependency of Nextflow, is available as a module on the M3 HPC cluster as `module load java`.
 
-> TODO: Troubleshooting errors / failures
+## Downloading a pipeline
+
+**Option 1:** Download the pipeline code from the Github repository.
+
+```bash
+git clone https://github.com/Australian-Protein-Design-Initiative/nf-binder-design
+cd nf-binder-design
+```
+
+**Option 2:** Use Nextflow `pull`
+
+```bash
+nextflow pull Australian-Protein-Design-Initiative/nf-binder-design
+
+# or for a specific version / release
+# nextflow pull -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design
+
+# You can see some info about what you just pulled
+nextflow info Australian-Protein-Design-Initiative/nf-binder-design
+```
+
+> In the case of option 2, Nextflow `git clone`s for you into: `~/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design` - so you can find things like the default config files in the repository there.
+
+## Configuring a pipeline - nextflow.config
+
+Most Nextflow pipelines (especially nf-core flavoured ones), come with sensible pre-configured defaults, but you'll often need to override or modify some of the settings for your particular computing environment, data and preferences. 
+
+We will assume here we are running on an HPC cluster using SLURM. Nextflow submits `sbatch` jobs to the SLURM queue on your behalf, and needs to specify resources and partition settings for each job.
+
+You can override defaults by creating a `nextflow.config` file in the working directory where you run the pipeline. The most common thing you'll need to do is modify the resources and parition settings for a specific task ('process' in Nextflow terminology).
+
+```groovy
+// nextflow.config
+process {
+    withName: BINDCRAFT {
+        // time, cpus, memory (non-GPU) are specified OUTSIDE clusterOptions
+        time = 2.hours
+        memory = '32g'
+        cpus = 16
+
+        // Everything else SLURM sbatch specific goes in clusterOptions
+        // eg, speficying a specific GPU partition
+        clusterOptions = "--gres=gpu:1 --partition=gpu"
+    }
+}
+```
+
+## Running a pipeline
+
+A wrapper script is a convenient way to record all the commandline arguments you used to run the pipeline and simplify re-running after failures / modifications. We will create a script called `run.sh` to run the pipeline (and do `chmod +x run.sh` to make it executable).
+
+```bash
+#!/bin/bash
+###
+## run.sh
+###
+
+# We will assume here that you have done `nextflow pull` so the pipeline code is in $HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design
+PIPELINE_DIR=$HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design
+
+DATESTAMP=$(date +%Y%m%d_%H%M%S)
+
+nextflow run ${PIPELINE_DIR}/bindcraft.nf \
+  -c ${PIPELINE_DIR}/conf/platforms/m3.config \
+  --input_pdb 'input/PDL1.pdb' \
+  --outdir results \
+  --target_chains "A" \
+  --hotspot_res "A56" \
+  --binder_length_range "65-120" \
+  --bindcraft_n_traj 4 \
+  --bindcraft_batch_size 1 \
+  -profile slurm \
+  -resume \
+  -with-report results/logs/report_${DATESTAMP}.html \
+  -with-trace results/logs/trace_${DATESTAMP}.txt
+```
+
+We include a specific config for the M3 HPC cluster using `-c ${PIPELINE_DIR}/conf/platforms/m3.config`.
+If you view this file, you'll see all the resource and partition settings tuned this particular HPC cluster. You can copy these settings to your own `nextflow.config` (as above) and override as required.
+
+We also include `-resume` to resume a previous run if it exists - this is benign if it's the first time you're running the pipeline, but is important to ensure the pipeline resumes where it left off if you need to restart it in the event of a failure.
+
+> Nextflow itself is relatively light weight in resource usage, but you can also turn this into an SBATCH script if your HPC adminstrators prefer you to not run it on the login node.
+
+### Alternative: using a JSON file for parameters
+
+An alternative to putting all the "`--double-dash`" pipeline parameters in the wrapper script is to use a JSON file like:
+
+```json
+{
+    "input_pdb": "input/PDL1.pdb",
+    "outdir": "results",
+    "target_chains": "A",
+    "hotspot_res": "A56",
+    "binder_length_range": "65-120",
+    "bindcraft_n_traj": 4,
+    "bindcraft_batch_size": 1
+}
+```
+
+And run like:
+
+```bash
+#!/bin/bash
+###
+## run-with-params.sh
+###
+
+# We will assume here that you have done `nextflow pull` so the pipeline code is in $HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design
+PIPELINE_DIR=$HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design
+
+DATESTAMP=$(date +%Y%m%d_%H%M%S)
+
+nextflow run ${PIPELINE_DIR}/bindcraft.nf \
+  -c ${PIPELINE_DIR}/conf/platforms/m3.config \
+  -params-file params.json \
+  -profile slurm \
+  -resume \
+  -with-report results/logs/report_${DATESTAMP}.html \
+  -with-trace results/logs/trace_${DATESTAMP}.txt
+```
+
+## Troubleshooting errors / failures
+
+A typical 'production' pipeline invocation will run hundreds or thousands of tasks accord many compute nodes. There's always a chance some will fail. Nextflow does a good job of retrying failed tasks, but after too many failures the pipeline will quit.
+
+Nextflow keeps intermediate files used for resuming a pipeline run in the `work` directory.
+
+When a process fails, the logs will have a task id like `e6/aa312b4` and will indicate a path into the `work` directory like: `work/e6/aa312b4a1da1edaed1ed23d12` - this folder is the working directory for that particular (failed) task.
+
+That `work/xx/yyyyy` directory will contain the files `.command.log`, `.command.err`, `.command.out` (the stdout and stderr logs), `.command.sh` (the script that was run) amoung other files. You can use these to diagnose what went wrong - often it's a particular process that needs more memory (RAM) or time assigned via `nextflow.config` (the scheduler killed the SLURM job), or the process failed due to a bad input file.
+
+## After the run
+
+After a Nextflow run successfully finishes, the `work` directory is usually of no use, as it only contains intermediate files, cached to allow resuming. The files you want to preserve are generally in the `results` directory.
+
+Carefully ... remove the work directory:
+```bash
+rm ./work -rf
+```
