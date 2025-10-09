@@ -1,5 +1,5 @@
 ---
-title: "BindCraft : analysing a full design run "
+title: "BindCraft : analysing a full design run"
 format:
   html:
     license: CC BY
@@ -18,3 +18,15 @@ View a the the PDB files in `Accepted/`. Examine the target-binder interface - d
 
 :::
 > TODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)
+
+# Optimizing BindCraft settings
+
+It can take 'many shots' _in silico_ to get a 'one shot' binder in the wet lab.
+
+Here's a figure from the BindCraft paper that gives some insight:
+
+![Supplementary Fig. 1 from Pacesa et al, _Nature_, 2025 (https://doi.org/10.1038/s41586-025-09429-6) - shows the number of trajectories, number passing initially AF2](assets/images/bindcraft_success_rates.png)'
+
+Each target required different numbers of trajectories, with a wide range in _in silico_ acceptance rates, to achieve the suggested "100 accepted designs to select 20 for assay" benchmark. **Part f** shows the impact of binder length range alone on _in silico_ success rates. 
+
+What we **don't** see here is the trajactories run testing alternative target structures, trimmings and hotspot combinations - expect to run many more trajectories than you'll ultimately require for your final 'production' run.

@@ -6,4 +6,15 @@ format:
     embed-resources: true
 ---
 
-> TODO: BindCraft methodology overview (also cite ColabDesign and original hallucination with AlphaFold2 paper)
+## BindCraft methodology overview 
+
+[Pacesa et al, _Nature_, 2025](https://doi.org/10.1038/s41586-025-09429-6) - One-shot design of functional protein binders with BindCraft 
+
+![Figure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline](assets/images/bindcraft_protocol.jpg)
+
+
+- Hallucination with the Alphafold2 model as implemented by ColabDesign
+
+![](assets/images/bindcraft_traj_stages.png)
+
+
