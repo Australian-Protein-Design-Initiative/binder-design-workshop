@@ -15,6 +15,7 @@ project:
     - bindcraft_background.qmd
     - bindcraft_exercise.qmd
     - bindcraft_scoring.qmd
+    - bindcraft_tips.qmd
     - hardware_and_software.qmd
     - experimental_validation.qmd
     - bash_apptainer_crash_course.qmd
@@ -44,6 +45,7 @@ website:
           - bindcraft_background.qmd
           - bindcraft_exercise.qmd
           - bindcraft_scoring.qmd
+          - bindcraft_tips.qmd
       - section: "Next steps"
         contents:
           - experimental_validation.qmd

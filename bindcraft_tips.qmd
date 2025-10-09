@@ -1,0 +1,257 @@
+---
+title: "BindCraft : tips and guidance"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+These tips are taken directly from the [BindCraft wiki page](https://github.com/martinpacesa/BindCraft/wiki/De-novo-binder-design-with-BindCraft) and [BindCraft paper supplementary info](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-025-09429-6/MediaObjects/41586_2025_9429_MOESM1_ESM.pdf), but reformatted to be more concise and readable, with a few extra tips:
+
+----
+
+### **Installation**
+
+- **System Requirements:** Runs exclusively on **Linux** systems with **conda** or **mamba**.
+    
+- **CUDA & JAX:** Specify your CUDA version during installation to avoid version conflicts, especially with **JAX**.
+    
+- **Dependencies:** Uses **ColabDesign**, **ProteinMPNN**, and **PyRosetta**. Commercial users need a **PyRosetta license**.
+    
+- **Environment Path:** If the conda environment fails to activate, its path can be manually specified in the run script.
+    
+- **Execution:** Designed for HPC clusters with **SLURM** but can be run locally via bash or python scripts.
+
+- **Apptainer containers:** are also available ([eg](https://github.com/Australian-Protein-Design-Initiative/containers/pkgs/container/containers%2Fbindcraft) ) - these can simplify installation when the provided `install_bindcraft.sh` script fails
+
+---
+
+### **Hardware Considerations**
+
+- **GPU:** A **CUDA-compatible NVIDIA GPU** is mandatory. Recommended models include **L40, V100, A100, or H100**.
+    
+    - An **H100** GPU is roughly 4 times faster than an **A100**.
+    - eg, on H100: 900 residue trajectory == 2-3 hours, 250 residue trajectory == 5 minutes
+        
+- **Google Colab:** Can be run on Colab, but it is approximately 10 times slower than a local installation with the same hardware.
+    
+- **GPU Memory:** This is the primary bottleneck. A **32 Gb** card handles a complex of ~550 residues, while an **80 Gb** card manages ~950 residues.
+    
+- **Parallelization:** The core process cannot be split across multiple GPUs, but you can run multiple separate jobs outputting to the same folder to speed up sampling.
+    
+- **Storage:** A few terabytes are recommended. The model weights alone are **5.3 Gb**. You can save space by disabling plot and animation outputs.
+    
+- **CPU & RAM:** A single CPU core is usually sufficient. At least **40 Gb of RAM** is recommended to avoid out-of-memory errors from model compilation or PyRosetta features.
+
+---
+
+### **Getting Started**
+
+- **Input:** Requires a target protein structure (PDB), a binder size range, and the desired number of designs.
+    
+- **Binder Size:**
+    
+    - Globular binders: Optimal between **60-180 amino acids** (max reliable size is 250 AAs).
+        
+    - Peptide binders: **8-25 amino acids**, requiring special peptide settings and filters. Peptide design success rates are typically 5-10 times lower.
+        
+- **Hotspots:** You can specify "hotspot" residues for the binder to target. If none are provided, the pipeline finds an optimal site on its own.
+    
+- **Monitoring & Early Stopping:**
+    
+    - Check the `Accepted` folder during the run to manually remove unsuitable designs.
+        
+    - The script may terminate prematurely if design success rates are too low, saving computational resources.
+        
+    - To stop early and rank current designs, kill the jobs, set the design count lower than what's in the `Accepted` folder, and rerun.
+        
+- **Run Time:** Can vary from a few **hours** to several **weeks** on a single GPU, depending on target difficulty and complex size. 
+  - "Easy" targets might only require ~100 trajectories, difficult ones might required 1000 - 10,000.
+  -  It's possible for difficult targets to yield no successful designs.
+
+---
+
+### **Under the Hood**
+
+- **Core Method:** Uses backpropagation through the **AlphaFold2 multimer network** in MSA-free (single sequence) mode.
+    
+- **Sequence Generation:** Optimizes the sequence in a "relaxed" (soft) space before converting it to a standard one-hot encoded sequence.
+    
+- **Self-Consistency Checks:**
+    
+    1. **Model Swapping:** Randomly swaps between the five trained AlphaFold2 multimer models during design to ensure robustness and avoid overfitting.
+        
+    2. **Sequence Optimization:** Uses **ProteinMPNN** to refine the binder's core and surface while preserving the designed interface. This is done because purely hallucinated sequences can be difficult to purify experimentally.
+        
+        - By default, "soluble" MPNN weights are used, which usually result in a negatively charged binder surface. "Original" weights can be used for a more neutral surface.
+            
+    3. **Monomer Reprediction:** Uses the **AlphaFold2 monomer model** for the final prediction. Since this model was not trained on complexes, it serves as a highly stringent test of a well-defined interface.
+        
+    4. **Binder Folding Check:** The binder is also repredicted alone (without the target) to assess its structural change (RMSD) upon binding.
+        
+- **Final Analysis:** **PyRosetta** is used to calculate interface scores and provide additional biophysical metrics for filtering (eg Rosetta dG, surface hydrophobicity, shape complementarity, number of interface residues, H-bonds and unsaturated H-bonds).
+    
+- **Output Structure:** Designs are collected in sequential folders (`Trajectory` → `MPNN` → `Accepted`) with corresponding metrics in separate CSV files.
+    
+
+---
+
+### **Target Preparation & Hotspot Selection**
+
+- **Input Structure:** 
+  
+  - Accepts **experimental** (NMR, CryoEM) 
+  - or **predicted** (AlphaFold2, Boltz-2 etc) PDBs. 
+    - Using an experimental structure as a template for a new AlphaFold2 or Boltz-2 prediction can help fill in missing loops.
+  - Even small variations of the 'same' target (experimental vs. predicted vs. alternative trimming) can change _in silico_ success rates significantly.
+    
+- **Trimming:**
+    
+    - Trim the target to only essential domains to save memory and time. Remove flexible ends and large flexible loops if these are not involved in the binding interface. 
+
+    - Trim at realistic points like domain boundaries or hinge residues (e.g., Gly, Pro), which can be identified by high B-factors or low pLDDT scores.
+        
+    - "Unrealistic" trims (e.g., splitting GPCR helices) are supported if they preserve the local structural context and don't expose core hydrophobic residues.
+        
+- **Hotspot Selection:**
+    
+    - Define hotspots by residue number and chain ID (e.g., `A23,A27-50,B45`).
+        
+    - Targeting a radial patch of surface residues on secondary structures is recommended, especially sites containing hydrophobic residues (F, Y, W, I, L, M).
+    
+    - Single residues also work in well defined binding sites. You can also leave hotspots undefined and let the model choose.
+        
+- **Off-Target Binding:** your hotspots may be ignored if the choice of target site is suboptimal or if there is a significantly better binding site nearby. To encourage your preferred binding site you can:
+    
+    - Mutate the unwanted binding site residues to **lysines**.
+        
+    - Trim away the off-target region.
+        
+    - Use the `_hardtarget` advanced setting.
+        
+    - Pre-block the off-target binding site with another binder ! First generate a design that binds to the off-target site, and use this new complex as a structural input for a new run.
+
+---
+
+### **Advanced Settings**
+
+- **Default Settings (`default_`):** Extensively tested and recommended for the highest chance of success.
+    
+- **`_hardtarget`:**
+    
+    - Sets `"predict_initial_guess": true`.
+        
+    - Biases the prediction by providing binder atom positions as a starting point. Can help rescue designs that fail after the MPNN step. (As of late 2025 this setting has not been systematically tested and is likely to reduce success rates).
+        
+- **`_flexible`:**
+    
+    - Sets `"rm_template_seq_design/predict": true`.
+        
+    - Masks the target's amino acid sequence, which allows for greater backbone flexibility and domain movements during design and reprediction.
+        
+- **`_mpnn`:**
+    
+    - Sets `"mpnn_fix_interface": false`.
+        
+    - Allows ProteinMPNN to redesign and optimize the interface residues, rather than keeping the AlphaFold2-designed interface fixed.
+        
+- **`_betasheet`:**
+    
+    - Enforces beta-sheet structures by penalizing helicity (`"weights_helicity": -2.0`).
+        
+- **`_peptide`:**
+    
+    - Uses a `3stage` algorithm instead of the default `4stage`.
+        
+    - Changes multiple loss weights to favour peptide-like properties (e.g., increases helicity weight, reduces contact weights).
+        
+    - Does not use the radius of gyration (`rg_loss`).
+
+- **`"predict_bigbang": true`** setting: 
+
+	- For complexes > 600 residues, this setting facilitates more efficient prediction of large complexes in the final stage 
+
+---
+
+### **Filtering**
+
+- **Default Filters:** The default filters are robust and generally should not be changed, except when designing peptides.
+    
+- **Key Metrics:** The most important metrics for filtering are **pLDDT, i_pTM, and i_pAE**.
+    
+    - The **i_pTM** score is a good binary predictor of binding, but values between 0.6 and 0.8 are a "grey zone" where predictions can be incorrect.
+        
+- **Affinity:** **None** of the computational metrics are predictive of binding affinity.
+    
+- **Early Rejection:** Trajectories are terminated early if they have:
+    
+    - CA clashes > 0 or Interface clashes > 25.
+        
+    - pLDDT < 0.7.
+        
+    - A "floating" binder with < 3 contacts to the target.
+        
+- **Binder RMSD Filter:** This filter can be relaxed or disabled if more conformational flexibility or an "induced fit" binder is desired.
+
+#### Default filters
+
+Designs that satisfy these critera are kept as 'Accepted':
+
+- **AlphaFold2 Metrics**
+    - `Average_pLDDT` > 0.8
+    - `Average_pTM` > 0.55
+    - `Average_i_pTM` > 0.5
+    - `Average_i_pAE` < 0.35
+
+- **Rosetta Metrics**
+    - `Average_Binder_Energy_Score` < 0
+    - `Average_Surface_Hydrophobicity` < 0.35
+    - `Average_ShapeComplementarity` > 0.6
+    - `Average_dG` < 0
+    - `Average_dSASA` > 1
+    - `Average_n_InterfaceResidues` > 7
+    - `Average_n_InterfaceHbonds` > 3
+    - `Average_n_InterfaceUnsatHbonds` < 4
+    - `Average_InterfaceAAs: K` < 3
+    - `Average_InterfaceAAs: M` < 3
+
+- **Structural Metrics**
+    - `Average_Binder_Loop%` < 90
+    - `Average_Hotspot_RMSD` < 6
+    - `Average_Binder_pLDDT` > 0.8
+    - `Average_Binder_RMSD` < 3.5
+
+
+
+---
+
+### **Design Selection**
+
+- **Quantity:** Generate at least **100 designs** that pass filters to ensure good sampling of interface diversity.
+    
+- **Ranking:** Final designs in the `Accepted/Ranked` folder are ranked by **i_pTM**. This is for prioritization only; all designs that pass filters are high-quality candidates.
+    
+- **Sub-selection:**
+    
+    - Prioritize sampling diverse interfaces over similar designs from the same trajectory.
+        
+    - Perform a final visual check in **PyMOL** or **ChimeraX**.
+        
+    - Consider repredicting top candidates in the context of the full biological complex and check that the target interface is free of post-translational modifications.
+        
+- **Experimental Success:**
+    
+    - Screening **~10 designs** is often sufficient to find a nanomolar binder.
+        
+    - Screening **50-100 designs** is recommended when aiming for picomolar affinity.
+        
+    - Generated binders are typically well-behaved biochemically (thermostable, easy to purify).
+        
+
+---
+
+### **Troubleshooting**
+
+- **Mismatched Atoms Error:** Your input PDB likely has partial residues or atoms left over from trimming. Clean the file before rerunning.
+    
+- **Binder Ignores Hotspots:** This is an intended feature to avoid forcing binders into poor sites. See the "Target Preparation" section for strategies to enforce binding to a specific site.
