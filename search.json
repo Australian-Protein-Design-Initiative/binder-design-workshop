@@ -4,7 +4,73 @@
     "href": "nextflow_crash_course.html",
     "title": "Nextflow crash course",
     "section": "",
-    "text": "Just enough Nextflow\nNextflow is very well documented and there is some great in-depth training material available.\nSee the official Nextflow Training, or Introduction to Bioinformatics workflows with Nextflow and nf-core for a comprehensive introduction and deeper dive.\nHere we will focus on downloading, configuring and running a Nextflow pipeline.\n\nTODO: Downloading a pipeline\n\n\nTODO: Configuring a pipeline - nextflow.config\n\n\nTODO: Running a pipeline\n\n\nTODO: Troubleshooting errors / failures\n\n\n\n\n\nReuseCC BY 4.0",
+    "text": "Nextflow is very well documented and there is some great in-depth training material available.\nSee the official Nextflow Training, or Introduction to Bioinformatics workflows with Nextflow and nf-core for a comprehensive introduction and deeper dive.\nHere we will focus on downloading, configuring and running a Nextflow pipeline for de novo protein binder design.\n\n\nFollow the official Nextflow installation instructions - they are clear, and work. You don’t need sudo to install Nextflow.\n\nTip: Java 17+, a dependency of Nextflow, is available as a module on the M3 HPC cluster as module load java.\n\n\n\n\nOption 1: Download the pipeline code from the Github repository.\ngit clone https://github.com/Australian-Protein-Design-Initiative/nf-binder-design\ncd nf-binder-design\nOption 2: Use Nextflow pull\nnextflow pull Australian-Protein-Design-Initiative/nf-binder-design\n\n# or for a specific version / release\n# nextflow pull -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design\n\n# You can see some info about what you just pulled\nnextflow info Australian-Protein-Design-Initiative/nf-binder-design\n\nIn the case of option 2, Nextflow git clones for you into: ~/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design - so you can find things like the default config files in the repository there.\n\n\n\n\nMost Nextflow pipelines (especially nf-core flavoured ones), come with sensible pre-configured defaults, but you’ll often need to override or modify some of the settings for your particular computing environment, data and preferences.\nWe will assume here we are running on an HPC cluster using SLURM. Nextflow submits sbatch jobs to the SLURM queue on your behalf, and needs to specify resources and partition settings for each job.\nYou can override defaults by creating a nextflow.config file in the working directory where you run the pipeline. The most common thing you’ll need to do is modify the resources and parition settings for a specific task (‘process’ in Nextflow terminology).\n// nextflow.config\nprocess {\n    withName: BINDCRAFT {\n        // time, cpus, memory (non-GPU) are specified OUTSIDE clusterOptions\n        time = 2.hours\n        memory = '32g'\n        cpus = 16\n\n        // Everything else SLURM sbatch specific goes in clusterOptions\n        // eg, speficying a specific GPU partition\n        clusterOptions = \"--gres=gpu:1 --partition=gpu\"\n    }\n}\n\n\n\nA wrapper script is a convenient way to record all the commandline arguments you used to run the pipeline and simplify re-running after failures / modifications. We will create a script called run.sh to run the pipeline (and do chmod +x run.sh to make it executable).\n#!/bin/bash\n###\n## run.sh\n###\n\n# We will assume here that you have done `nextflow pull` so the pipeline code is in $HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design\nPIPELINE_DIR=$HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design\n\nDATESTAMP=$(date +%Y%m%d_%H%M%S)\n\nnextflow run ${PIPELINE_DIR}/bindcraft.nf \\\n  -c ${PIPELINE_DIR}/conf/platforms/m3.config \\\n  --input_pdb 'input/PDL1.pdb' \\\n  --outdir results \\\n  --target_chains \"A\" \\\n  --hotspot_res \"A56\" \\\n  --binder_length_range \"65-120\" \\\n  --bindcraft_n_traj 4 \\\n  --bindcraft_batch_size 1 \\\n  -profile slurm \\\n  -resume \\\n  -with-report results/logs/report_${DATESTAMP}.html \\\n  -with-trace results/logs/trace_${DATESTAMP}.txt\nWe include a specific config for the M3 HPC cluster using -c ${PIPELINE_DIR}/conf/platforms/m3.config. If you view this file, you’ll see all the resource and partition settings tuned this particular HPC cluster. You can copy these settings to your own nextflow.config (as above) and override as required.\nWe also include -resume to resume a previous run if it exists - this is benign if it’s the first time you’re running the pipeline, but is important to ensure the pipeline resumes where it left off if you need to restart it in the event of a failure.\n\nNextflow itself is relatively light weight in resource usage, but you can also turn this into an SBATCH script if your HPC adminstrators prefer you to not run it on the login node.\n\n\n\nAn alternative to putting all the “--double-dash” pipeline parameters in the wrapper script is to use a JSON file like:\n{\n    \"input_pdb\": \"input/PDL1.pdb\",\n    \"outdir\": \"results\",\n    \"target_chains\": \"A\",\n    \"hotspot_res\": \"A56\",\n    \"binder_length_range\": \"65-120\",\n    \"bindcraft_n_traj\": 4,\n    \"bindcraft_batch_size\": 1\n}\nAnd run like:\n#!/bin/bash\n###\n## run-with-params.sh\n###\n\n# We will assume here that you have done `nextflow pull` so the pipeline code is in $HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design\nPIPELINE_DIR=$HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design\n\nDATESTAMP=$(date +%Y%m%d_%H%M%S)\n\nnextflow run ${PIPELINE_DIR}/bindcraft.nf \\\n  -c ${PIPELINE_DIR}/conf/platforms/m3.config \\\n  -params-file params.json \\\n  -profile slurm \\\n  -resume \\\n  -with-report results/logs/report_${DATESTAMP}.html \\\n  -with-trace results/logs/trace_${DATESTAMP}.txt\n\n\n\n\nA typical ‘production’ pipeline invocation will run hundreds or thousands of tasks accord many compute nodes. There’s always a chance some will fail. Nextflow does a good job of retrying failed tasks, but after too many failures the pipeline will quit.\nNextflow keeps intermediate files used for resuming a pipeline run in the work directory.\nWhen a process fails, the logs will have a task id like e6/aa312b4 and will indicate a path into the work directory like: work/e6/aa312b4a1da1edaed1ed23d12 - this folder is the working directory for that particular (failed) task.\nThat work/xx/yyyyy directory will contain the files .command.log, .command.err, .command.out (the stdout and stderr logs), .command.sh (the script that was run) amoung other files. You can use these to diagnose what went wrong - often it’s a particular process that needs more memory (RAM) or time assigned via nextflow.config (the scheduler killed the SLURM job), or the process failed due to a bad input file.\n\n\n\nAfter a Nextflow run successfully finishes, the work directory is usually of no use, as it only contains intermediate files, cached to allow resuming. The files you want to preserve are generally in the results directory.\nCarefully … remove the work directory:\nrm ./work -rf",
+    "crumbs": [
+      "Appendix: Foundational skills crash course",
+      "Nextflow crash course"
+    ]
+  },
+  {
+    "objectID": "nextflow_crash_course.html#installing-nextflow",
+    "href": "nextflow_crash_course.html#installing-nextflow",
+    "title": "Nextflow crash course",
+    "section": "",
+    "text": "Follow the official Nextflow installation instructions - they are clear, and work. You don’t need sudo to install Nextflow.\n\nTip: Java 17+, a dependency of Nextflow, is available as a module on the M3 HPC cluster as module load java.",
+    "crumbs": [
+      "Appendix: Foundational skills crash course",
+      "Nextflow crash course"
+    ]
+  },
+  {
+    "objectID": "nextflow_crash_course.html#downloading-a-pipeline",
+    "href": "nextflow_crash_course.html#downloading-a-pipeline",
+    "title": "Nextflow crash course",
+    "section": "",
+    "text": "Option 1: Download the pipeline code from the Github repository.\ngit clone https://github.com/Australian-Protein-Design-Initiative/nf-binder-design\ncd nf-binder-design\nOption 2: Use Nextflow pull\nnextflow pull Australian-Protein-Design-Initiative/nf-binder-design\n\n# or for a specific version / release\n# nextflow pull -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design\n\n# You can see some info about what you just pulled\nnextflow info Australian-Protein-Design-Initiative/nf-binder-design\n\nIn the case of option 2, Nextflow git clones for you into: ~/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design - so you can find things like the default config files in the repository there.",
+    "crumbs": [
+      "Appendix: Foundational skills crash course",
+      "Nextflow crash course"
+    ]
+  },
+  {
+    "objectID": "nextflow_crash_course.html#configuring-a-pipeline---nextflow.config",
+    "href": "nextflow_crash_course.html#configuring-a-pipeline---nextflow.config",
+    "title": "Nextflow crash course",
+    "section": "",
+    "text": "Most Nextflow pipelines (especially nf-core flavoured ones), come with sensible pre-configured defaults, but you’ll often need to override or modify some of the settings for your particular computing environment, data and preferences.\nWe will assume here we are running on an HPC cluster using SLURM. Nextflow submits sbatch jobs to the SLURM queue on your behalf, and needs to specify resources and partition settings for each job.\nYou can override defaults by creating a nextflow.config file in the working directory where you run the pipeline. The most common thing you’ll need to do is modify the resources and parition settings for a specific task (‘process’ in Nextflow terminology).\n// nextflow.config\nprocess {\n    withName: BINDCRAFT {\n        // time, cpus, memory (non-GPU) are specified OUTSIDE clusterOptions\n        time = 2.hours\n        memory = '32g'\n        cpus = 16\n\n        // Everything else SLURM sbatch specific goes in clusterOptions\n        // eg, speficying a specific GPU partition\n        clusterOptions = \"--gres=gpu:1 --partition=gpu\"\n    }\n}",
+    "crumbs": [
+      "Appendix: Foundational skills crash course",
+      "Nextflow crash course"
+    ]
+  },
+  {
+    "objectID": "nextflow_crash_course.html#running-a-pipeline",
+    "href": "nextflow_crash_course.html#running-a-pipeline",
+    "title": "Nextflow crash course",
+    "section": "",
+    "text": "A wrapper script is a convenient way to record all the commandline arguments you used to run the pipeline and simplify re-running after failures / modifications. We will create a script called run.sh to run the pipeline (and do chmod +x run.sh to make it executable).\n#!/bin/bash\n###\n## run.sh\n###\n\n# We will assume here that you have done `nextflow pull` so the pipeline code is in $HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design\nPIPELINE_DIR=$HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design\n\nDATESTAMP=$(date +%Y%m%d_%H%M%S)\n\nnextflow run ${PIPELINE_DIR}/bindcraft.nf \\\n  -c ${PIPELINE_DIR}/conf/platforms/m3.config \\\n  --input_pdb 'input/PDL1.pdb' \\\n  --outdir results \\\n  --target_chains \"A\" \\\n  --hotspot_res \"A56\" \\\n  --binder_length_range \"65-120\" \\\n  --bindcraft_n_traj 4 \\\n  --bindcraft_batch_size 1 \\\n  -profile slurm \\\n  -resume \\\n  -with-report results/logs/report_${DATESTAMP}.html \\\n  -with-trace results/logs/trace_${DATESTAMP}.txt\nWe include a specific config for the M3 HPC cluster using -c ${PIPELINE_DIR}/conf/platforms/m3.config. If you view this file, you’ll see all the resource and partition settings tuned this particular HPC cluster. You can copy these settings to your own nextflow.config (as above) and override as required.\nWe also include -resume to resume a previous run if it exists - this is benign if it’s the first time you’re running the pipeline, but is important to ensure the pipeline resumes where it left off if you need to restart it in the event of a failure.\n\nNextflow itself is relatively light weight in resource usage, but you can also turn this into an SBATCH script if your HPC adminstrators prefer you to not run it on the login node.\n\n\n\nAn alternative to putting all the “--double-dash” pipeline parameters in the wrapper script is to use a JSON file like:\n{\n    \"input_pdb\": \"input/PDL1.pdb\",\n    \"outdir\": \"results\",\n    \"target_chains\": \"A\",\n    \"hotspot_res\": \"A56\",\n    \"binder_length_range\": \"65-120\",\n    \"bindcraft_n_traj\": 4,\n    \"bindcraft_batch_size\": 1\n}\nAnd run like:\n#!/bin/bash\n###\n## run-with-params.sh\n###\n\n# We will assume here that you have done `nextflow pull` so the pipeline code is in $HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design\nPIPELINE_DIR=$HOME/.nextflow/assets/Australian-Protein-Design-Initiative/nf-binder-design\n\nDATESTAMP=$(date +%Y%m%d_%H%M%S)\n\nnextflow run ${PIPELINE_DIR}/bindcraft.nf \\\n  -c ${PIPELINE_DIR}/conf/platforms/m3.config \\\n  -params-file params.json \\\n  -profile slurm \\\n  -resume \\\n  -with-report results/logs/report_${DATESTAMP}.html \\\n  -with-trace results/logs/trace_${DATESTAMP}.txt",
+    "crumbs": [
+      "Appendix: Foundational skills crash course",
+      "Nextflow crash course"
+    ]
+  },
+  {
+    "objectID": "nextflow_crash_course.html#troubleshooting-errors-failures",
+    "href": "nextflow_crash_course.html#troubleshooting-errors-failures",
+    "title": "Nextflow crash course",
+    "section": "",
+    "text": "A typical ‘production’ pipeline invocation will run hundreds or thousands of tasks accord many compute nodes. There’s always a chance some will fail. Nextflow does a good job of retrying failed tasks, but after too many failures the pipeline will quit.\nNextflow keeps intermediate files used for resuming a pipeline run in the work directory.\nWhen a process fails, the logs will have a task id like e6/aa312b4 and will indicate a path into the work directory like: work/e6/aa312b4a1da1edaed1ed23d12 - this folder is the working directory for that particular (failed) task.\nThat work/xx/yyyyy directory will contain the files .command.log, .command.err, .command.out (the stdout and stderr logs), .command.sh (the script that was run) amoung other files. You can use these to diagnose what went wrong - often it’s a particular process that needs more memory (RAM) or time assigned via nextflow.config (the scheduler killed the SLURM job), or the process failed due to a bad input file.",
+    "crumbs": [
+      "Appendix: Foundational skills crash course",
+      "Nextflow crash course"
+    ]
+  },
+  {
+    "objectID": "nextflow_crash_course.html#after-the-run",
+    "href": "nextflow_crash_course.html#after-the-run",
+    "title": "Nextflow crash course",
+    "section": "",
+    "text": "After a Nextflow run successfully finishes, the work directory is usually of no use, as it only contains intermediate files, cached to allow resuming. The files you want to preserve are generally in the results directory.\nCarefully … remove the work directory:\nrm ./work -rf",
     "crumbs": [
       "Appendix: Foundational skills crash course",
       "Nextflow crash course"
@@ -44,25 +110,208 @@
     ]
   },
   {
-    "objectID": "bindcraft_scoring.html",
-    "href": "bindcraft_scoring.html",
-    "title": "BindCraft : analysing a full design run",
+    "objectID": "bindcraft_tips.html",
+    "href": "bindcraft_tips.html",
+    "title": "BindCraft : tips and guidance",
     "section": "",
-    "text": "TODO: We should switch here to ‘here’s one we prepared earlier’ with results from a ~300 (or more) trajectory BindCraft / nf-binder-design run.\n\n\n\n\n\n\n\nCautionChallenge - viewing the BindCraft results\n\n\n\nView the table final_design_stats.csv - do we have any accepted designs ? Which scores are most important ?\nView a the the PDB files in Accepted/. Examine the target-binder interface - designs with high and low ipTM scores.\n\n\n\nTODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)\n\n\n\n\nReuseCC BY 4.0",
+    "text": "These tips are taken directly from the BindCraft wiki page and BindCraft paper supplementary info, but reformatted to be more concise and readable, with a few extra tips:\n\n\nInstallation\n\nSystem Requirements: Runs exclusively on Linux systems with conda or mamba.\nCUDA & JAX: Specify your CUDA version during installation to avoid version conflicts, especially with JAX.\nDependencies: Uses ColabDesign, ProteinMPNN, and PyRosetta. Commercial users need a PyRosetta license.\nEnvironment Path: If the conda environment fails to activate, its path can be manually specified in the run script.\nExecution: Designed for HPC clusters with SLURM but can be run locally via bash or python scripts.\nApptainer containers: are also available (eg ) - these can simplify installation when the provided install_bindcraft.sh script fails\n\n\n\n\nHardware Considerations\n\nGPU: A CUDA-compatible NVIDIA GPU is mandatory. Recommended models include L40, V100, A100, or H100.\n\nAn H100 GPU is roughly 4 times faster than an A100.\neg, on H100: 900 residue trajectory == 2-3 hours, 250 residue trajectory == 5 minutes\n\nGoogle Colab: Can be run on Colab, but it is approximately 10 times slower than a local installation with the same hardware.\nGPU Memory: This is the primary bottleneck. A 32 Gb card handles a complex of ~550 residues, while an 80 Gb card manages ~950 residues.\nParallelization: The core process cannot be split across multiple GPUs, but you can run multiple separate jobs outputting to the same folder to speed up sampling.\nStorage: A few terabytes are recommended. The model weights alone are 5.3 Gb. You can save space by disabling plot and animation outputs.\nCPU & RAM: A single CPU core is usually sufficient. At least 40 Gb of RAM is recommended to avoid out-of-memory errors from model compilation or PyRosetta features.\n\n\n\n\nGetting Started\n\nInput: Requires a target protein structure (PDB), a binder size range, and the desired number of designs.\nBinder Size:\n\nGlobular binders: Optimal between 60-180 amino acids (max reliable size is 250 AAs).\nPeptide binders: 8-25 amino acids, requiring special peptide settings and filters. Peptide design success rates are typically 5-10 times lower.\n\nHotspots: You can specify “hotspot” residues for the binder to target. If none are provided, the pipeline finds an optimal site on its own.\nMonitoring & Early Stopping:\n\nCheck the Accepted folder during the run to manually remove unsuitable designs.\nThe script may terminate prematurely if design success rates are too low, saving computational resources.\nTo stop early and rank current designs, kill the jobs, set the design count lower than what’s in the Accepted folder, and rerun.\n\nRun Time: Can vary from a few hours to several weeks on a single GPU, depending on target difficulty and complex size.\n\n“Easy” targets might only require ~100 trajectories, difficult ones might required 1000 - 10,000.\nIt’s possible for difficult targets to yield no successful designs.\n\n\n\n\n\nUnder the Hood\n\nCore Method: Uses backpropagation through the AlphaFold2 multimer network in MSA-free (single sequence) mode.\nSequence Generation: Optimizes the sequence in a “relaxed” (soft) space before converting it to a standard one-hot encoded sequence.\nSelf-Consistency Checks:\n\nModel Swapping: Randomly swaps between the five trained AlphaFold2 multimer models during design to ensure robustness and avoid overfitting.\nSequence Optimization: Uses ProteinMPNN to refine the binder’s core and surface while preserving the designed interface. This is done because purely hallucinated sequences can be difficult to purify experimentally.\n\nBy default, “soluble” MPNN weights are used, which usually result in a negatively charged binder surface. “Original” weights can be used for a more neutral surface.\n\nMonomer Reprediction: Uses the AlphaFold2 monomer model for the final prediction. Since this model was not trained on complexes, it serves as a highly stringent test of a well-defined interface.\nBinder Folding Check: The binder is also repredicted alone (without the target) to assess its structural change (RMSD) upon binding.\n\nFinal Analysis: PyRosetta is used to calculate interface scores and provide additional biophysical metrics for filtering (eg Rosetta dG, surface hydrophobicity, shape complementarity, number of interface residues, H-bonds and unsaturated H-bonds).\nOutput Structure: Designs are collected in sequential folders (Trajectory → MPNN → Accepted) with corresponding metrics in separate CSV files.\n\n\n\n\nTarget Preparation & Hotspot Selection\n\nInput Structure:\n\nAccepts experimental (NMR, CryoEM)\nor predicted (AlphaFold2, Boltz-2 etc) PDBs.\n\nUsing an experimental structure as a template for a new AlphaFold2 or Boltz-2 prediction can help fill in missing loops.\n\nEven small variations of the ‘same’ target (experimental vs. predicted vs. alternative trimming) can change in silico success rates significantly.\n\nTrimming:\n\nTrim the target to only essential domains to save memory and time. Remove flexible ends and large flexible loops if these are not involved in the binding interface.\nTrim at realistic points like domain boundaries or hinge residues (e.g., Gly, Pro), which can be identified by high B-factors or low pLDDT scores.\n“Unrealistic” trims (e.g., splitting GPCR helices) are supported if they preserve the local structural context and don’t expose core hydrophobic residues.\n\nHotspot Selection:\n\nDefine hotspots by residue number and chain ID (e.g., A23,A27-50,B45).\nTargeting a radial patch of surface residues on secondary structures is recommended, especially sites containing hydrophobic residues (F, Y, W, I, L, M).\nSingle residues also work in well defined binding sites. You can also leave hotspots undefined and let the model choose.\n\nOff-Target Binding: your hotspots may be ignored if the choice of target site is suboptimal or if there is a significantly better binding site nearby. To encourage your preferred binding site you can:\n\nMutate the unwanted binding site residues to lysines.\nTrim away the off-target region.\nUse the _hardtarget advanced setting.\nPre-block the off-target binding site with another binder ! First generate a design that binds to the off-target site, and use this new complex as a structural input for a new run.\n\n\n\n\n\nAdvanced Settings\n\nDefault Settings (default_): Extensively tested and recommended for the highest chance of success.\n_hardtarget:\n\nSets \"predict_initial_guess\": true.\nBiases the prediction by providing binder atom positions as a starting point. Can help rescue designs that fail after the MPNN step. (As of late 2025 this setting has not been systematically tested and is likely to reduce success rates).\n\n_flexible:\n\nSets \"rm_template_seq_design/predict\": true.\nMasks the target’s amino acid sequence, which allows for greater backbone flexibility and domain movements during design and reprediction.\n\n_mpnn:\n\nSets \"mpnn_fix_interface\": false.\nAllows ProteinMPNN to redesign and optimize the interface residues, rather than keeping the AlphaFold2-designed interface fixed.\n\n_betasheet:\n\nEnforces beta-sheet structures by penalizing helicity (\"weights_helicity\": -2.0).\n\n_peptide:\n\nUses a 3stage algorithm instead of the default 4stage.\nChanges multiple loss weights to favour peptide-like properties (e.g., increases helicity weight, reduces contact weights).\nDoes not use the radius of gyration (rg_loss).\n\n\"predict_bigbang\": true setting:\n\nFor complexes &gt; 600 residues, this setting facilitates more efficient prediction of large complexes in the final stage\n\n\n\n\n\nFiltering\n\nDefault Filters: The default filters are robust and generally should not be changed, except when designing peptides.\nKey Metrics: The most important metrics for filtering are pLDDT, i_pTM, and i_pAE.\n\nThe i_pTM score is a good binary predictor of binding, but values between 0.6 and 0.8 are a “grey zone” where predictions can be incorrect.\n\nAffinity: None of the computational metrics are predictive of binding affinity.\nEarly Rejection: Trajectories are terminated early if they have:\n\nCA clashes &gt; 0 or Interface clashes &gt; 25.\npLDDT &lt; 0.7.\nA “floating” binder with &lt; 3 contacts to the target.\n\nBinder RMSD Filter: This filter can be relaxed or disabled if more conformational flexibility or an “induced fit” binder is desired.\n\n\nDefault filters\nDesigns that satisfy these critera are kept as ‘Accepted’:\n\nAlphaFold2 Metrics\n\nAverage_pLDDT &gt; 0.8\nAverage_pTM &gt; 0.55\nAverage_i_pTM &gt; 0.5\nAverage_i_pAE &lt; 0.35\n\nRosetta Metrics\n\nAverage_Binder_Energy_Score &lt; 0\nAverage_Surface_Hydrophobicity &lt; 0.35\nAverage_ShapeComplementarity &gt; 0.6\nAverage_dG &lt; 0\nAverage_dSASA &gt; 1\nAverage_n_InterfaceResidues &gt; 7\nAverage_n_InterfaceHbonds &gt; 3\nAverage_n_InterfaceUnsatHbonds &lt; 4\nAverage_InterfaceAAs: K &lt; 3\nAverage_InterfaceAAs: M &lt; 3\n\nStructural Metrics\n\nAverage_Binder_Loop% &lt; 90\nAverage_Hotspot_RMSD &lt; 6\nAverage_Binder_pLDDT &gt; 0.8\nAverage_Binder_RMSD &lt; 3.5\n\n\n\n\n\n\nDesign Selection\n\nQuantity: Generate at least 100 designs that pass filters to ensure good sampling of interface diversity.\nRanking: Final designs in the Accepted/Ranked folder are ranked by i_pTM. This is for prioritization only; all designs that pass filters are high-quality candidates.\nSub-selection:\n\nPrioritize sampling diverse interfaces over similar designs from the same trajectory.\nPerform a final visual check in PyMOL or ChimeraX.\nConsider repredicting top candidates in the context of the full biological complex and check that the target interface is free of post-translational modifications.\n\nExperimental Success:\n\nScreening ~10 designs is often sufficient to find a nanomolar binder.\nScreening 50-100 designs is recommended when aiming for picomolar affinity.\nGenerated binders are typically well-behaved biochemically (thermostable, easy to purify).\n\n\n\n\n\nTroubleshooting\n\nMismatched Atoms Error: Your input PDB likely has partial residues or atoms left over from trimming. Clean the file before rerunning.\nBinder Ignores Hotspots: This is an intended feature to avoid forcing binders into poor sites. See the “Target Preparation” section for strategies to enforce binding to a specific site.\n\n\n\n\n\nReuseCC BY 4.0",
     "crumbs": [
       "BindCraft",
-      "BindCraft : analysing a full design run"
+      "BindCraft : tips and guidance"
     ]
   },
   {
-    "objectID": "bindcraft_background.html",
-    "href": "bindcraft_background.html",
-    "title": "BindCraft Background",
+    "objectID": "bindcraft_exercise.html",
+    "href": "bindcraft_exercise.html",
+    "title": "BindCraft Exercise",
     "section": "",
-    "text": "TODO: BindCraft methodology overview (also cite ColabDesign and original hallucination with AlphaFold2 paper)\n\n\n\n\nReuseCC BY 4.0",
+    "text": "BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as settings.json:\n{\n    \"design_path\": \"bindcraft_results\",\n    \"binder_name\": \"pdl1_binder\",\n    \"starting_pdb\": \"./input/PDL1.pdb\",\n    \"chains\": \"A\",\n    \"target_hotspot_residues\": \"A56\",\n    \"lengths\": [\n        55,\n        120\n    ],\n    \"number_of_final_designs\": 1\n}\nWe have chosen a single hotspot here (as \"{chain}{resnum}\") - multiple hotspots can be comma separated like \"A56,A54,A115\".\nNormally you’d like to generate more than a single design (maybe \"number_of_final_designs\": 100 ?) - today we barely have time for one !\n\n\n\nexport APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/\n\nPREFIX_BINDCRAFT=\"apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 \"\n\n#    # Ensure that BindCraft finds the correct version of ffmpeg\n#    export PATH=/opt/conda/envs/BindCraft/bin/:\\$PATH\n\n$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \\\n    /app/BindCraft/bindcraft.py \\\n        --settings settings.json \\\n        --filters /app/BindCraft/settings_filters/default_filters.json \\\n        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json\n\n# \n#         --filters /app/BindCraft/settings_filters/default_filters.json \\\nBindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.\n\nIt’s safe to Ctrl-C kill a BindCraft run, only the progress on the current trajectory is lost.\n\n--filters and --advanced are optional - in our example they point to the default config files (inside the Apptainer container). You could specify your own, based on those found in the BindCraft Github repository.\n\nUnless you are embarking on a study to experimentally verify the impact of different filters or advanced settings on success rates, it is safest to use the defaults which have been more heavily tested by the BindCraft authors, since these are what have been used to achieve the published wet-lab success rates.\n\n\n\n\nWe configured BindCraft to put results in the bindcraft_results directory.\nIn here we have, of most interest:\n\nfinal_design_stats.csv - a CSV file summarizing the results of the BindCraft run\nAccepted/ - a directory containing the PDB files of the accepted designs (missing if no designs were accepted)\n\nas well as:\n\nfailure_csv.csv - a CSV file summarizing the stage where a design failed to pass a filter\nTrajectory/ - various non-accepted trajectories MPNN/ - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters\ntrajectory_stats.csv and mpnn_design_stats.csv - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage\n\nWe will focus on understanding the key outputs here in the next section.",
     "crumbs": [
       "BindCraft",
-      "BindCraft Background"
+      "BindCraft Exercise"
+    ]
+  },
+  {
+    "objectID": "bindcraft_exercise.html#configuration",
+    "href": "bindcraft_exercise.html#configuration",
+    "title": "BindCraft Exercise",
+    "section": "",
+    "text": "BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as settings.json:\n{\n    \"design_path\": \"bindcraft_results\",\n    \"binder_name\": \"pdl1_binder\",\n    \"starting_pdb\": \"./input/PDL1.pdb\",\n    \"chains\": \"A\",\n    \"target_hotspot_residues\": \"A56\",\n    \"lengths\": [\n        55,\n        120\n    ],\n    \"number_of_final_designs\": 1\n}\nWe have chosen a single hotspot here (as \"{chain}{resnum}\") - multiple hotspots can be comma separated like \"A56,A54,A115\".\nNormally you’d like to generate more than a single design (maybe \"number_of_final_designs\": 100 ?) - today we barely have time for one !",
+    "crumbs": [
+      "BindCraft",
+      "BindCraft Exercise"
+    ]
+  },
+  {
+    "objectID": "bindcraft_exercise.html#run-bindcraft",
+    "href": "bindcraft_exercise.html#run-bindcraft",
+    "title": "BindCraft Exercise",
+    "section": "",
+    "text": "export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/\n\nPREFIX_BINDCRAFT=\"apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 \"\n\n#    # Ensure that BindCraft finds the correct version of ffmpeg\n#    export PATH=/opt/conda/envs/BindCraft/bin/:\\$PATH\n\n$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \\\n    /app/BindCraft/bindcraft.py \\\n        --settings settings.json \\\n        --filters /app/BindCraft/settings_filters/default_filters.json \\\n        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json\n\n# \n#         --filters /app/BindCraft/settings_filters/default_filters.json \\\nBindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.\n\nIt’s safe to Ctrl-C kill a BindCraft run, only the progress on the current trajectory is lost.\n\n--filters and --advanced are optional - in our example they point to the default config files (inside the Apptainer container). You could specify your own, based on those found in the BindCraft Github repository.\n\nUnless you are embarking on a study to experimentally verify the impact of different filters or advanced settings on success rates, it is safest to use the defaults which have been more heavily tested by the BindCraft authors, since these are what have been used to achieve the published wet-lab success rates.",
+    "crumbs": [
+      "BindCraft",
+      "BindCraft Exercise"
+    ]
+  },
+  {
+    "objectID": "bindcraft_exercise.html#bindcraft-output",
+    "href": "bindcraft_exercise.html#bindcraft-output",
+    "title": "BindCraft Exercise",
+    "section": "",
+    "text": "We configured BindCraft to put results in the bindcraft_results directory.\nIn here we have, of most interest:\n\nfinal_design_stats.csv - a CSV file summarizing the results of the BindCraft run\nAccepted/ - a directory containing the PDB files of the accepted designs (missing if no designs were accepted)\n\nas well as:\n\nfailure_csv.csv - a CSV file summarizing the stage where a design failed to pass a filter\nTrajectory/ - various non-accepted trajectories MPNN/ - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters\ntrajectory_stats.csv and mpnn_design_stats.csv - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage\n\nWe will focus on understanding the key outputs here in the next section.",
+    "crumbs": [
+      "BindCraft",
+      "BindCraft Exercise"
+    ]
+  },
+  {
+    "objectID": "bindcraft_exercise.html#recommendations",
+    "href": "bindcraft_exercise.html#recommendations",
+    "title": "BindCraft Exercise",
+    "section": "Recommendations",
+    "text": "Recommendations\n\nChoose some hotspots based on the strategies we’ve learned.\nRun between 100 and 300 trajectories (--bindcraft_n_traj 300) to assess the ‘acceptance rate’\n\nIf you are getting a reasonable acceptance rate, &gt; ~%1, do a second run setting --bindcraft_n_traj to a value that should generate ~100 accepted designs\nIf you are getting less than ~1% acceptance rate, you may need to change your hotspots, modify target trimming or use a different target structure, or (cautiously) use advanced presets.\n\n\nThe percentage acceptance rate is:\n\\[\\text{Acceptance Rate} = 100 \\times \\frac{n_{\\text{accepted}}}{N_{\\text{traj}}}\\]\nwhere:\n\n\\(n_{\\text{accepted}}\\) = number of accepted designs (excluding MPNN duplicates)\n\\(N_{\\text{traj}}\\) = total number of trajectories\n\nAs a guide, the BindCraft authors recommend generating ~100 ‘accepted’ designs and choosing the best 20 for experimental assay. ‘Best’ is likely highest Average_i_pTM, but you may also choose additional criteria based on what you know about the target or biology.",
+    "crumbs": [
+      "BindCraft",
+      "BindCraft Exercise"
+    ]
+  },
+  {
+    "objectID": "bindcraft_exercise.html#resources",
+    "href": "bindcraft_exercise.html#resources",
+    "title": "BindCraft Exercise",
+    "section": "Resources",
+    "text": "Resources\n\nThe official BindCraft (wiki) docs: De novo binder design with BindCraft",
+    "crumbs": [
+      "BindCraft",
+      "BindCraft Exercise"
+    ]
+  },
+  {
+    "objectID": "rfdiffusion_scoring.html",
+    "href": "rfdiffusion_scoring.html",
+    "title": "RFdiffusion : analysing a full design run",
+    "section": "",
+    "text": "TODO: A “here’s one we prepared earlier” section, with the results of a ~1000 trajectory nf-binder-design RFDiffusion run for PDL1.",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "RFdiffusion : analysing a full design run"
+    ]
+  },
+  {
+    "objectID": "rfdiffusion_scoring.html#what-is-plddt",
+    "href": "rfdiffusion_scoring.html#what-is-plddt",
+    "title": "RFdiffusion : analysing a full design run",
+    "section": "What is pLDDT ?",
+    "text": "What is pLDDT ?\n\nTODO: Alphafold2 pLDDT (also include original LDDT paper citation)",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "RFdiffusion : analysing a full design run"
+    ]
+  },
+  {
+    "objectID": "rfdiffusion_scoring.html#what-is-pae-and-pae-interaction",
+    "href": "rfdiffusion_scoring.html#what-is-pae-and-pae-interaction",
+    "title": "RFdiffusion : analysing a full design run",
+    "section": "What is PAE, and PAE interaction ?",
+    "text": "What is PAE, and PAE interaction ?\n\nTODO: Alphafold2 PAE, relationship to pTM, and ipTM ?",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "RFdiffusion : analysing a full design run"
+    ]
+  },
+  {
+    "objectID": "rfdiffusion_scoring.html#other-scores",
+    "href": "rfdiffusion_scoring.html#other-scores",
+    "title": "RFdiffusion : analysing a full design run",
+    "section": "Other scores",
+    "text": "Other scores\n\nTODO: Rosetta gG energy ?",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "RFdiffusion : analysing a full design run"
+    ]
+  },
+  {
+    "objectID": "rfdiffusion_background.html",
+    "href": "rfdiffusion_background.html",
+    "title": "RFdiffusion Background",
+    "section": "",
+    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for ‘hallucinating’ the backbone of a designed binder for a target structure\nProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n\n\n\nDiffusion models (also image diffusion example) and SE(3) diffusion models.\nOverview of the full pipeline, RFDiffusion -&gt; ProteinMPNN -&gt; Alphafold (single sequence, initial guess)\nRogues gallery of things that have been successfully designed with RFdiffusion.",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "RFdiffusion Background"
+    ]
+  },
+  {
+    "objectID": "rfdiffusion_background.html#background",
+    "href": "rfdiffusion_background.html#background",
+    "title": "RFdiffusion Background",
+    "section": "",
+    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for ‘hallucinating’ the backbone of a designed binder for a target structure\nProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n\n\n\nDiffusion models (also image diffusion example) and SE(3) diffusion models.\nOverview of the full pipeline, RFDiffusion -&gt; ProteinMPNN -&gt; Alphafold (single sequence, initial guess)\nRogues gallery of things that have been successfully designed with RFdiffusion.",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "RFdiffusion Background"
+    ]
+  },
+  {
+    "objectID": "structure_prediction.html",
+    "href": "structure_prediction.html",
+    "title": "Structure prediction",
+    "section": "",
+    "text": "Structure prediction\nOnce sequences have been generated for the backbone design via inverse folding, we want to predict more accurately if this binder sequence is likely to fold into the correct structure.\nThis allows us to assess the quality of the proposed protein-protein interface.\n\nAlphafold scores: pLDDT, PAE, pae_interaction, TM, pTM, ipTM, oh my !\n\nhttps://www.ebi.ac.uk/training/online/courses/alphafold/\n\n\naf2_initial_guess vs. Alphafold2 (vs. ColabFold modes vs. other structure prediction tools)\n\n\n\n\nReuseCC BY 4.0"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Protein binder design workshop: RFdiffusion and BindCraft",
+    "section": "",
+    "text": "Important links\n\nTODO: Insert link to shared Google Doc / Slack channel / other in here. The Google doc, editable by all participants, can be used as a jumping off point for other dynamic links and administrative info we may need to update during the workshop (like the VM login details). It can also be used also be used by participants for posting challenge solutions.\n\n\n\nSchedule\n\n\n\nTime\nEvent\n\n\n\n\n1:00\nWelcome and introduction\n\n\n1:30\nRFdiffusion\n\n\n2:30\nBreak\n\n\n2:45\nBindCraft\n\n\n3:45\nBreak\n\n\n4:00\nExperimental validation\n\n\n4:30\nWrap-up and discussion\n\n\n4:45\nEnd 🎉\n\n\n\n\n\n\n\n\nReuseCC BY 4.0",
+    "crumbs": [
+      "Workshop",
+      "Protein binder design workshop: RFdiffusion and BindCraft"
+    ]
+  },
+  {
+    "objectID": "introduction.html",
+    "href": "introduction.html",
+    "title": "Introduction",
+    "section": "",
+    "text": "Introduction\n\n\n\n\nReuseCC BY 4.0",
+    "crumbs": [
+      "Workshop",
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "target_preparation.html",
+    "href": "target_preparation.html",
+    "title": "Target preparation",
+    "section": "",
+    "text": "So, you want to de novo design a binder for a target protein …",
+    "crumbs": [
+      "Target Preparation",
+      "Target preparation"
+    ]
+  },
+  {
+    "objectID": "target_preparation.html#things-to-consider",
+    "href": "target_preparation.html#things-to-consider",
+    "title": "Target preparation",
+    "section": "Things to consider",
+    "text": "Things to consider\n\nDo I have an experimental structure of the target ?\n\nIs it high quality / well defined in the regions required ?\nIf I don’t have an experimental structure, are computational models (eg Alphafold) reliable for this target - do I believe them based on other data, biology ?\n\nIs this a good experimental/clinical target ?\n\nWhat characteristics should be designed binders have to be better/cheaper/safer/unique relative to existing tools or therapies ?\nIn the assay or biological system, will the target surfaces be accessible, or how will my binder get there ?\n\nHow will produce and test my de novo binders ?\n\nDo I have a reliable medium-high throughput assay ?",
+    "crumbs": [
+      "Target Preparation",
+      "Target preparation"
+    ]
+  },
+  {
+    "objectID": "target_preparation.html#truncation-trimming-cropping",
+    "href": "target_preparation.html#truncation-trimming-cropping",
+    "title": "Target preparation",
+    "section": "Truncation, trimming, cropping",
+    "text": "Truncation, trimming, cropping\n\n“Truncating a target is an art.” – Nathaniel Bennett, RFdiffusion README.md\n\nFor RFdiffusion, runtime scales at O(N^2) where N is the number of residues.\nFor BindCraft, 500 residues (target+binder) uses ~30Gb GPU memory.\nIt is very common, and good practise, to remove parts of the target coordinates to speed up computation of binders, and make better use of in-demand GPU resources. Sometimes truncation is the difference between practical (24G VRAM), possible (A100-80G or GH200-96G) and not (yet) possible ( &gt;141G VRAM on a single device).\n\nTry to keep distinct (sub)domains intact\nTry to avoid exposing the hydrophobic core\nDon’t truncate too close to your proposed binding interface and hotspots (keep ~X angstroms away)\n\n\n\n\n\n\n\nCautionChallenge - truncate PD-L1\n\n\n\nGrab the cooridinates for the PD-1/PD-L1 complex 3BIK (legacy PDB format).\nWe want to use PD-L1 (chain A) as our target and block the binding of PD-1 (chain B).\nPropose a truncated version of PD-L1 (chain A) we could use to design a de novo binder against.\n(Save the truncated coordinates as PDL1.pdb)\n\n\n\nHotspot selection\nIn the context of de novo binder design, a ‘hotspot’ is residue on the target that is likely to make favourable interactions with residues on the de novo binder. Hotspots help guide the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on in silico success rates.\nFor RFdiffusion, 3 - 6 hotspots are recommended (the potential attempts to put between 0 and 20% of these hotspots, at random, within 10A of a binder Cbeta atom, while making any other contacts that appear statisically plausible to the model).\nFor BindCraft, zero to X hotspots. Starting with a small number (1 - 3 ?) hotspots is probably best.\nAromatic (and hydrophobic) residues tend to make the best hotspots, but you don’t need to restrict your choices to only these residue types.\n\n\n\n\n\n\nCautionChallenge - PD-L1 hotspots\n\n\n\nLook at the residues at the interface of PD-1/PD-L1 in 3BIK.\nPropose three residues on PD-L1 (chain A) we might choose as hotspots to design a de novo binder to block interaction of PD-1.",
+    "crumbs": [
+      "Target Preparation",
+      "Target preparation"
     ]
   },
   {
@@ -132,197 +381,36 @@
     ]
   },
   {
-    "objectID": "target_preparation.html",
-    "href": "target_preparation.html",
-    "title": "Target preparation",
+    "objectID": "bindcraft_background.html",
+    "href": "bindcraft_background.html",
+    "title": "BindCraft Background",
     "section": "",
-    "text": "So, you want to de novo design a binder for a target protein …",
-    "crumbs": [
-      "Target Preparation",
-      "Target preparation"
-    ]
-  },
-  {
-    "objectID": "target_preparation.html#things-to-consider",
-    "href": "target_preparation.html#things-to-consider",
-    "title": "Target preparation",
-    "section": "Things to consider",
-    "text": "Things to consider\n\nDo I have an experimental structure of the target ?\n\nIs it high quality / well defined in the regions required ?\nIf I don’t have an experimental structure, are computational models (eg Alphafold) reliable for this target - do I believe them based on other data, biology ?\n\nIs this a good experimental/clinical target ?\n\nWhat characteristics should be designed binders have to be better/cheaper/safer/unique relative to existing tools or therapies ?\nIn the assay or biological system, will the target surfaces be accessible, or how will my binder get there ?\n\nHow will produce and test my de novo binders ?\n\nDo I have a reliable medium-high throughput assay ?",
-    "crumbs": [
-      "Target Preparation",
-      "Target preparation"
-    ]
-  },
-  {
-    "objectID": "target_preparation.html#truncation-trimming-cropping",
-    "href": "target_preparation.html#truncation-trimming-cropping",
-    "title": "Target preparation",
-    "section": "Truncation, trimming, cropping",
-    "text": "Truncation, trimming, cropping\n\n“Truncating a target is an art.” – Nathaniel Bennett, RFdiffusion README.md\n\nFor RFdiffusion, runtime scales at O(N^2) where N is the number of residues.\nFor BindCraft, 500 residues (target+binder) uses ~30Gb GPU memory.\nIt is very common, and good practise, to remove parts of the target coordinates to speed up computation of binders, and make better use of in-demand GPU resources. Sometimes truncation is the difference between practical (24G VRAM), possible (A100-80G or GH200-96G) and not (yet) possible ( &gt;141G VRAM on a single device).\n\nTry to keep distinct (sub)domains intact\nTry to avoid exposing the hydrophobic core\nDon’t truncate too close to your proposed binding interface and hotspots (keep ~X angstroms away)\n\n\n\n\n\n\n\nCautionChallenge - truncate PD-L1\n\n\n\nGrab the cooridinates for the PD-1/PD-L1 complex 3BIK (legacy PDB format).\nWe want to use PD-L1 (chain A) as our target and block the binding of PD-1 (chain B).\nPropose a truncated version of PD-L1 (chain A) we could use to design a de novo binder against.\n(Save the truncated coordinates as PDL1.pdb)\n\n\n\nHotspot selection\nIn the context of de novo binder design, a ‘hotspot’ is residue on the target that is likely to make favourable interactions with residues on the de novo binder. Hotspots help guide the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on in silico success rates.\nFor RFdiffusion, 3 - 6 hotspots are recommended (the potential attempts to put between 0 and 20% of these hotspots, at random, within 10A of a binder Cbeta atom, while making any other contacts that appear statisically plausible to the model).\nFor BindCraft, zero to X hotspots. Starting with a small number (1 - 3 ?) hotspots is probably best.\nAromatic (and hydrophobic) residues tend to make the best hotspots, but you don’t need to restrict your choices to only these residue types.\n\n\n\n\n\n\nCautionChallenge - PD-L1 hotspots\n\n\n\nLook at the residues at the interface of PD-1/PD-L1 in 3BIK.\nPropose three residues on PD-L1 (chain A) we might choose as hotspots to design a de novo binder to block interaction of PD-1.",
-    "crumbs": [
-      "Target Preparation",
-      "Target preparation"
-    ]
-  },
-  {
-    "objectID": "introduction.html",
-    "href": "introduction.html",
-    "title": "Introduction",
-    "section": "",
-    "text": "Introduction\n\n\n\n\nReuseCC BY 4.0",
-    "crumbs": [
-      "Workshop",
-      "Introduction"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Protein binder design workshop: RFdiffusion and BindCraft",
-    "section": "",
-    "text": "Important links\n\nTODO: Insert link to shared Google Doc / Slack channel / other in here. The Google doc, editable by all participants, can be used as a jumping off point for other dynamic links and administrative info we may need to update during the workshop (like the VM login details). It can also be used also be used by participants for posting challenge solutions.\n\n\n\nSchedule\n\n\n\nTime\nEvent\n\n\n\n\n1:00\nWelcome and introduction\n\n\n1:30\nRFdiffusion\n\n\n2:30\nBreak\n\n\n2:45\nBindCraft\n\n\n3:45\nBreak\n\n\n4:00\nExperimental validation\n\n\n4:30\nWrap-up and discussion\n\n\n4:45\nEnd 🎉\n\n\n\n\n\n\n\n\nReuseCC BY 4.0",
-    "crumbs": [
-      "Workshop",
-      "Protein binder design workshop: RFdiffusion and BindCraft"
-    ]
-  },
-  {
-    "objectID": "structure_prediction.html",
-    "href": "structure_prediction.html",
-    "title": "Structure prediction",
-    "section": "",
-    "text": "Structure prediction\nOnce sequences have been generated for the backbone design via inverse folding, we want to predict more accurately if this binder sequence is likely to fold into the correct structure.\nThis allows us to assess the quality of the proposed protein-protein interface.\n\nAlphafold scores: pLDDT, PAE, pae_interaction, TM, pTM, ipTM, oh my !\n\nhttps://www.ebi.ac.uk/training/online/courses/alphafold/\n\n\naf2_initial_guess vs. Alphafold2 (vs. ColabFold modes vs. other structure prediction tools)\n\n\n\n\nReuseCC BY 4.0"
-  },
-  {
-    "objectID": "rfdiffusion_background.html",
-    "href": "rfdiffusion_background.html",
-    "title": "RFdiffusion Background",
-    "section": "",
-    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for ‘hallucinating’ the backbone of a designed binder for a target structure\nProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n\n\n\nDiffusion models (also image diffusion example) and SE(3) diffusion models.\nOverview of the full pipeline, RFDiffusion -&gt; ProteinMPNN -&gt; Alphafold (single sequence, initial guess)\nRogues gallery of things that have been successfully designed with RFdiffusion.",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion Background"
-    ]
-  },
-  {
-    "objectID": "rfdiffusion_background.html#background",
-    "href": "rfdiffusion_background.html#background",
-    "title": "RFdiffusion Background",
-    "section": "",
-    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for ‘hallucinating’ the backbone of a designed binder for a target structure\nProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n\n\n\nDiffusion models (also image diffusion example) and SE(3) diffusion models.\nOverview of the full pipeline, RFDiffusion -&gt; ProteinMPNN -&gt; Alphafold (single sequence, initial guess)\nRogues gallery of things that have been successfully designed with RFdiffusion.",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion Background"
-    ]
-  },
-  {
-    "objectID": "rfdiffusion_scoring.html",
-    "href": "rfdiffusion_scoring.html",
-    "title": "RFdiffusion : analysing a full design run",
-    "section": "",
-    "text": "TODO: A “here’s one we prepared earlier” section, with the results of a ~1000 trajectory nf-binder-design RFDiffusion run for PDL1.",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion : analysing a full design run"
-    ]
-  },
-  {
-    "objectID": "rfdiffusion_scoring.html#what-is-plddt",
-    "href": "rfdiffusion_scoring.html#what-is-plddt",
-    "title": "RFdiffusion : analysing a full design run",
-    "section": "What is pLDDT ?",
-    "text": "What is pLDDT ?\n\nTODO: Alphafold2 pLDDT (also include original LDDT paper citation)",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion : analysing a full design run"
-    ]
-  },
-  {
-    "objectID": "rfdiffusion_scoring.html#what-is-pae-and-pae-interaction",
-    "href": "rfdiffusion_scoring.html#what-is-pae-and-pae-interaction",
-    "title": "RFdiffusion : analysing a full design run",
-    "section": "What is PAE, and PAE interaction ?",
-    "text": "What is PAE, and PAE interaction ?\n\nTODO: Alphafold2 PAE, relationship to pTM, and ipTM ?",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion : analysing a full design run"
-    ]
-  },
-  {
-    "objectID": "rfdiffusion_scoring.html#other-scores",
-    "href": "rfdiffusion_scoring.html#other-scores",
-    "title": "RFdiffusion : analysing a full design run",
-    "section": "Other scores",
-    "text": "Other scores\n\nTODO: Rosetta gG energy ?",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion : analysing a full design run"
-    ]
-  },
-  {
-    "objectID": "bindcraft_exercise.html",
-    "href": "bindcraft_exercise.html",
-    "title": "BindCraft Exercise",
-    "section": "",
-    "text": "BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as settings.json:\n{\n    \"design_path\": \"bindcraft_results\",\n    \"binder_name\": \"pdl1_binder\",\n    \"starting_pdb\": \"./input/PDL1.pdb\",\n    \"chains\": \"A\",\n    \"target_hotspot_residues\": \"A56\",\n    \"lengths\": [\n        55,\n        120\n    ],\n    \"number_of_final_designs\": 1\n}\nWe have chosen a single hotspot here (as \"{chain}{resnum}\") - multiple hotspots can be comma separated like \"A56,A54,A115\".\nNormally you’d like to generate more than a single design (maybe \"number_of_final_designs\": 100 ?) - today we barely have time for one !\n\n\n\nexport APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/\n\nPREFIX_BINDCRAFT=\"apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 \"\n\n#    # Ensure that BindCraft finds the correct version of ffmpeg\n#    export PATH=/opt/conda/envs/BindCraft/bin/:\\$PATH\n\n$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \\\n    /app/BindCraft/bindcraft.py \\\n        --settings settings.json \\\n        --filters /app/BindCraft/settings_filters/default_filters.json \\\n        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json\n\n# \n#         --filters /app/BindCraft/settings_filters/default_filters.json \\\nBindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.\n\nIt’s safe to Ctrl-C kill a BindCraft run, only the progress on the current trajectory is lost.\n\n--filters and --advanced are optional - in our example they point to the default config files (inside the Apptainer container). You could specify your own, based on those found in the BindCraft Github repository.\n\nUnless you are embarking on a study to experimentally verify the impact of different filters or advanced settings on success rates, it is safest to use the defaults which have been more heavily tested by the BindCraft authors, since these are what have been used to achieve the published wet-lab success rates.\n\n\n\n\nWe configured BindCraft to put results in the bindcraft_results directory.\nIn here we have, of most interest:\n\nfinal_design_stats.csv - a CSV file summarizing the results of the BindCraft run\nAccepted/ - a directory containing the PDB files of the accepted designs (missing if no designs were accepted)\n\nas well as:\n\nfailure_csv.csv - a CSV file summarizing the stage where a design failed to pass a filter\nTrajectory/ - various non-accepted trajectories MPNN/ - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters\ntrajectory_stats.csv and mpnn_design_stats.csv - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage\n\nWe will focus on understanding the key outputs here in the next section.",
+    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign",
     "crumbs": [
       "BindCraft",
-      "BindCraft Exercise"
+      "BindCraft Background"
     ]
   },
   {
-    "objectID": "bindcraft_exercise.html#configuration",
-    "href": "bindcraft_exercise.html#configuration",
-    "title": "BindCraft Exercise",
+    "objectID": "bindcraft_background.html#bindcraft-methodology-overview",
+    "href": "bindcraft_background.html#bindcraft-methodology-overview",
+    "title": "BindCraft Background",
     "section": "",
-    "text": "BindCraft requires a JSON format configuration file to define parameters for the design. Create the file below as settings.json:\n{\n    \"design_path\": \"bindcraft_results\",\n    \"binder_name\": \"pdl1_binder\",\n    \"starting_pdb\": \"./input/PDL1.pdb\",\n    \"chains\": \"A\",\n    \"target_hotspot_residues\": \"A56\",\n    \"lengths\": [\n        55,\n        120\n    ],\n    \"number_of_final_designs\": 1\n}\nWe have chosen a single hotspot here (as \"{chain}{resnum}\") - multiple hotspots can be comma separated like \"A56,A54,A115\".\nNormally you’d like to generate more than a single design (maybe \"number_of_final_designs\": 100 ?) - today we barely have time for one !",
+    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign",
     "crumbs": [
       "BindCraft",
-      "BindCraft Exercise"
+      "BindCraft Background"
     ]
   },
   {
-    "objectID": "bindcraft_exercise.html#run-bindcraft",
-    "href": "bindcraft_exercise.html#run-bindcraft",
-    "title": "BindCraft Exercise",
+    "objectID": "bindcraft_scoring.html",
+    "href": "bindcraft_scoring.html",
+    "title": "BindCraft : analysing a full design run",
     "section": "",
-    "text": "export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/\n\nPREFIX_BINDCRAFT=\"apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 \"\n\n#    # Ensure that BindCraft finds the correct version of ffmpeg\n#    export PATH=/opt/conda/envs/BindCraft/bin/:\\$PATH\n\n$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \\\n    /app/BindCraft/bindcraft.py \\\n        --settings settings.json \\\n        --filters /app/BindCraft/settings_filters/default_filters.json \\\n        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json\n\n# \n#         --filters /app/BindCraft/settings_filters/default_filters.json \\\nBindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.\n\nIt’s safe to Ctrl-C kill a BindCraft run, only the progress on the current trajectory is lost.\n\n--filters and --advanced are optional - in our example they point to the default config files (inside the Apptainer container). You could specify your own, based on those found in the BindCraft Github repository.\n\nUnless you are embarking on a study to experimentally verify the impact of different filters or advanced settings on success rates, it is safest to use the defaults which have been more heavily tested by the BindCraft authors, since these are what have been used to achieve the published wet-lab success rates.",
+    "text": "TODO: We should switch here to ‘here’s one we prepared earlier’ with results from a ~300 (or more) trajectory BindCraft / nf-binder-design run.\n\n\n\n\n\n\n\nCautionChallenge - viewing the BindCraft results\n\n\n\nView the table final_design_stats.csv - do we have any accepted designs ? Which scores are most important ?\nView a the the PDB files in Accepted/. Examine the target-binder interface - designs with high and low ipTM scores.\n\n\n\nTODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)\n\n\nOptimizing BindCraft settings\nIt can take ‘many shots’ in silico to get a ‘one shot’ binder in the wet lab.\nHere’s a figure from the BindCraft paper that gives some insight:\n’\nEach target required different numbers of trajectories, with a wide range in in silico acceptance rates, to achieve the suggested “100 accepted designs to select 20 for assay” benchmark. Part f shows the impact of binder length range alone on in silico success rates.\nWhat we don’t see here is the trajactories run testing alternative target structures, trimmings and hotspot combinations - expect to run many more trajectories than you’ll ultimately require for your final ‘production’ run.\n\n\n\n\nReuseCC BY 4.0",
     "crumbs": [
       "BindCraft",
-      "BindCraft Exercise"
-    ]
-  },
-  {
-    "objectID": "bindcraft_exercise.html#bindcraft-output",
-    "href": "bindcraft_exercise.html#bindcraft-output",
-    "title": "BindCraft Exercise",
-    "section": "",
-    "text": "We configured BindCraft to put results in the bindcraft_results directory.\nIn here we have, of most interest:\n\nfinal_design_stats.csv - a CSV file summarizing the results of the BindCraft run\nAccepted/ - a directory containing the PDB files of the accepted designs (missing if no designs were accepted)\n\nas well as:\n\nfailure_csv.csv - a CSV file summarizing the stage where a design failed to pass a filter\nTrajectory/ - various non-accepted trajectories MPNN/ - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters\ntrajectory_stats.csv and mpnn_design_stats.csv - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage\n\nWe will focus on understanding the key outputs here in the next section.",
-    "crumbs": [
-      "BindCraft",
-      "BindCraft Exercise"
-    ]
-  },
-  {
-    "objectID": "bindcraft_exercise.html#recommendations",
-    "href": "bindcraft_exercise.html#recommendations",
-    "title": "BindCraft Exercise",
-    "section": "Recommendations",
-    "text": "Recommendations\n\nChoose some hotspots based on the strategies we’ve learned.\nRun between 100 and 300 trajectories (--bindcraft_n_traj 300) to assess the ‘acceptance rate’\n\nIf you are getting a reasonable acceptance rate, &gt; ~%1, do a second run setting --bindcraft_n_traj to a value that should generate ~100 accepted designs\nIf you are getting less than ~1% acceptance rate, you may need to change your hotspots, modify target trimming or use a different target structure, or (cautiously) use advanced presets.\n\n\nThe percentage acceptance rate is:\n\\[\\text{Acceptance Rate} = 100 \\times \\frac{n_{\\text{accepted}}}{N_{\\text{traj}}}\\]\nwhere:\n\n\\(n_{\\text{accepted}}\\) = number of accepted designs (excluding MPNN duplicates)\n\\(N_{\\text{traj}}\\) = total number of trajectories\n\nAs a guide, the BindCraft authors recommend generating ~100 ‘accepted’ designs and choosing the best 20 for experimental assay. ‘Best’ is likely highest Average_i_pTM, but you may also choose additional criteria based on what you know about the target or biology.",
-    "crumbs": [
-      "BindCraft",
-      "BindCraft Exercise"
-    ]
-  },
-  {
-    "objectID": "bindcraft_exercise.html#resources",
-    "href": "bindcraft_exercise.html#resources",
-    "title": "BindCraft Exercise",
-    "section": "Resources",
-    "text": "Resources\n\nThe official BindCraft (wiki) docs: De novo binder design with BindCraft",
-    "crumbs": [
-      "BindCraft",
-      "BindCraft Exercise"
+      "BindCraft : analysing a full design run"
     ]
   },
   {
