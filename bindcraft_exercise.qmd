@@ -36,7 +36,11 @@ Normally you'd like to generate more than a single design (maybe `"number_of_fin
 ```bash
 export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/
 
-PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 "
+# This version pulls the container image from the Github Package Registry
+#PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 "
+
+# This version uses an Apptainer image pre-downloaded to the workshop scratch space
+PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-bindcraft-05702c4_nv-cuda12.img "
 
 #    # Ensure that BindCraft finds the correct version of ffmpeg
 #    export PATH=/opt/conda/envs/BindCraft/bin/:\$PATH

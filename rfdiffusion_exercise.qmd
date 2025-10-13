@@ -27,13 +27,19 @@ Here's version of the PDL1 domain we cropped in the previous exercise: [PDL1.pdb
 On your server, let's create a directory for our RFDiffusion work and upload this PDB file to `input/PDL1.pdb`:
 
 ```bash
-# Start in your home directory, (or or another preferred location)
-cd ~
+# Start by creating a directory where we will work - this may be your home directory,
+# but in this case each participant should create a specifc path with their username in the workshop scratch space
+mkdir -p /scratch2/pd27/users/${USER}
+cd /scratch2/pd27/users/${USER}
 
 mkdir -p exercises/rfd/input
 cd exercises/rfd
+```
 
-# if you'd like to use a pre-prepared PDL1.pdd rather than your own, run:
+Upload your trimmed PDL1 PDB file to `/scratch2/pd27/users/${USER}/exercises/rfd/input/PDL1.pdb` (using `rsync`, `scp` or your preferred method).
+
+If you'd like to use a pre-prepared `PDL1.pdb` rather than your own, run:
+```bash
 wget -O input/PDL1.pdb https://australian-protein-design-initiative.github.io/binder-design-workshop/exercises/rfd/input/PDL1.pdb
 ```
 
@@ -48,11 +54,12 @@ Let's start by running the command, and while things are running we can break do
 ```bash
 # This prefix `PREFIX_RFD` is here to run RFDiffusion via an Apptainer container. 
 # It should work anywhere where Apptainer is installed. You'll need an NVIDIA GPU. 
-# The first time it's run there's an initial delay while the container image is downloaded.
-# NOTE: We _may_ change this prior to the in-person workshop to be a simpler but realistic command,
-# and configure the VMs to transparently use the Apptainer containers. The specific apptainer commandlines
-# for running anywhere can be moved to an appendix section
-PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules docker://ghcr.io/australian-protein-design-initiative/containers/rfdiffusion:pytorch2407 "
+
+# This version pull the container image from the Github Package Registry - it should work on any system with apptainer installed. The first time it's run there's an initial delay while the container image is downloaded.
+#PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules docker://ghcr.io/australian-protein-design-initiative/containers/rfdiffusion:pytorch2407 "
+
+# This version uses an Apptainer image pre-downloaded to the workshop scratch space
+PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-rfdiffusion-pytorch2407.img "
 
 mkdir -p output/rfdiffusion
 
@@ -133,7 +140,11 @@ For binder design, manually setting `inference.ckpt_override_path=/models/rfdiff
 > TODO
 
 ```bash
-PREFIX_PMPNN="apptainer exec --nv docker://ghcr.io/australian-protein-design-initiative/containers/proteinmpnn_dl_binder_design:latest "
+# This version pulls the container image from the Github Package Registry
+#PREFIX_PMPNN="apptainer exec --nv docker://ghcr.io/australian-protein-design-initiative/containers/proteinmpnn_dl_binder_design:latest "
+
+# This version uses an Apptainer image pre-downloaded to the workshop scratch space
+PREFIX_PMPNN="apptainer exec --nv /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-proteinmpnn_dl_binder_design-latest.img "
 
 mkdir -p output/proteinmpnn
 
