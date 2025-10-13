@@ -4242,19 +4242,23 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="run-bindcraft">Run BindCraft</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">APPTAINERENV_PREPEND_PATH</span><span class="op">=</span>/opt/conda/envs/BindCraft/bin/</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">PREFIX_BINDCRAFT</span><span class="op">=</span><span class="st">&quot;apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B </span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-d</span><span class="va">)</span><span class="st">:/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 &quot;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#    # Ensure that BindCraft finds the correct version of ffmpeg</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#    export PATH=/opt/conda/envs/BindCraft/bin/:\$PATH</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="va">$PREFIX_BINDCRAFT</span> /opt/conda/envs/BindCraft/bin/python <span class="dt">\</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    /app/BindCraft/bindcraft.py <span class="dt">\</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">--settings</span> settings.json <span class="dt">\</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">--filters</span> /app/BindCraft/settings_filters/default_filters.json <span class="dt">\</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">--advanced</span> /app/BindCraft/settings_advanced/default_4stage_multimer.json</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#         --filters /app/BindCraft/settings_filters/default_filters.json \</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># This version pulls the container image from the Github Package Registry</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#PREFIX_BINDCRAFT=&quot;apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 &quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># This version uses an Apptainer image pre-downloaded to the workshop scratch space</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="va">PREFIX_BINDCRAFT</span><span class="op">=</span><span class="st">&quot;apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B </span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-d</span><span class="va">)</span><span class="st">:/.matplotlib --nv /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-bindcraft-05702c4_nv-cuda12.img &quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#    # Ensure that BindCraft finds the correct version of ffmpeg</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#    export PATH=/opt/conda/envs/BindCraft/bin/:\$PATH</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="va">$PREFIX_BINDCRAFT</span> /opt/conda/envs/BindCraft/bin/python <span class="dt">\</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    /app/BindCraft/bindcraft.py <span class="dt">\</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">--settings</span> settings.json <span class="dt">\</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">--filters</span> /app/BindCraft/settings_filters/default_filters.json <span class="dt">\</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">--advanced</span> /app/BindCraft/settings_advanced/default_4stage_multimer.json</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#         --filters /app/BindCraft/settings_filters/default_filters.json \</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>BindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.</p>
 <blockquote class="blockquote">
 <p>It’s safe to Ctrl-C kill a BindCraft run, only the progress on the current trajectory is lost.</p>
