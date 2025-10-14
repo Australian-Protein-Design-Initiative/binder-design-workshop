@@ -4090,6 +4090,7 @@ vertical-align: -.125em;
 <p>If you are running the command from this tutorial on a computer other than the Monash M3 HPC cluster, you won’t nessecarily have the same pre-installed modules (eg <code>module load</code>).</p>
 <p>Here are more detailed snippets that contain the additional Apptainer prefixes required for each command to use the containers available via our container registry on Github.</p>
 <p>These should run anywhere with Apptainer installed (and a supported NVIDIA GPU).</p>
+<p>You’ll also need Nextflow for the <code>nf-binder-design</code> examples - see <a href="./nextflow_crash_course.html#installing-nextflow">Appendix: Foundational skills: Nextflow crash course</a>.</p>
 <section id="rfdiffusion-proteinmpnn-af2-initial-guess" class="level2">
 <h2 class="anchored" data-anchor-id="rfdiffusion-proteinmpnn-af2-initial-guess">RFdiffusion + ProteinMPNN + AF2 initial guess</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This prefix `PREFIX_RFD` is here to run RFDiffusion via an Apptainer container. </span></span>
