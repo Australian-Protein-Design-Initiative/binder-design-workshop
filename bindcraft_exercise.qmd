@@ -75,6 +75,9 @@ We will focus on understanding the key outputs here in the next section.
 In practice, rather than running a single BindCraft run, you will probably want to run multiple BindCraft runs in parallel across multiple GPUs to speed things up. We've added simple BindCraft support to `nf-binder-design` so you more easily run multiple BindCraft runs in parallel on an HPC cluster.
 
 ```bash
+# Load the nextflow module that is pre-installed on the M3 HPC cluster
+module load nextflow/24.04.3
+
 nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design/bindcraft.nf \
   --input_pdb 'input/PDL1.pdb' \
   --outdir results \

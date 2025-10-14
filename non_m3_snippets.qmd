@@ -14,6 +14,8 @@ Here are more detailed snippets that contain the additional Apptainer prefixes r
 
 These should run anywhere with Apptainer installed (and a supported NVIDIA GPU).
 
+You'll also need Nextflow for the `nf-binder-design` examples - see [Appendix: Foundational skills: Nextflow crash course](nextflow_crash_course.qmd#installing-nextflow).
+
 ## RFdiffusion + ProteinMPNN + AF2 initial guess
 
 ```bash

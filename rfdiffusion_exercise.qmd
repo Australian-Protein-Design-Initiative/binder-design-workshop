@@ -54,6 +54,7 @@ Let's start by running the command, and while things are running we can break do
 ```bash
 # Load the RFdiffusion module that is pre-installed on the M3 HPC cluster
 # This puts the RFdiffusion script `run_inference.py` on your PATH
+#
 module load rfdiffusion/.b44206a
 
 mkdir -p output/rfdiffusion
@@ -139,6 +140,7 @@ For binder design, manually setting `inference.ckpt_override_path=/models/rfdiff
 ```bash
 # Load the dl_binder_design (ProteinMPNN) module that is pre-installed on the M3 HPC cluster
 # This puts the script `dl_interface_design.py` (from https://github.com/nrbennet/dl_binder_design/blob/main/mpnn_fr/dl_interface_design.py) on your PATH
+#
 module load dl_binder_design/.cafa385
 
 mkdir -p output/proteinmpnn
@@ -167,6 +169,7 @@ Once sequences have been generated for the backbone design via inverse folding, 
 ```bash
 # Load the dl_binder_design (Alphafold2 initial guess) module that is pre-installed on the M3 HPC cluster
 # This puts the script `predict.py`(from https://github.com/nrbennet/dl_binder_design/blob/main/af2_initial_guess/predict.py) on your PATH
+#
 module load dl_binder_design/.cafa385
 
 mkdir -p output/af2_initial_guess/pdbs
@@ -193,6 +196,9 @@ Rather than cobble something together, we suggest you use [`nf-binder-design`](h
 Here's our example above, using the nf-binder-design RFdiffusion workflow:
 
 ```bash
+# Load the nextflow module that is pre-installed on the M3 HPC cluster - any recent version from the last ~12 months should work
+module load nextflow/24.04.3 
+
 nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design  \
   --input_pdb 'input/*.pdb' \
   --outdir results \
@@ -233,6 +239,3 @@ process {
 `-r 0.1.4` above specifies the 'release' to run (version 0.1.4 in this case). If you omit this, you'll get the latest development version - keep in mind some settings might change between versions.
 
 :::
-
-
-
