@@ -2,62 +2,66 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/nextflow_crash_course.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
+    <lastmod>2025-10-14T03:32:06.676Z</lastmod>
   </url>
   <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/experimental_validation.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bindcraft_tips.html</loc>
-    <lastmod>2025-10-13T03:10:53.257Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bindcraft_exercise.html</loc>
-    <lastmod>2025-10-13T03:10:53.257Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/rfdiffusion_scoring.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/rfdiffusion_background.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/structure_prediction.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/index.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/introduction.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/target_preparation.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/rfdiffusion_exercise.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bindcraft_background.html</loc>
-    <lastmod>2025-10-13T03:10:53.257Z</lastmod>
-  </url>
-  <url>
-    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bindcraft_scoring.html</loc>
-    <lastmod>2025-10-13T03:10:53.257Z</lastmod>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/non_m3_snippets.html</loc>
+    <lastmod>2025-10-14T03:32:06.676Z</lastmod>
   </url>
   <url>
     <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/hardware_and_software.html</loc>
-    <lastmod>2025-10-13T03:10:53.261Z</lastmod>
+    <lastmod>2025-10-14T03:32:06.675Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bindcraft_scoring.html</loc>
+    <lastmod>2025-10-14T03:32:06.672Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bindcraft_background.html</loc>
+    <lastmod>2025-10-14T03:32:06.672Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/rfdiffusion_exercise.html</loc>
+    <lastmod>2025-10-14T03:32:06.676Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/target_preparation.html</loc>
+    <lastmod>2025-10-14T03:32:06.676Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/introduction.html</loc>
+    <lastmod>2025-10-14T03:32:06.675Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/index.html</loc>
+    <lastmod>2025-10-14T03:32:06.675Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/structure_prediction.html</loc>
+    <lastmod>2025-10-14T03:32:06.676Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/rfdiffusion_background.html</loc>
+    <lastmod>2025-10-14T03:32:06.676Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/rfdiffusion_scoring.html</loc>
+    <lastmod>2025-10-14T03:32:06.676Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bindcraft_exercise.html</loc>
+    <lastmod>2025-10-14T03:32:06.672Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bindcraft_tips.html</loc>
+    <lastmod>2025-10-14T03:32:06.672Z</lastmod>
+  </url>
+  <url>
+    <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/experimental_validation.html</loc>
+    <lastmod>2025-10-14T03:32:06.675Z</lastmod>
   </url>
   <url>
     <loc>https://australian-protein-design-initiative.github.io/binder-design-workshop/bash_apptainer_crash_course.html</loc>
-    <lastmod>2025-10-13T03:10:53.257Z</lastmod>
+    <lastmod>2025-10-14T03:32:06.672Z</lastmod>
   </url>
 </urlset>
