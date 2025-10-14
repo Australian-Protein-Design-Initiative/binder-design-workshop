@@ -34,25 +34,14 @@ Normally you'd like to generate more than a single design (maybe `"number_of_fin
 ## Run BindCraft
 
 ```bash
-export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/
+module load bindcraft/.05702c4
+ 
+bindcraft.py \
+    --settings settings.json
 
-# This version pulls the container image from the Github Package Registry
-#PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 "
-
-# This version uses an Apptainer image pre-downloaded to the workshop scratch space
-PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-bindcraft-05702c4_nv-cuda12.img "
-
-#    # Ensure that BindCraft finds the correct version of ffmpeg
-#    export PATH=/opt/conda/envs/BindCraft/bin/:\$PATH
-
-$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \
-    /app/BindCraft/bindcraft.py \
-        --settings settings.json \
-        --filters /app/BindCraft/settings_filters/default_filters.json \
-        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json
-
-# 
-#         --filters /app/BindCraft/settings_filters/default_filters.json \
+# We won't override any default settings or filters
+#    --filters /app/BindCraft/settings_filters/default_filters.json \
+#    --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json
 ```
 
 BindCraft runs can be resumed from where they left off just by running the command again - it will determine if the number of accepted designs has been met, and if not, continue.

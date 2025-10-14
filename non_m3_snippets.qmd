@@ -1,0 +1,92 @@
+---
+title: "Apptainer wrapper commands for any system"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+# Apptainer wrapper commands for any system
+
+If you are running the command from this tutorial on a computer other than the Monash M3 HPC cluster, you won't nessecarily have the same pre-installed modules (eg `module load`).
+
+Here are more detailed snippets that contain the additional Apptainer prefixes required for each command to use the containers available via our container registry on Github.
+
+These should run anywhere with Apptainer installed (and a supported NVIDIA GPU).
+
+## RFdiffusion + ProteinMPNN + AF2 initial guess
+
+```bash
+# This prefix `PREFIX_RFD` is here to run RFDiffusion via an Apptainer container. 
+# It should work anywhere where Apptainer is installed. You'll need an NVIDIA GPU. 
+
+# This version pull the container image from the Github Package Registry - it should work on any system with apptainer installed. The first time it's run there's an initial delay while the container image is downloaded.
+PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules docker://ghcr.io/australian-protein-design-initiative/containers/rfdiffusion:pytorch2407 "
+
+# This version uses an Apptainer image pre-downloaded to the workshop scratch space
+#PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-rfdiffusion-pytorch2407.img "
+
+mkdir -p output/rfdiffusion
+
+$PREFIX_RFD /app/RFdiffusion/scripts/run_inference.py \
+  inference.input_pdb=input/PDL1.pdb \
+  'contigmap.contigs=[A18-132/0 65-120]' \
+  'ppi.hotspot_res=[A56]' \
+  inference.output_prefix=output/rfdiffusion/pdl1_test \
+  inference.num_designs=4 \
+  denoiser.noise_scale_ca=0 \
+  denoiser.noise_scale_frame=0
+```
+
+```bash
+# This version pulls the container image from the Github Package Registry
+PREFIX_PMPNN="apptainer exec --nv docker://ghcr.io/australian-protein-design-initiative/containers/proteinmpnn_dl_binder_design:latest "
+
+# This version uses an Apptainer image pre-downloaded to the workshop scratch space
+#PREFIX_PMPNN="apptainer exec --nv /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-proteinmpnn_dl_binder_design-latest.img "
+
+mkdir -p output/proteinmpnn
+
+$PREFIX_PMPNN /app/dl_binder_design/mpnn_fr/dl_interface_design.py \
+    -pdbdir input/ \
+    -relax_cycles 0 \
+    -seqs_per_struct 2 \
+    -outpdbdir output/proteinmpnn/ \
+    -omit_AAs C
+```
+
+```bash
+PREFIX_AF2IG="apptainer exec --nv docker://ghcr.io/australian-protein-design-initiative/containers/af2_initial_guess:nv-cuda12 "
+
+mkdir -p output/af2_initial_guess/pdbs
+
+$PREFIX_AF2IG python /app/dl_binder_design/af2_initial_guess/predict.py \
+    -pdbdir output/proteinmpnn \
+    -outpdbdir output/af2_initial_guess/pdbs/ \
+    -recycle 3 \
+    -scorefilename output/af2_initial_guess/pdl1_test.scores.cs
+```
+
+## BindCraft
+
+```bash
+export APPTAINERENV_PREPEND_PATH=/opt/conda/envs/BindCraft/bin/
+
+# This version pulls the container image from the Github Package Registry
+PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 "
+
+# This version uses an Apptainer image pre-downloaded to the workshop scratch space
+#PREFIX_BINDCRAFT="apptainer exec --cleanenv --env MPLCONFIGDIR=/.matplotlib -B $(mktemp -d):/.matplotlib --nv /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-bindcraft-05702c4_nv-cuda12.img "
+
+#    # Ensure that BindCraft finds the correct version of ffmpeg
+#    export PATH=/opt/conda/envs/BindCraft/bin/:\$PATH
+
+$PREFIX_BINDCRAFT /opt/conda/envs/BindCraft/bin/python \
+    /app/BindCraft/bindcraft.py \
+        --settings settings.json \
+        --filters /app/BindCraft/settings_filters/default_filters.json \
+        --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json
+
+# 
+#         --filters /app/BindCraft/settings_filters/default_filters.json \
+```

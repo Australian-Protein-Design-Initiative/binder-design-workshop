@@ -52,18 +52,13 @@ Here, we are going to run RFdiffusion with parameters specific for generating a 
 Let's start by running the command, and while things are running we can break down what each part does:
 
 ```bash
-# This prefix `PREFIX_RFD` is here to run RFDiffusion via an Apptainer container. 
-# It should work anywhere where Apptainer is installed. You'll need an NVIDIA GPU. 
-
-# This version pull the container image from the Github Package Registry - it should work on any system with apptainer installed. The first time it's run there's an initial delay while the container image is downloaded.
-#PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules docker://ghcr.io/australian-protein-design-initiative/containers/rfdiffusion:pytorch2407 "
-
-# This version uses an Apptainer image pre-downloaded to the workshop scratch space
-PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-rfdiffusion-pytorch2407.img "
+# Load the RFdiffusion module that is pre-installed on the M3 HPC cluster
+# This puts the RFdiffusion script `run_inference.py` on your PATH
+module load rfdiffusion/.b44206a
 
 mkdir -p output/rfdiffusion
 
-$PREFIX_RFD /app/RFdiffusion/scripts/run_inference.py \
+run_inference.py \
   inference.input_pdb=input/PDL1.pdb \
   'contigmap.contigs=[A18-132/0 65-120]' \
   'ppi.hotspot_res=[A56]' \
@@ -72,6 +67,8 @@ $PREFIX_RFD /app/RFdiffusion/scripts/run_inference.py \
   denoiser.noise_scale_ca=0 \
   denoiser.noise_scale_frame=0
 ```
+
+> Note that this version of the workshop it tailored for the M3 HPC cluster where we've pre-installed each tool as a `module`. If you are running this on a different system, you will need to adapt these commands to use the Apptainer containers less transparently - see [Appendix:Running the Apptainer containers on any system](non_m3_snippets.qmd).
 
 ### RFdiffusion options
 
@@ -140,15 +137,13 @@ For binder design, manually setting `inference.ckpt_override_path=/models/rfdiff
 > TODO
 
 ```bash
-# This version pulls the container image from the Github Package Registry
-#PREFIX_PMPNN="apptainer exec --nv docker://ghcr.io/australian-protein-design-initiative/containers/proteinmpnn_dl_binder_design:latest "
-
-# This version uses an Apptainer image pre-downloaded to the workshop scratch space
-PREFIX_PMPNN="apptainer exec --nv /scratch2/pd27/shared/containers/ghcr.io-australian-protein-design-initiative-containers-proteinmpnn_dl_binder_design-latest.img "
+# Load the dl_binder_design (ProteinMPNN) module that is pre-installed on the M3 HPC cluster
+# This puts the script `dl_interface_design.py` (from https://github.com/nrbennet/dl_binder_design/blob/main/mpnn_fr/dl_interface_design.py) on your PATH
+module load dl_binder_design/.cafa385
 
 mkdir -p output/proteinmpnn
 
-$PREFIX_PMPNN /app/dl_binder_design/mpnn_fr/dl_interface_design.py \
+dl_interface_design.py \
     -pdbdir input/ \
     -relax_cycles 0 \
     -seqs_per_struct 2 \
@@ -170,11 +165,13 @@ Once sequences have been generated for the backbone design via inverse folding, 
 > TODO
 
 ```bash
-PREFIX_AF2IG="apptainer exec --nv docker://ghcr.io/australian-protein-design-initiative/containers/af2_initial_guess:nv-cuda12 "
+# Load the dl_binder_design (Alphafold2 initial guess) module that is pre-installed on the M3 HPC cluster
+# This puts the script `predict.py`(from https://github.com/nrbennet/dl_binder_design/blob/main/af2_initial_guess/predict.py) on your PATH
+module load dl_binder_design/.cafa385
 
 mkdir -p output/af2_initial_guess/pdbs
 
-$PREFIX_AF2IG python /app/dl_binder_design/af2_initial_guess/predict.py \
+predict.py \
     -pdbdir output/proteinmpnn \
     -outpdbdir output/af2_initial_guess/pdbs/ \
     -recycle 3 \

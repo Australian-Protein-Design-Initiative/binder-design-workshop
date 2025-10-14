@@ -18,6 +18,7 @@ project:
     - bindcraft_tips.qmd
     - hardware_and_software.qmd
     - experimental_validation.qmd
+    - non_m3_snippets.qmd
     - bash_apptainer_crash_course.qmd
     - nextflow_crash_course.qmd
 
@@ -52,8 +53,9 @@ website:
       - section: "Harware & Software"
         contents:
           - hardware_and_software.qmd
-      - section: "Appendix: Foundational skills crash course"
+      - section: "Appendix"
         contents:
+          - non_m3_snippets.qmd
           - bash_apptainer_crash_course.qmd
           - nextflow_crash_course.qmd
 

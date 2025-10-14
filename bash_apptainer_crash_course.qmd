@@ -1,5 +1,5 @@
 ---
-title: "Bash shell and Apptainer crash course"
+title: "Foundational skills: Bash shell and Apptainer crash course"
 format:
   html:
     license: CC BY
