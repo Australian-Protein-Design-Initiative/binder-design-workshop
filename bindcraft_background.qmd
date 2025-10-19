@@ -13,8 +13,27 @@ format:
 ![Figure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline](assets/images/bindcraft_protocol.jpg)
 
 
-- Hallucination with the Alphafold2 model as implemented by ColabDesign
+Hallucination with the Alphafold2 model as implemented by ColabDesign.
 
-![](assets/images/bindcraft_traj_stages.png)
+The trajectory is split into four stages, where in each stage the probability distribution of the sequence at each position predicted by the Alphafold2 model is made increasingly discrete.
 
+ie, we go from 'fuzzy' this many possible residues at a position, to fixing on the highest probability residue.
 
+![From Martin Pacesa and Lennart Nickel's presentation https://www.youtube.com/watch?v=u5yijcBsonw](assets/images/bindcraft_traj_stages.png)
+
+The final 'semi-greedy' stage tests the impact of randomly mutating a small fraction of positions (based on a PSSM derived from the sequence logits)
+
+## The BindCraft loss function
+
+It's instructive to look at what goes into the BindCraft loss function that guides the trajectory and generates the initial design.
+We have weighted terms that drive the confidence of the binder and confidence of the interface, as well as encouraging more non-helical secondary structure and a more compact radius of gyration.
+
+\begin{align}
+ℒ &= 0.1⋅(1−pLDDT) \nonumber \\
+  &\quad + 0.05⋅ipTM \nonumber \\
+  &\quad + 0.4⋅pAE_{binder} \nonumber \\
+  &\quad + 0.1⋅ipAE_{interchain} \nonumber \\
+  &\quad + 1.0⋅hotspot\_contact_{loss} \nonumber \\
+  &\quad + 0.3⋅radius_{gyr} \nonumber \\
+  &\quad - 0.3⋅helicity_{loss}
+\end{align}

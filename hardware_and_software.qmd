@@ -14,7 +14,7 @@ Or, _"how can I run this at home ?"_
 
 _What kind of hardware do I need ?_
 
-> TODO: GPUs, the more the better. Local workstation example, HPC example, cloud example.
+> TODO: GPUs, the more the better. Local workstation example, HPC example, cloud example. Longer proteins require more VRAM.
 
 # Software 
 
@@ -64,9 +64,7 @@ _(or see step 1 above)_
 
 # At Monash
 
-`nf-binder-design` has a configuration profile for the M3 HPC cluster.
-
-> TODO: Detail (or see README.md)
+`nf-binder-design` has a configuration profile for the M3 HPC cluster (use `-profile slurm,m3` or `-profile slurm,m3_bdi`)
 
 # At Unimelb
 

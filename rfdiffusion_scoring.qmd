@@ -6,25 +6,48 @@ format:
     embed-resources: true
 ---
 
-> TODO: A "here's one we prepared earlier" section, with the results of a ~1000 trajectory nf-binder-design RFDiffusion run for PDL1.
+"Here's one we prepared earlier" - 500 designs using the RFdiffusion binder design workflow of `nf-binder-design` are in `/scratch2/pd27/shared/examples/nfbd/pdl1-rfd`.
+
+### Challenge - viewing the RFdiffusion pipeline results
+
+View the table `combined_scores.tsv` - how many designs are have a favourable `pae_interaction` score ?
+How about `plddt_binder` ?
+
+:::
 
 # Design run summary and scoring
 
 - `pae_interaction < 10`
 - binder `pLDDT > 80`
 
-## What is pLDDT ?
-
-> TODO: Alphafold2 pLDDT (also include original LDDT paper citation)
-
-## What is PAE, and PAE interaction ?
-
-> TODO:  Alphafold2 PAE, relationship to pTM, and ipTM ?
+> TODO: Shift scores recap from introduction.qmd into here ?
 
 ## Other scores
 
 > TODO: Rosetta gG energy ?
 
-# Resources
+# Binder monomer prediction, complex re-prediction
 
-- [EBI Alphafold tutorial](https://www.ebi.ac.uk/training/online/courses/alphafold/): good overviews of pLDDT, PAE, TM, pTM, ipTM.
+Alphafold 'initial guess' is useful because it's much faster than the full Alphafold workflow for efficiently filtering and ranking designs. However, it makes compromises in accuracy and can be biased but the provided complex structure used as a starting point.
+
+The final step that we've not applied in this workshop is 'full' structure prediction using using Alphafold (2, or 3, or another predictor such as Boltz-2). Generally, we want to predict, from sequence alone:
+
+- a re-prediction of the complex structure
+
+- the binder monomer structure
+
+### Why predict the binder monomer (from sequence alone) ?
+
+If we are aiming for a stable high affinity binder, we typically want the binder monomer to be the same structure when free and bound (binders that undergo conformational changes upon binding are interesting, but typically not what we are chasing here).
+
+> **What to do:** compare the C$\alpha$ RMSD of the 'free' binder monomer with the 'bound' binder. If the RMSD is significantly different (> ~3.5 Å ?) then we will typcially discard this binder design.
+
+
+### Why re-predict the binder+target complex structure ?
+
+1. Alphafold 'initial guess' uses the RFdiffusion generated complex as a starting point for structure prediction, and so can be biased toward predicting that binding mode.
+
+2. Alphafold 'initial guess' works in 'single sequence mode' without and multiple sequence alignment (MSA) input - this is much faster, but it reduces the accuracy of the target structure in the complex. Running 'full Alphafold' (or equivalent) with the MSA input _for the target_ helps confirm the predicted complex.
+
+> **What to do:** compare the C$\alpha$ RMSD of the re-predicted complex with the initial guess complex (and also the C$\alpha$ RMSD of target superimposition, and the binder superimposition alone). If the re-predicted complex has changed significantly from the initial guess prediction (> ~3.5 Å ?) then we have low confidence in the original design and will likely discard it.
+

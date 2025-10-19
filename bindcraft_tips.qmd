@@ -221,8 +221,6 @@ Designs that satisfy these critera are kept as 'Accepted':
     - `Average_Binder_pLDDT` > 0.8
     - `Average_Binder_RMSD` < 3.5
 
-
-
 ---
 
 ### **Design Selection**

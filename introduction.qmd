@@ -8,3 +8,204 @@ format:
 
 # Introduction
 
+Post-Alphafold2, new deep learning methods in _de novo_ protein design have emerged with unprecedented success rates for folding and activity generated sequences.
+
+This workshop aims to explore one key design goal - generating small proteins _in silico_ that bind to a target protein with high affinity and specificity.
+
+We will use two leading methods - one based on RFdiffusion, one and using BindCraft.
+
+# Scores, so many scores
+
+It's worth recapping many of the different scores that Alphafold (and other related structure prediction tools) generally use to assess confidence, since these are also key scores that are used for generating and filtering _de novo_ binder designs.
+
+### [pLDDT](https://www.ebi.ac.uk/training/online/courses/alphafold/inputs-and-outputs/evaluating-alphafolds-predicted-structures-using-confidence-scores/plddt-understanding-local-confidence/) - predicted "local distance test"
+
+  - based on the [lDDT-Cα](https://pmc.ncbi.nlm.nih.gov/articles/PMC3799472/) score for comparing local Cα distances between predicted and experimental structures
+  - 'Real' lDDT-Cα scores are based on the average fraction of preserved distances between each Cα atom in four distance thresholds of 0.5 Å, 1 Å, 2 Å, and 4 Å 
+  - Alphafold2 was trained to predict lDDT-Cα as a measure of local confidence by using real lDDT values between ground truth experimental structures and its predictions.
+
+::: {.callout-note icon=false}
+
+#### pLDDT Interpretation
+
+**Range:** 0 → 100 (or sometimes expressed as 0.0 → 1.0).
+
+Higher is more confident.
+:::
+
+### [PAE](https://www.ebi.ac.uk/training/online/courses/alphafold/inputs-and-outputs/evaluating-alphafolds-predicted-structures-using-confidence-scores/pae-a-measure-of-global-confidence-in-alphafold-predictions/) - predicted aligned error
+
+  - the confidence in the relative position of each residue pair in the predicted structure, measured in Ångströms (Å)
+  - the expected positional error at residue X, if the predicted and ground truth structures were aligned on residue Y.
+  - Usually visualized as a 2D heatmap of the predicted aligned error for each residue pair.
+
+::: {.callout-note icon=false}
+
+#### PAE Interpretation
+
+**Range:** 0.0 → ~30 Å (Ångströms)
+
+Not a single value, but often averaged over groups of residue pairs (intra or inter-chain).
+
+Lower suggests a more accurate prediction.
+:::
+
+
+### `pae_interaction` - inter-chain predicted aligned error
+
+  - sometimes called `iPAE`, or `i_pAE`
+  - The average PAE score for inter-chain residue pairs in the PAE matrix, between target and binder.
+  - Eg, the average pAE every pair that is _**not**_ and **intra**-domain PAE score.
+  - a measure of confidence in the relative arrangement of the target and binder.
+
+::: {.callout-note icon=false}
+
+#### pae_interaction Interpretation
+
+**Range:** 0.0 → 100 (or sometimes expressed as 0.0 → 1.0).
+
+Higher is more confident.
+:::
+
+```{=html}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-10 max-w-2xl w-full">
+<!-- SVG Visualization -->
+<div class="flex justify-center">
+<svg width="500" height="450" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="14">
+<!-- Define styles -->
+<style>
+.matrix-bg { fill: #f0f0f0; stroke: #333; stroke-width: 1.5; }
+.interaction-area { fill: #a0c4ff; }
+.divider-line { stroke: #555; stroke-width: 1.5; stroke-dasharray: 4 2; }
+.label-text { fill: #000; text-anchor: middle; }
+.axis-label { fill: #000; text-anchor: middle; font-weight: bold; }
+.formula-text { font-family: monospace; font-size: 16px; }
+.quadrant-label { fill: #333; text-anchor: middle; }
+</style>
+
+<!-- Title -->
+<text x="225" y="30" class="axis-label" font-size="18">PAE Matrix for pae_interaction</text>
+
+<!-- Highlighted Interaction Areas -->
+<!-- pae_interaction1 = pae[:binderlen, binderlen:] -->
+<rect x="190" y="70" width="180" height="120" class="interaction-area" />
+<!-- pae_interaction2 = pae[binderlen:, :binderlen] -->
+<rect x="70" y="190" width="120" height="180" class="interaction-area" />
+
+<!-- Matrix Background & Outline -->
+<rect x="70" y="70" width="300" height="300" class="matrix-bg" fill-opacity="0" />
+
+<!-- Divider Lines -->
+<line x1="190" y1="70" x2="190" y2="370" class="divider-line" />
+<line x1="70" y1="190" x2="370" y2="190" class="divider-line" />
+
+<!-- Axis Labels and Ticks -->
+<!-- Y-Axis (Rows) -->
+<text x="35" y="235" class="axis-label" transform="rotate(-90 35 235)">Residue Index (Rows)</text>
+<text x="50" y="80" class="label-text" text-anchor="end">0</text>
+<text x="400" y="130" class="axis-label" font-size="12">Binder</text>
+<text x="400" y="280" class="axis-label" font-size="12">Target</text>
+
+<!-- X-Axis (Columns) -->
+<text x="220" y="400" class="axis-label">Residue Index (Columns)</text>
+<text x="70" y="390" class="label-text">0</text>
+<text x="130" y="55" class="axis-label" font-size="12">Binder</text>
+<text x="280" y="55" class="axis-label" font-size="12">Target</text>
+
+<!-- Quadrant labels -->
+<text x="130" y="135" class="quadrant-label" font-size="12">Intra-Binder PAE</text>
+<text x="280" y="135" class="quadrant-label" font-weight="bold">pae_interaction1</text>
+<text x="130" y="285" class="quadrant-label" font-weight="bold">pae_interaction2</text>
+<text x="280" y="285" class="quadrant-label" font-size="12">Intra-Target PAE</text>
+</svg>
+
+<div style="text-align:center; margin-top: 1rem;">
+  <span style="font-family: 'Latin Modern Math', 'STIX Two Math', 'Cambria Math', 'MathJax_Main', serif; font-size: 1.3em;">
+    <i>pae<sub>interaction</sub></i> = mean( <i>pae<sub>interaction1</sub></i> + <i>pae<sub>interaction2</sub></i> )
+  </span>
+</div>
+
+</div>
+</div>
+```
+<br/>
+
+- the 'other' `iPAE`
+  - [others](https://doi.org/10.1021/acs.jcim.3c00378) [have](http://dx.doi.org/10.1038/s44320-023-00005-6) used the name `iPAE` defined as the _**median PAE of interface residues**_ (where interface residues are those < 3.5 Å from the binding partner).
+  - the tools in the workshop don't use this score
+
+
+### [pTM](https://www.ebi.ac.uk/training/online/courses/alphafold/inputs-and-outputs/evaluating-alphafolds-predicted-structures-using-confidence-scores/confidence-scores-in-alphafold-multimer/) - predicted template modelling (TM) score
+
+- an overall measure of structure accuracy - Alphafold2 (`ptm`) models, and Alphafold Multimer models, are trained to predict TM-score between the predicted and experimental structures.
+
+- The original _non-predicted_ TM-score is based on the C$\alpha$ distances between the predicted and experimental structures, with poorly superimposing C$\alpha$ atoms downweighted, and a scaling factor to normalise for the length of the protein (for the best superimposition, that maximises the TM-score).
+
+- TM-score is less sensitive to outliers than RMSD (flexible loops and tails have a smaller impact), and independent of protein length
+
+::: {.callout-note icon=false}
+
+#### pTM Interpretation
+
+**Range:** 0.0 → 1.0
+
+Higher is more confident
+- $< ~0.17$ is completely random
+
+- $> 0.5$ is likely the same fold
+
+- $1.0$ is an identical structure
+```
+:::
+
+### [ipTM](https://www.ebi.ac.uk/training/online/courses/alphafold/inputs-and-outputs/evaluating-alphafolds-predicted-structures-using-confidence-scores/confidence-scores-in-alphafold-multimer/) - interface predicted template modelling (TM) score
+
+  - like the pTM score, but considers only pairs of residues between chains, not within chains (inter-chain pairs only)
+  
+  - a measure of confidence in the relative arrangement of the target and binder.
+
+::: {.callout-note icon=false}
+
+#### ipTM Interpretation
+
+**Range:** 0.0 → 1.0
+
+Higher is more confident
+
+- $> 0.6$, _might_ be a real complex
+
+- $> 0.8$, probably a real complex
+:::
+
+### [C$\alpha$-RMSD](https://en.wikipedia.org/wiki/Root_mean_square_deviation_of_atomic_positions) - root mean square deviation of C$\alpha$ atoms
+
+- calculated between two superimposed structures
+
+- can be sensitive to outliers (flexible loops and tails), but often outliers are excluded from the calculation (eg ChimeraX 'matchmaker' reports RMSD values for 'pruned' and 'all' pairs of atoms)
+
+- depends non-linearly on protein length (longer proteins will tend to have higher RMSD values)
+
+::: {.callout-note icon=false}
+
+#### RMSD (C$\alpha$) Interpretation
+
+**Range:** 0.0 → ... ∞ ?
+
+Lower is more confident
+:::
+
+
+----
+
+::: {.callout-tip}
+## Predicting affinity
+
+To date, none of these scores (or others) have been found to strongly associate with binding affinity in the high affinity ranges (≫10 μM) we are usually interested in.
+
+Many **_do_** tend to associate with boolean binding/non-binding (eg predicting less than or greater than 10 μM affinity), so they are still useful for guiding and filtering designs _in silico_.
+
+:::
+
+# Resources
+
+- [EBI Alphafold tutorial](https://www.ebi.ac.uk/training/online/courses/alphafold/): good practical overviews of pLDDT, PAE, TM, pTM, ipTM.

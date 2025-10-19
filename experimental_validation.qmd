@@ -28,9 +28,7 @@ Many of these considerations will be familiar to experimental structural biologi
 
 ## Expected experimental 'hit' rates
 
-> TODO: How do we define successful binding ? (eg Kd <= 10uM ?)
-
-> TODO: What is the typical % of successful experimental hits, given typical _in silico_ scoring thresholds ? Show BindCraft and RFDiffusion published success rates.
+How do we define successful binding ? A typical definition used is Kd <= 10uM.
 
 RFDiffusion with published _in silico_ scoring thresholds, has a success rate of between 7% to 35% (depending on the target).
 

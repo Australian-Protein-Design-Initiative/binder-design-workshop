@@ -6,7 +6,7 @@ format:
     embed-resources: true
 ---
 
-# Apptainer wrapper commands for any system
+# Running without using pre-installed HPC modules
 
 If you are running the command from this tutorial on a computer other than the Monash M3 HPC cluster, you won't nessecarily have the same pre-installed modules (eg `module load`).
 

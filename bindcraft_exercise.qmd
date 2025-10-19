@@ -91,7 +91,7 @@ nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design/bind
   -resume
 ```
 
-> We only have a single GPU on the workshop VMs, however with a few tweaks the above command will work just the same but run on many GPUs in parallel (eg, `-profile slurm`, and `-c nextflow.config` pointing to a nextflow configuation tailored to your HPC cluster and partition access etc)
+> We only have a single 'local' GPU per participant for the workshop, however with a few tweaks the above command will work just the same but run on many GPUs in parallel (eg, `-profile slurm,m3` or `-profile slurm,m3_bdi`, or a `-c nextflow.config` tailored to your HPC cluster and available partitions etc)
 
 One difference with the `nf-binder-design` wrapper around BindCraft is that we set `--bindcraft_n_traj` as the number of trajectories (design _attempts_) we want to run, rather than the number of accepted designs to stop after (`number_of_final_designs`). This maps better to short HPC jobs where each jobs has a defined time limit.
 
@@ -110,11 +110,9 @@ $$\text{Acceptance Rate} = 100 \times \frac{n_{\text{accepted}}}{N_{\text{traj}}
 
 where:
 
-- $n_{\text{accepted}}$ = number of accepted designs (excluding MPNN duplicates)
+- $n_{\text{accepted}}$ = number of accepted designs
 - $N_{\text{traj}}$ = total number of trajectories
 
+> (From my interpretation of the BindCraft source code, when using the default `"max_mpnn_sequences": 2`, the maximum acceptance rate is **200%** `¯\_(ツ)_/¯` )
+
 As a guide, the BindCraft authors recommend generating ~100 'accepted' designs and choosing the best 20 for experimental assay. 'Best' is likely highest `Average_i_pTM`, but you may also choose additional criteria based on what you know about the target or biology.
-
-## Resources
-
-- The official BindCraft (wiki) docs: [De novo binder design with BindCraft](https://github.com/martinpacesa/BindCraft/wiki/De-novo-binder-design-with-BindCraft)

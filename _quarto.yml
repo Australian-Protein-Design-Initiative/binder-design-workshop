@@ -51,13 +51,13 @@ website:
         contents:
           - experimental_validation.qmd
       - section: "Harware & Software"
-        contents:
-          - hardware_and_software.qmd
       - section: "Appendix"
         contents:
           - non_m3_snippets.qmd
+          - hardware_and_software.qmd
           - bash_apptainer_crash_course.qmd
           - nextflow_crash_course.qmd
+
 
 format:
   html:
