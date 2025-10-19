@@ -114,9 +114,9 @@
     "href": "hardware_and_software.html",
     "title": "Hardware and software requirements",
     "section": "",
-    "text": "Or, “how can I run this at home ?”\n\n\nWhat kind of hardware do I need ?\n\nTODO: GPUs, the more the better. Local workstation example, HPC example, cloud example.",
+    "text": "Or, “how can I run this at home ?”\n\n\nWhat kind of hardware do I need ?\n\nTODO: GPUs, the more the better. Local workstation example, HPC example, cloud example. Longer proteins require more VRAM.",
     "crumbs": [
-      "Harware & Software",
+      "Appendix",
       "Hardware and software requirements"
     ]
   },
@@ -125,9 +125,9 @@
     "href": "hardware_and_software.html#compute-resources",
     "title": "Hardware and software requirements",
     "section": "",
-    "text": "What kind of hardware do I need ?\n\nTODO: GPUs, the more the better. Local workstation example, HPC example, cloud example.",
+    "text": "What kind of hardware do I need ?\n\nTODO: GPUs, the more the better. Local workstation example, HPC example, cloud example. Longer proteins require more VRAM.",
     "crumbs": [
-      "Harware & Software",
+      "Appendix",
       "Hardware and software requirements"
     ]
   },
@@ -138,7 +138,7 @@
     "section": "Licensing",
     "text": "Licensing\nThe foundation of these tools are available under under permissive open source licenses and can be used freely for non-commercial use. However, NOTE that PyRosetta, a component of both RFDiffusion and BindCraft, requires a license from the University of Washington for commercial use.",
     "crumbs": [
-      "Harware & Software",
+      "Appendix",
       "Hardware and software requirements"
     ]
   },
@@ -149,7 +149,7 @@
     "section": "Installation",
     "text": "Installation\n\n\n\n\n\n\nWarning\n\n\n\nFor this workshop, you don’t need to install anything. We’ve set things up to run in Apptainer containers that are already downloaded.\nInstalling these packges typically takes hours, and troubleshooting research software installation is a topic for an entirely different wokshop.\n\n\nYou’ll want a Linux based operating system. You do not nessecarily need admin / sudo permissions.\nMethods, roughly in order of preference:",
     "crumbs": [
-      "Harware & Software",
+      "Appendix",
       "Hardware and software requirements"
     ]
   },
@@ -160,7 +160,7 @@
     "section": "1. Engage your local HPC or research cloud admins to help create a shared installation everyone can use.",
     "text": "1. Engage your local HPC or research cloud admins to help create a shared installation everyone can use.\nThey are often experienced in troubleshooting installation and dependency issues that can be specific to the systems they maintain.",
     "crumbs": [
-      "Harware & Software",
+      "Appendix",
       "Hardware and software requirements"
     ]
   },
@@ -171,7 +171,7 @@
     "section": "2. Use a container",
     "text": "2. Use a container\nApptainer (formerly known as Singularity) simplifies deployment of software by bundling up the software and its dependencies, including a simple Linux system image, into a single container.\nDocker is another popular alternative, but isn’t usually available on HPC systems due to security constraints.\nApptainer can run Docker images, so you rarely need Docker to run research software.\nAll the container images used in this workshop are available here and the Dockerfile recipes used to build them are available here.",
     "crumbs": [
-      "Harware & Software",
+      "Appendix",
       "Hardware and software requirements"
     ]
   },
@@ -182,7 +182,7 @@
     "section": "3. Use a pipeline",
     "text": "3. Use a pipeline\nA Nextflow pipeline like nf-binder-design can help manage running all the steps in an RFdiffusion - ProteinMPNN - Alphafold2 (or BindCraft) workflow.\nThe best pipelines typically use publically available Apptainer containers by default, so you don’t need to think about installing each of the tools yourself.",
     "crumbs": [
-      "Harware & Software",
+      "Appendix",
       "Hardware and software requirements"
     ]
   },
@@ -193,7 +193,7 @@
     "section": "4. Install yourself",
     "text": "4. Install yourself\nFollow the instrucions at https://github.com/RosettaCommons/RFdiffusion and https://github.com/martinpacesa/BindCraft - the installation steps are well documented, but don’t always work perfectly in every environment without some troubleshooting.\n(or see step 1 above)",
     "crumbs": [
-      "Harware & Software",
+      "Appendix",
       "Hardware and software requirements"
     ]
   },
@@ -202,7 +202,7 @@
     "href": "bindcraft_scoring.html",
     "title": "BindCraft : analysing a full design run",
     "section": "",
-    "text": "TODO: We should switch here to ‘here’s one we prepared earlier’ with results from a ~300 (or more) trajectory BindCraft / nf-binder-design run.\n\n\n\n\n\n\n\nCautionChallenge - viewing the BindCraft results\n\n\n\nView the table final_design_stats.csv - do we have any accepted designs ? Which scores are most important ?\nView a the the PDB files in Accepted/. Examine the target-binder interface - designs with high and low ipTM scores.\n\n\n\nTODO: Overview of BindCraft scores - too many to cover everything, but relate the key ones to the filters (eg binder RMSD cutoffs, etc)\n\n\nOptimizing BindCraft settings\nIt can take ‘many shots’ in silico to get a ‘one shot’ binder in the wet lab.\nHere’s a figure from the BindCraft paper that gives some insight:\n’\nEach target required different numbers of trajectories, with a wide range in in silico acceptance rates, to achieve the suggested “100 accepted designs to select 20 for assay” benchmark. Part f shows the impact of binder length range alone on in silico success rates.\nWhat we don’t see here is the trajactories run testing alternative target structures, trimmings and hotspot combinations - expect to run many more trajectories than you’ll ultimately require for your final ‘production’ run.\n\n\n\n\nReuseCC BY 4.0",
+    "text": "We’ve run 400 BindCraft trajectories for PDL1 using nf-binder-design -the results are in /scratch2/pd27/shared/examples/nfbd/pdl1-bindcraft - this reflects a more realistic number of trajectories for a ‘production run’.\n\n\n\n\n\n\nCautionChallenge - viewing the BindCraft results\n\n\n\nView the table final_design_stats.csv - how many accepted designs do we have ? What is the acceptance rate ?\nWhat do the designs with almost the same name, but different _mpnn{n} suffixes have in common ?\nView a the the PDB files in Accepted/. Examine the target-binder interface of some designs with high and low ipTM scores.\n\n\nBindCraft outputs many scores, but for ranking designs we’d typically focus on:\n\nAverage_i_pTM - the average ipTM across each Alphafold2 model for this complex\n\n\nNote that since fairly stringent filters have already been applied, any of the Accepted designs is considered to have a good chance of binding.\n\nHere are all the scores you’ll find in the final_design_stats.csv file. The 1_, 2_, 3_, etc scores are for each different Alphafold2 model:\nRank,Design,Protocol,Length,Seed,Helicity,Target_Hotspot,Sequence,InterfaceResidues,\n\nMPNN_score,MPNN_seq_recovery,\n\nAverage_pLDDT,          1_pLDDT,2_pLDDT,3_pLDDT,4_pLDDT,5_pLDDT,\nAverage_pTM,            1_pTM,2_pTM,3_pTM,4_pTM,5_pTM,\nAverage_i_pTM,          1_i_pTM,2_i_pTM,3_i_pTM,4_i_pTM,5_i_pTM,\nAverage_pAE,            1_pAE,2_pAE,3_pAE,4_pAE,5_pAE,\nAverage_i_pAE,          1_i_pAE,2_i_pAE,3_i_pAE,4_i_pAE,5_i_pAE,\nAverage_i_pLDDT,        1_i_pLDDT,2_i_pLDDT,3_i_pLDDT,4_i_pLDDT,5_i_pLDDT,\nAverage_ss_pLDDT,       1_ss_pLDDT,2_ss_pLDDT,3_ss_pLDDT,4_ss_pLDDT,5_ss_pLDDT,\n\nAverage_Unrelaxed_Clashes,  1_Unrelaxed_Clashes,2_Unrelaxed_Clashes,3_Unrelaxed_Clashes,4_Unrelaxed_Clashes,5_Unrelaxed_Clashes,\nAverage_Relaxed_Clashes,    1_Relaxed_Clashes,2_Relaxed_Clashes,3_Relaxed_Clashes,4_Relaxed_Clashes,5_Relaxed_Clashes,\nAverage_Binder_Energy_Score,    1_Binder_Energy_Score,2_Binder_Energy_Score,3_Binder_Energy_Score,4_Binder_Energy_Score,5_Binder_Energy_Score,\nAverage_Surface_Hydrophobicity, 1_Surface_Hydrophobicity,2_Surface_Hydrophobicity,3_Surface_Hydrophobicity,4_Surface_Hydrophobicity,5_Surface_Hydrophobicity,\nAverage_ShapeComplementarity,   1_ShapeComplementarity,2_ShapeComplementarity,3_ShapeComplementarity,4_ShapeComplementarity,5_ShapeComplementarity,\nAverage_PackStat,       1_PackStat,2_PackStat,3_PackStat,4_PackStat,5_PackStat,\nAverage_dG,         1_dG,2_dG,3_dG,4_dG,5_dG,\nAverage_dSASA,          1_dSASA,2_dSASA,3_dSASA,4_dSASA,5_dSASA,\nAverage_dG/dSASA,       1_dG/dSASA,2_dG/dSASA,3_dG/dSASA,4_dG/dSASA,5_dG/dSASA,\nAverage_Interface_SASA_%,   1_Interface_SASA_%,2_Interface_SASA_%,3_Interface_SASA_%,4_Interface_SASA_%,5_Interface_SASA_%,\nAverage_Interface_Hydrophobicity,   1_Interface_Hydrophobicity,2_Interface_Hydrophobicity,3_Interface_Hydrophobicity,4_Interface_Hydrophobicity,5_Interface_Hydrophobicity,\nAverage_n_InterfaceResidues,    1_n_InterfaceResidues,2_n_InterfaceResidues,3_n_InterfaceResidues,4_n_InterfaceResidues,5_n_InterfaceResidues,\nAverage_n_InterfaceHbonds,  1_n_InterfaceHbonds,2_n_InterfaceHbonds,3_n_InterfaceHbonds,4_n_InterfaceHbonds,5_n_InterfaceHbonds,\nAverage_InterfaceHbondsPercentage,  1_InterfaceHbondsPercentage,2_InterfaceHbondsPercentage,3_InterfaceHbondsPercentage,4_InterfaceHbondsPercentage,5_InterfaceHbondsPercentage,\nAverage_n_InterfaceUnsatHbonds, 1_n_InterfaceUnsatHbonds,2_n_InterfaceUnsatHbonds,3_n_InterfaceUnsatHbonds,4_n_InterfaceUnsatHbonds,5_n_InterfaceUnsatHbonds,\nAverage_InterfaceUnsatHbondsPercentage, 1_InterfaceUnsatHbondsPercentage,2_InterfaceUnsatHbondsPercentage,3_InterfaceUnsatHbondsPercentage,4_InterfaceUnsatHbondsPercentage,5_InterfaceUnsatHbondsPercentage,\n\nAverage_Interface_Helix%,       1_Interface_Helix%,2_Interface_Helix%,3_Interface_Helix%,4_Interface_Helix%,5_Interface_Helix%,\nAverage_Interface_BetaSheet%,       1_Interface_BetaSheet%,2_Interface_BetaSheet%,3_Interface_BetaSheet%,4_Interface_BetaSheet%,5_Interface_BetaSheet%,\nAverage_Interface_Loop%,        1_Interface_Loop%,2_Interface_Loop%,3_Interface_Loop%,4_Interface_Loop%,5_Interface_Loop%,\nAverage_Binder_Helix%,          1_Binder_Helix%,2_Binder_Helix%,3_Binder_Helix%,4_Binder_Helix%,5_Binder_Helix%,\nAverage_Binder_BetaSheet%,      1_Binder_BetaSheet%,2_Binder_BetaSheet%,3_Binder_BetaSheet%,4_Binder_BetaSheet%,5_Binder_BetaSheet%,\nAverage_Binder_Loop%,           1_Binder_Loop%,2_Binder_Loop%,3_Binder_Loop%,4_Binder_Loop%,5_Binder_Loop%,\n\nAverage_InterfaceAAs,       1_InterfaceAAs,2_InterfaceAAs,3_InterfaceAAs,4_InterfaceAAs,5_InterfaceAAs,\n\nAverage_Hotspot_RMSD,       1_Hotspot_RMSD,2_Hotspot_RMSD,3_Hotspot_RMSD,4_Hotspot_RMSD,5_Hotspot_RMSD,\nAverage_Target_RMSD,        1_Target_RMSD,2_Target_RMSD,3_Target_RMSD,4_Target_RMSD,5_Target_RMSD,\nAverage_Binder_pLDDT,       1_Binder_pLDDT,2_Binder_pLDDT,3_Binder_pLDDT,4_Binder_pLDDT,5_Binder_pLDDT,\nAverage_Binder_pTM,     1_Binder_pTM,2_Binder_pTM,3_Binder_pTM,4_Binder_pTM,5_Binder_pTM,\nAverage_Binder_pAE,     1_Binder_pAE,2_Binder_pAE,3_Binder_pAE,4_Binder_pAE,5_Binder_pAE,\nAverage_Binder_RMSD,        1_Binder_RMSD,2_Binder_RMSD,3_Binder_RMSD,4_Binder_RMSD,5_Binder_RMSD,\n\nDesignTime,Notes,TargetSettings,Filters,AdvancedSettings\n\nDefault filters\nDesigns that satisfy these critera are kept as ‘Accepted’:\n\nAlphaFold2 Metrics\n\nAverage_pLDDT &gt; 0.8\nAverage_pTM &gt; 0.55\nAverage_i_pTM &gt; 0.5\nAverage_i_pAE &lt; 0.35\n\nRosetta Metrics\n\nAverage_Binder_Energy_Score &lt; 0\nAverage_Surface_Hydrophobicity &lt; 0.35\nAverage_ShapeComplementarity &gt; 0.6\nAverage_dG &lt; 0\nAverage_dSASA &gt; 1\nAverage_n_InterfaceResidues &gt; 7\nAverage_n_InterfaceHbonds &gt; 3\nAverage_n_InterfaceUnsatHbonds &lt; 4\nAverage_InterfaceAAs: K &lt; 3\nAverage_InterfaceAAs: M &lt; 3\n\nStructural Metrics\n\nAverage_Binder_Loop% &lt; 90\nAverage_Hotspot_RMSD &lt; 6\nAverage_Binder_pLDDT &gt; 0.8\nAverage_Binder_RMSD &lt; 3.5\n\n\n\n\nOptimizing BindCraft settings\nIt can take ‘many shots’ in silico to get a ‘one shot’ binder in the wet lab.\nHere’s a figure from the BindCraft paper that gives some insight:\n’\nEach target required different numbers of trajectories, with a wide range in in silico acceptance rates, to achieve the suggested “100 accepted designs to select 20 for assay” benchmark. Part f shows the impact of binder length range alone on in silico success rates.\nWhat we don’t see here is the trajactories run testing alternative target structures, trimmings and hotspot combinations - expect to run many more trajectories than you’ll ultimately require for your final ‘production’ run.\nThe two key parameters you should adjust to get more ‘accepted’ designs are:\n\nthe target structure (different models, different trimmings)\nthe hotspots\n\nModifying the default filters or advanced settings should typically be approached with extreme caution - not all ‘advanced’ settings have been systematically tested and may reduce the success rates reported in the BindCraft paper. Caveat emptor\n\n\n\n\nReuseCC BY 4.0",
     "crumbs": [
       "BindCraft",
       "BindCraft : analysing a full design run"
@@ -213,7 +213,7 @@
     "href": "bindcraft_background.html",
     "title": "BindCraft Background",
     "section": "",
-    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign",
+    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign.\nThe trajectory is split into four stages, where in each stage the probability distribution of the sequence at each position predicted by the Alphafold2 model is made increasingly discrete.\nie, we go from ‘fuzzy’ this many possible residues at a position, to fixing on the highest probability residue.\n\n\n\nFrom Martin Pacesa and Lennart Nickel’s presentation https://www.youtube.com/watch?v=u5yijcBsonw\n\n\nThe final ‘semi-greedy’ stage tests the impact of randomly mutating a small fraction of positions (based on a PSSM derived from the sequence logits)",
     "crumbs": [
       "BindCraft",
       "BindCraft Background"
@@ -224,7 +224,18 @@
     "href": "bindcraft_background.html#bindcraft-methodology-overview",
     "title": "BindCraft Background",
     "section": "",
-    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign",
+    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign.\nThe trajectory is split into four stages, where in each stage the probability distribution of the sequence at each position predicted by the Alphafold2 model is made increasingly discrete.\nie, we go from ‘fuzzy’ this many possible residues at a position, to fixing on the highest probability residue.\n\n\n\nFrom Martin Pacesa and Lennart Nickel’s presentation https://www.youtube.com/watch?v=u5yijcBsonw\n\n\nThe final ‘semi-greedy’ stage tests the impact of randomly mutating a small fraction of positions (based on a PSSM derived from the sequence logits)",
+    "crumbs": [
+      "BindCraft",
+      "BindCraft Background"
+    ]
+  },
+  {
+    "objectID": "bindcraft_background.html#the-bindcraft-loss-function",
+    "href": "bindcraft_background.html#the-bindcraft-loss-function",
+    "title": "BindCraft Background",
+    "section": "The BindCraft loss function",
+    "text": "The BindCraft loss function\nIt’s instructive to look at what goes into the BindCraft loss function that guides the trajectory and generates the initial design. We have weighted terms that drive the confidence of the binder and confidence of the interface, as well as encouraging more non-helical secondary structure and a more compact radius of gyration.\n\\[\\begin{align}\nℒ &= 0.1⋅(1−pLDDT) \\nonumber \\\\\n  &\\quad + 0.05⋅ipTM \\nonumber \\\\\n  &\\quad + 0.4⋅pAE_{binder} \\nonumber \\\\\n  &\\quad + 0.1⋅ipAE_{interchain} \\nonumber \\\\\n  &\\quad + 1.0⋅hotspot\\_contact_{loss} \\nonumber \\\\\n  &\\quad + 0.3⋅radius_{gyr} \\nonumber \\\\\n  &\\quad - 0.3⋅helicity_{loss}\n\\end{align}\\]",
     "crumbs": [
       "BindCraft",
       "BindCraft Background"
@@ -334,7 +345,7 @@
     "href": "introduction.html",
     "title": "Introduction",
     "section": "",
-    "text": "Introduction\n\n\n\n\nReuseCC BY 4.0",
+    "text": "Introduction\nPost-Alphafold2, new deep learning methods in de novo protein design have emerged with unprecedented success rates for folding and activity generated sequences.\nThis workshop aims to explore one key design goal - generating small proteins in silico that bind to a target protein with high affinity and specificity.\nWe will use two leading methods - one based on RFdiffusion, one and using BindCraft.\n\n\nScores, so many scores\nIt’s worth recapping many of the different scores that Alphafold (and other related structure prediction tools) generally use to assess confidence, since these are also key scores that are used for generating and filtering de novo binder designs.\n\npLDDT - predicted “local distance test”\n\nbased on the lDDT-Cα score for comparing local Cα distances between predicted and experimental structures\n‘Real’ lDDT-Cα scores are based on the average fraction of preserved distances between each Cα atom in four distance thresholds of 0.5 Å, 1 Å, 2 Å, and 4 Å\nAlphafold2 was trained to predict lDDT-Cα as a measure of local confidence by using real lDDT values between ground truth experimental structures and its predictions.\n\n\n\n\n\n\n\nNotepLDDT Interpretation\n\n\n\nRange: 0 → 100 (or sometimes expressed as 0.0 → 1.0).\nHigher is more confident.\n\n\n\n\nPAE - predicted aligned error\n\nthe confidence in the relative position of each residue pair in the predicted structure, measured in Ångströms (Å)\nthe expected positional error at residue X, if the predicted and ground truth structures were aligned on residue Y.\nUsually visualized as a 2D heatmap of the predicted aligned error for each residue pair.\n\n\n\n\n\n\n\nNotePAE Interpretation\n\n\n\nRange: 0.0 → ~30 Å (Ångströms)\nNot a single value, but often averaged over groups of residue pairs (intra or inter-chain).\nLower suggests a more accurate prediction.\n\n\n\n\npae_interaction - inter-chain predicted aligned error\n\nsometimes called iPAE, or i_pAE\nThe average PAE score for inter-chain residue pairs in the PAE matrix, between target and binder.\nEg, the average pAE every pair that is not and intra-domain PAE score.\na measure of confidence in the relative arrangement of the target and binder.\n\n\n\n\n\n\n\nNotepae_interaction Interpretation\n\n\n\nRange: 0.0 → 100 (or sometimes expressed as 0.0 → 1.0).\nHigher is more confident.\n\n\n\n\n\n\n\n\n\n\nPAE Matrix for pae_interaction\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nResidue Index (Rows)\n0\nBinder\nTarget\n\n\nResidue Index (Columns)\n0\nBinder\nTarget\n\n\nIntra-Binder PAE\npae_interaction1\npae_interaction2\nIntra-Target PAE\n\n\n\n  \n    paeinteraction = mean( paeinteraction1 + paeinteraction2 )\n  \n\n\n\n\n\n\nthe ‘other’ iPAE\n\nothers have used the name iPAE defined as the median PAE of interface residues (where interface residues are those &lt; 3.5 Å from the binding partner).\nthe tools in the workshop don’t use this score\n\n\n\n\npTM - predicted template modelling (TM) score\n\nan overall measure of structure accuracy - Alphafold2 (ptm) models, and Alphafold Multimer models, are trained to predict TM-score between the predicted and experimental structures.\nThe original non-predicted TM-score is based on the C\\(\\alpha\\) distances between the predicted and experimental structures, with poorly superimposing C\\(\\alpha\\) atoms downweighted, and a scaling factor to normalise for the length of the protein (for the best superimposition, that maximises the TM-score).\nTM-score is less sensitive to outliers than RMSD (flexible loops and tails have a smaller impact), and independent of protein length\n\n\n\n\n\n\n\nNotepTM Interpretation\n\n\n\nRange: 0.0 → 1.0\nHigher is more confident - \\(&lt; ~0.17\\) is completely random\n\n\\(&gt; 0.5\\) is likely the same fold\n\\(1.0\\) is an identical structure ```\n\n\n\n\n\nipTM - interface predicted template modelling (TM) score\n\nlike the pTM score, but considers only pairs of residues between chains, not within chains (inter-chain pairs only)\na measure of confidence in the relative arrangement of the target and binder.\n\n\n\n\n\n\n\nNoteipTM Interpretation\n\n\n\nRange: 0.0 → 1.0\nHigher is more confident\n\n\\(&gt; 0.6\\), might be a real complex\n\\(&gt; 0.8\\), probably a real complex\n\n\n\n\n\nC\\(\\alpha\\)-RMSD - root mean square deviation of C\\(\\alpha\\) atoms\n\ncalculated between two superimposed structures\ncan be sensitive to outliers (flexible loops and tails), but often outliers are excluded from the calculation (eg ChimeraX ‘matchmaker’ reports RMSD values for ‘pruned’ and ‘all’ pairs of atoms)\ndepends non-linearly on protein length (longer proteins will tend to have higher RMSD values)\n\n\n\n\n\n\n\nNoteRMSD (C\\(\\alpha\\)) Interpretation\n\n\n\nRange: 0.0 → … ∞ ?\nLower is more confident\n\n\n\n\n\n\n\n\n\nTipPredicting affinity\n\n\n\nTo date, none of these scores (or others) have been found to strongly associate with binding affinity in the high affinity ranges (≫10 μM) we are usually interested in.\nMany do tend to associate with boolean binding/non-binding (eg predicting less than or greater than 10 μM affinity), so they are still useful for guiding and filtering designs in silico.\n\n\n\n\n\nResources\n\nEBI Alphafold tutorial: good practical overviews of pLDDT, PAE, TM, pTM, ipTM.\n\n\n\n\n\nReuseCC BY 4.0",
     "crumbs": [
       "Workshop",
       "Introduction"
@@ -385,29 +396,7 @@
     "href": "rfdiffusion_scoring.html",
     "title": "RFdiffusion : analysing a full design run",
     "section": "",
-    "text": "TODO: A “here’s one we prepared earlier” section, with the results of a ~1000 trajectory nf-binder-design RFDiffusion run for PDL1.",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion : analysing a full design run"
-    ]
-  },
-  {
-    "objectID": "rfdiffusion_scoring.html#what-is-plddt",
-    "href": "rfdiffusion_scoring.html#what-is-plddt",
-    "title": "RFdiffusion : analysing a full design run",
-    "section": "What is pLDDT ?",
-    "text": "What is pLDDT ?\n\nTODO: Alphafold2 pLDDT (also include original LDDT paper citation)",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion : analysing a full design run"
-    ]
-  },
-  {
-    "objectID": "rfdiffusion_scoring.html#what-is-pae-and-pae-interaction",
-    "href": "rfdiffusion_scoring.html#what-is-pae-and-pae-interaction",
-    "title": "RFdiffusion : analysing a full design run",
-    "section": "What is PAE, and PAE interaction ?",
-    "text": "What is PAE, and PAE interaction ?\n\nTODO: Alphafold2 PAE, relationship to pTM, and ipTM ?",
+    "text": "“Here’s one we prepared earlier” - 500 designs using the RFdiffusion binder design workflow of nf-binder-design are in /scratch2/pd27/shared/examples/nfbd/pdl1-rfd.",
     "crumbs": [
       "RFdiffusion (& ProteinMPNN)",
       "RFdiffusion : analysing a full design run"
@@ -473,18 +462,7 @@
     "href": "bindcraft_exercise.html#recommendations",
     "title": "BindCraft Exercise",
     "section": "Recommendations",
-    "text": "Recommendations\n\nChoose some hotspots based on the strategies we’ve learned.\nRun between 100 and 300 trajectories (--bindcraft_n_traj 300) to assess the ‘acceptance rate’\n\nIf you are getting a reasonable acceptance rate, &gt; ~%1, do a second run setting --bindcraft_n_traj to a value that should generate ~100 accepted designs\nIf you are getting less than ~1% acceptance rate, you may need to change your hotspots, modify target trimming or use a different target structure, or (cautiously) use advanced presets.\n\n\nThe percentage acceptance rate is:\n\\[\\text{Acceptance Rate} = 100 \\times \\frac{n_{\\text{accepted}}}{N_{\\text{traj}}}\\]\nwhere:\n\n\\(n_{\\text{accepted}}\\) = number of accepted designs (excluding MPNN duplicates)\n\\(N_{\\text{traj}}\\) = total number of trajectories\n\nAs a guide, the BindCraft authors recommend generating ~100 ‘accepted’ designs and choosing the best 20 for experimental assay. ‘Best’ is likely highest Average_i_pTM, but you may also choose additional criteria based on what you know about the target or biology.",
-    "crumbs": [
-      "BindCraft",
-      "BindCraft Exercise"
-    ]
-  },
-  {
-    "objectID": "bindcraft_exercise.html#resources",
-    "href": "bindcraft_exercise.html#resources",
-    "title": "BindCraft Exercise",
-    "section": "Resources",
-    "text": "Resources\n\nThe official BindCraft (wiki) docs: De novo binder design with BindCraft",
+    "text": "Recommendations\n\nChoose some hotspots based on the strategies we’ve learned.\nRun between 100 and 300 trajectories (--bindcraft_n_traj 300) to assess the ‘acceptance rate’\n\nIf you are getting a reasonable acceptance rate, &gt; ~%1, do a second run setting --bindcraft_n_traj to a value that should generate ~100 accepted designs\nIf you are getting less than ~1% acceptance rate, you may need to change your hotspots, modify target trimming or use a different target structure, or (cautiously) use advanced presets.\n\n\nThe percentage acceptance rate is:\n\\[\\text{Acceptance Rate} = 100 \\times \\frac{n_{\\text{accepted}}}{N_{\\text{traj}}}\\]\nwhere:\n\n\\(n_{\\text{accepted}}\\) = number of accepted designs\n\\(N_{\\text{traj}}\\) = total number of trajectories\n\n\n(From my interpretation of the BindCraft source code, when using the default \"max_mpnn_sequences\": 2, the maximum acceptance rate is 200% ¯\\_(ツ)_/¯ )\n\nAs a guide, the BindCraft authors recommend generating ~100 ‘accepted’ designs and choosing the best 20 for experimental assay. ‘Best’ is likely highest Average_i_pTM, but you may also choose additional criteria based on what you know about the target or biology.",
     "crumbs": [
       "BindCraft",
       "BindCraft Exercise"
@@ -528,7 +506,7 @@
     "href": "experimental_validation.html#expected-experimental-hit-rates",
     "title": "Experimental Validation",
     "section": "Expected experimental ‘hit’ rates",
-    "text": "Expected experimental ‘hit’ rates\n\nTODO: How do we define successful binding ? (eg Kd &lt;= 10uM ?)\n\n\nTODO: What is the typical % of successful experimental hits, given typical in silico scoring thresholds ? Show BindCraft and RFDiffusion published success rates.\n\nRFDiffusion with published in silico scoring thresholds, has a success rate of between 7% to 35% (depending on the target).\nBindCraft has published success rate of between 10% to 100% (depending on the target).",
+    "text": "Expected experimental ‘hit’ rates\nHow do we define successful binding ? A typical definition used is Kd &lt;= 10uM.\nRFDiffusion with published in silico scoring thresholds, has a success rate of between 7% to 35% (depending on the target).\nBindCraft has published success rate of between 10% to 100% (depending on the target).",
     "crumbs": [
       "Next steps",
       "Experimental Validation"
