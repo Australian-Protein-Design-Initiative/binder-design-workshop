@@ -216,13 +216,34 @@ Rather than cobble something together, we suggest you use [`nf-binder-design`](h
 
 ## De novo binders against PDL1 with nf-binder-design
 
-Here's our example above, using the nf-binder-design RFdiffusion workflow:
+Here's our example above, using the nf-binder-design RFdiffusion workflow.
+
+First create a directory for our work and copy the PDL1 PDB file to it:
 
 ```bash
-# Load the nextflow module that is pre-installed on the M3 HPC cluster - any recent version from the last ~12 months should work
+mkdir -p /scratch2/pd27/users/${USER}/exercises/rfd-nfbd/input
+cd /scratch2/pd27/users/${USER}/exercises/rfd-nfbd
+cp ../rfd/input/PDL1.pdb input/
+```
+
+Now we are ready to run the pipeline:
+
+```bash
+# Load the nextflow module that is pre-installed on the M3 HPC cluster
+# Any recent version from the last ~12 months should work
 module load nextflow/24.04.3 
 
-nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design  \
+# Nextflow automatically downloads containers for the software automatically.
+# To save some time, the containers for the pipeline have been pre-cached for the workshop.
+# We set these environment variables to point to the Apptainer cache location.
+# Outside the workshop, this would be somewhere on your scratch space 
+# (don't use your /home directory - it will go over quota !)
+# You might add exports like this to your ~/.bashrc
+export NXF_APPTAINER_CACHEDIR=/scratch2/pd27/shared/containers
+export APPTAINER_CACHEDIR=$NXF_APPTAINER_CACHEDIR
+unset NXF_SINGULARITY_CACHEDIR
+
+nextflow run Australian-Protein-Design-Initiative/nf-binder-design \
   --input_pdb 'input/*.pdb' \
   --outdir results \
   --contigs "[A18-132/0 65-120]" \
@@ -243,7 +264,7 @@ nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design  \
 You can see all the options available with:
 
 ```bash
-nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design --help
+nextflow run Australian-Protein-Design-Initiative/nf-binder-design --help
 ```
 
 ::: {.callout-tip}
@@ -259,6 +280,6 @@ process {
 }
 ```
 
-`-r 0.1.4` above specifies the 'release' to run (version 0.1.4 in this case). If you omit this, you'll get the latest development version - keep in mind some settings might change between versions.
+Note the use of `'` single quotes and escaped `\"` double quotes - this is important to ensure the string is passed correctly to the RFdiffusion command.
 
 :::

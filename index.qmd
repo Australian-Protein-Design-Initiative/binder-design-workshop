@@ -25,3 +25,7 @@ format:
 | 4:45 | End 🎉 |
 
 ----
+
+# Acknowledgements
+
+Many thanks to Monash eResearch HPC team for providing the compute resources and associated support for this workshop.

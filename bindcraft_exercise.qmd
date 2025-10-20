@@ -78,7 +78,11 @@ In practice, rather than running a single BindCraft run, you will probably want 
 # Load the nextflow module that is pre-installed on the M3 HPC cluster
 module load nextflow/24.04.3
 
-nextflow run -r 0.1.4 Australian-Protein-Design-Initiative/nf-binder-design/bindcraft.nf \
+export NXF_APPTAINER_CACHEDIR=/scratch2/pd27/shared/containers
+export APPTAINER_CACHEDIR=$NXF_APPTAINER_CACHEDIR
+unset NXF_SINGULARITY_CACHEDIR
+
+nextflow run Australian-Protein-Design-Initiative/nf-binder-design/bindcraft.nf \
   --input_pdb 'input/PDL1.pdb' \
   --outdir results \
   --target_chains "A" \
