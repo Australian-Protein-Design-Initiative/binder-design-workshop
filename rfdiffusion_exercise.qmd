@@ -34,6 +34,12 @@ cd /scratch2/pd27/users/${USER}
 
 mkdir -p exercises/rfd/input
 cd exercises/rfd
+
+# check your working directory
+pwd
+
+# see what files and directories you have so far
+tree -L 2
 ```
 
 Upload your trimmed PDL1 PDB file to `/scratch2/pd27/users/${USER}/exercises/rfd/input/PDL1.pdb` (using `rsync`, `scp` or your preferred method).
@@ -76,7 +82,7 @@ On a T4 GPU, this takes about ~8 minutes (~2 minutes per design).
 ### Watching GPU utilization with `nvitop`
 
 ```bash
-module load nvitop/1.3.2
+module load nvitop
 # (nvitop is also pip-installable)
 
 nvitop
@@ -224,6 +230,12 @@ First create a directory for our work and copy the PDL1 PDB file to it:
 mkdir -p /scratch2/pd27/users/${USER}/exercises/rfd-nfbd/input
 cd /scratch2/pd27/users/${USER}/exercises/rfd-nfbd
 cp ../rfd/input/PDL1.pdb input/
+
+# check your working directory
+pwd
+
+# see what files and directories you have so far
+tree -L 2
 ```
 
 Now we are ready to run the pipeline:
