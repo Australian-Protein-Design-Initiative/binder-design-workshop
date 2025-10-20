@@ -69,7 +69,24 @@ run_inference.py \
   denoiser.noise_scale_frame=0
 ```
 
-> Note that this version of the workshop it tailored for the M3 HPC cluster where we've pre-installed each tool as a `module`. If you are running this on a different system, you will need to adapt these commands to use the Apptainer containers less transparently - see [Appendix:Running the Apptainer containers on any system](non_m3_snippets.qmd).
+On a T4 GPU, this takes about ~8 minutes (~2 minutes per design).
+
+> Note that this version of the workshop is tailored for the M3 HPC cluster where we've pre-installed each tool as a `module`. If you are running this on a different system, you will need to adapt these commands to use the Apptainer containers less transparently - see [Appendix: Running the Apptainer containers on any system](non_m3_snippets.qmd).
+
+### Watching GPU utilization with `nvitop`
+
+```bash
+module load nvitop/1.3.2
+# (nvitop is also pip-installable)
+
+nvitop
+
+# a more bare-bones version that is usually always installed when an NVIDIA GPU is present is
+# nvidia-smi -l 10
+```
+
+Open a second terminal on your compute node where RFdiffusion is running and watch the GPU utilization with `nvitop`.
+
 
 ### RFdiffusion options
 
@@ -105,6 +122,8 @@ If a segment does not have a chain ID specfied, like `65-120`, this is treated a
 
 ### Challenge - defining contigs
 
+If we used the full original `3BIK.pdb` PDB file instead of manually trimming our coordinates in ChimeraX/Pymol/Vim, what contig expression could we use to 'virtually' trim to our domain of interest ?
+
 How would we generate binders to our PDL1 domain that are **exactly** 100 residues long ?
 
 :::
@@ -112,18 +131,18 @@ How would we generate binders to our PDL1 domain that are **exactly** 100 residu
 You can see the full list of configuration options for RFdiffusion with:
 
 ```bash
-$PREFIX /app/RFdiffusion/scripts/run_inference.py --help
+run_inference.py --help
 ```
 
-... most should probably be left as the defaults. 
+... most should usually be left as the defaults. 
 
-Some, like `inference.ckpt_override_path` are automatically set for you to select the correct model weights based on other config options in use.
+Some, like `inference.ckpt_override_path` are automatically set to select the correct model weights based on other config options in use.
 
 For binder design, manually setting `inference.ckpt_override_path=/models/rfdiffusion/Complex_beta_ckpt.pt` can be useful to increase the beta-strand content of designs (this model is reportedly less well tested - YMMV !).
 
 ::: {.callout-info}
 
-`/models/rfdiffusion/` corresponds to the path where your RFdiffusion model weights were downloaded to - `/models/rfdiffusion/` is a valid path in the context of the containers we are using here but may be different for other installations of RFdiffusion.
+> `/models/rfdiffusion/` corresponds to the path where your RFdiffusion model weights were downloaded to - `/models/rfdiffusion/` is a valid path in the context of the containers (and M3 module) we are using here but may be different for other installations of RFdiffusion.
 
 :::
 
@@ -146,7 +165,7 @@ module load dl_binder_design/.cafa385
 mkdir -p output/proteinmpnn
 
 dl_interface_design.py \
-    -pdbdir input/ \
+    -pdbdir output/rfdiffusion/ \
     -relax_cycles 0 \
     -seqs_per_struct 2 \
     -outpdbdir output/proteinmpnn/ \
@@ -159,6 +178,8 @@ Other useful options:
 - `-temperature`
 - `-augment_eps`
 
+
+ProteinMPNN detects the GPU on our compute node, but it isn't appreciably faster on GPU - if running in a separate job, no need to waste a GPU for this.
 
 ## Alphafold2 initial guess - scoring by prediction
 
@@ -180,6 +201,8 @@ predict.py \
     -recycle 3 \
     -scorefilename output/af2_initial_guess/pdl1_test.scores.cs
 ```
+
+On a T4 GPU, each AF2 initial guess structure for these complexes takes ~1.3 mins each (~10 min total), on average.
 
 # nf-binder-design : putting it all together
 
