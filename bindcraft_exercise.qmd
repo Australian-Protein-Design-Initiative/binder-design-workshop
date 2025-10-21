@@ -50,7 +50,7 @@ Normally you'd like to generate more than a single design (maybe `"number_of_fin
 module load bindcraft/.05702c4
  
 bindcraft.py \
-    --settings settings.json
+    --settings settings.json \
     --filters /app/BindCraft/settings_filters/default_filters.json \
     --advanced /app/BindCraft/settings_advanced/default_4stage_multimer.json
 ```
@@ -85,6 +85,20 @@ We will focus on understanding the key outputs here in the next section.
 
 In practice, rather than running a single BindCraft run, you will probably want to run multiple BindCraft runs in parallel across multiple GPUs to speed things up. We've added simple BindCraft support to `nf-binder-design` so you more easily run multiple BindCraft runs in parallel on an HPC cluster.
 
+First, let's create a directory for our `nf-binder-design` work and copy the `PDL1.pdb` file to it:
+```bash
+mkdir -p /scratch2/pd27/users/${USER}/exercises/bindcraft-nfbd/input
+cd /scratch2/pd27/users/${USER}/exercises/bindcraft-nfbd
+cp ../bindcraft/input/PDL1.pdb input/
+
+# check your working directory
+pwd
+
+# see what files and directories you have so far
+tree -L 2
+```
+
+Now load the nextflow module, and run the pipeline. We ensure the `APPTAINER_CACHEDIR` is correctly set for the workshop:
 ```bash
 # Load the nextflow module that is pre-installed on the M3 HPC cluster
 module load nextflow/24.04.3
