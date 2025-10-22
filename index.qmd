@@ -15,7 +15,7 @@ format:
 
 | Time | Event |
 |------|-------|
-| 1:00 | Welcome and introduction |
+| 1:00 | Welcome, introduction and setup |
 | 1:30 | RFdiffusion |
 | 2:30 | Break |
 | 2:45 | BindCraft |
@@ -26,6 +26,22 @@ format:
 
 ----
 
+::: {.callout-caution}
+
+### Challenge - 3 mins - introduce yourself !
+
+Within your table, fairly rapidly, introduce yourself:
+
+- Name ?
+- What do you do ?
+- What are you watching on `<insert streaming service>` at the moment ?
+
+:::
+
+----
+
 # Acknowledgements
 
 Many thanks to Monash eResearch HPC team for providing the compute resources and associated support for this workshop.
+
+Thankyou to the extrodinary effort of the workshop team and helpers in making this workshop happen.

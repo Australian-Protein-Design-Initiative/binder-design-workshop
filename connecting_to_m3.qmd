@@ -1,0 +1,41 @@
+---
+title: "Connecting to the M3 HPC cluster"
+format:
+  html:
+    license: CC BY
+    embed-resources: true
+---
+
+We will use [M3 "Strudel" Remote Desktops](https://m3-desktop.erc.monash.edu/) ([docs](https://docs.erc.monash.edu/M3/Strudel/RemoteDesktops)) today, so everyone gets their own GPU on a compute node. We will run everything on that compute node, rather than submitting additional jobs to the SLURM queue.
+
+- Login at [https://m3-desktop.erc.monash.edu/](https://m3-desktop.erc.monash.edu/)
+  - Choose "M3 with AAF login"
+    - If you M3 account is associated with an institutional email address, use the orange AAF login button
+    - If your M3 account is associated with a Google/gmail address, use the Google login button
+
+- Select **VS Code Server** in the sidebar.
+- Select **T4**, **4 hours**. 
+- Edit the **"Advanced Options"** and add: `--reservation=oct27workshop` to the SBATCH command.
+- Press **Launch**.
+- Wait a few seconds, then press **"Connect"** under the "Pending/Running VS Code Servers" section.
+  - Watch out for popup window blocking from the browser - allow the popup if it was blocked
+
+Once you have the VS Code session running, click on the _'two bits of paper'_ icon in the sidebar, click Open Folder, and enter `/scratch2/pd27/`.
+
+You can open a new Terminal with `` Ctrl+Shift+` `` (backtick), or find "Terminal -> New Terminal" in the hamburger menu.
+
+Install these VS Code extensions (the _'four squares'_ icon in the sidebar, or press `Ctrl+Shift+X`):
+
+- Protein Viewer ( `ArianJamasb.protein-viewer` ) - Molstar inside vscode
+- "CSV" ( `ReprEng.csv` )
+- Rainbow CSV ( `mechatroner.rainbow-csv` )
+- Live Preview ( `ms-vscode.live-server` )
+
+![Suggested vscode extensions](assets/images/vscode-extensions.png)
+
+Now let's create your user directory where you'll work today. In the Terminal, run:
+
+```bash
+mkdir -p /scratch2/pd27/users/${USER}
+cd /scratch2/pd27/users/${USER}
+```

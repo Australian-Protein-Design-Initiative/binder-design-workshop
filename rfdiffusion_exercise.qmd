@@ -16,7 +16,6 @@ Then, we will run the `nf-binder-design` workflow that combines these steps into
 ## The target
 
 
-
 {{< mol-url ./exercises/rfd/input/PDL1.pdb layoutShowSequence=true layoutShowLeftPanel=false >}}
 
 _(press the spanner icon to see the sequence, )_

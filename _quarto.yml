@@ -6,11 +6,13 @@ project:
     - "assets/**"
   render:
     - index.qmd
+    - connecting_to_m3.qmd
     - introduction.qmd
     - structure_prediction.qmd
     - target_preparation.qmd
     - rfdiffusion_background.qmd
     - rfdiffusion_exercise.qmd
+    - scores.qmd
     - rfdiffusion_scoring.qmd
     - bindcraft_background.qmd
     - bindcraft_exercise.qmd
@@ -32,6 +34,7 @@ website:
       - section: "Workshop"
         contents:
           - index.qmd
+          - connecting_to_m3.qmd
           - introduction.qmd
       - section: "Target Preparation"
         contents:
@@ -40,6 +43,7 @@ website:
         contents:
           - rfdiffusion_background.qmd
           - rfdiffusion_exercise.qmd
+          - scores.qmd
           - rfdiffusion_scoring.qmd
       - section: "BindCraft"
         contents:

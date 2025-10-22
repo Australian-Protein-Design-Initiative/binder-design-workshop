@@ -44,7 +44,9 @@ We want to use PD-L1 (chain A) as our target and block the binding of PD-1 (chai
 
 Propose a truncated version of PD-L1 (chain A) we could use to design a _de novo_ binder against.
 
-(Save the truncated coordinates as `PDL1.pdb`)
+> You can use ChimeraX/Pymol/whatever if you have it, or just edit the PDB file in a text editor to keep just the `ATOM` records for the chain and residue ranges you want to keep.
+
+Save the truncated coordinates as `PDL1.pdb`
 
 :::
 

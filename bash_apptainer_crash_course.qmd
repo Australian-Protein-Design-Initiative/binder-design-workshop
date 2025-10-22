@@ -24,6 +24,9 @@ Here's a crash course.
 Setting your cache path - this is where Apptainer will download container images to:
 ```bash
 export APPTAINER_CACHEDIR=$HOME/.apptainer/apptainer_cache
+
+# Side note: Nextflow can use it's own environment variable for the Apptainer cache
+# export NXF_APPTAINER_CACHEDIR=$APPTAINER_CACHEDIR
 ```
 
 Downloading a container image:

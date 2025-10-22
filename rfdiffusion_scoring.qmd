@@ -8,6 +8,8 @@ format:
 
 "Here's one we prepared earlier" - 500 designs using the RFdiffusion binder design workflow of `nf-binder-design` are in `/scratch2/pd27/shared/examples/nfbd/pdl1-rfd`.
 
+::: {.callout-caution}
+
 ### Challenge - viewing the RFdiffusion pipeline results
 
 View the table `combined_scores.tsv` - how many designs are have a favourable `pae_interaction` score ?
@@ -17,10 +19,15 @@ How about `plddt_binder` ?
 
 # Design run summary and scoring
 
+Designs with scores:
+
 - `pae_interaction < 10`
 - binder `pLDDT > 80`
 
-> TODO: Shift scores recap from introduction.qmd into here ?
+are considered to have a higher chance of binding (at <10μM).
+
+You may use additional criteria, but these two scores are the primary filters for selecting and ranking designs.
+
 
 ## Other scores
 
@@ -28,13 +35,15 @@ How about `plddt_binder` ?
 
 # Binder monomer prediction, complex re-prediction
 
-Alphafold 'initial guess' is useful because it's much faster than the full Alphafold workflow for efficiently filtering and ranking designs. However, it makes compromises in accuracy and can be biased but the provided complex structure used as a starting point.
+Alphafold 'initial guess' is useful because it's much faster than the full Alphafold workflow for efficiently filtering and ranking designs. However, it makes compromises in accuracy and can be biased by the provided complex structure used as a starting point.
 
 The final step that we've not applied in this workshop is 'full' structure prediction using using Alphafold (2, or 3, or another predictor such as Boltz-2). Generally, we want to predict, from sequence alone:
 
 - a re-prediction of the complex structure
 
 - the binder monomer structure
+
+If the target was 'unnaturally' trimmed, the complex re-prediction is best done with a complete target domain.
 
 ### Why predict the binder monomer (from sequence alone) ?
 

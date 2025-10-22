@@ -17,7 +17,7 @@ Hallucination with the Alphafold2 model as implemented by ColabDesign.
 
 The trajectory is split into four stages, where in each stage the probability distribution of the sequence at each position predicted by the Alphafold2 model is made increasingly discrete.
 
-ie, we go from 'fuzzy' this many possible residues at a position, to fixing on the highest probability residue.
+ie, we go from a 'fuzzy' sequence with many possible residues at a position, to fixing on the highest probability residue.
 
 ![From Martin Pacesa and Lennart Nickel's presentation https://www.youtube.com/watch?v=u5yijcBsonw](assets/images/bindcraft_traj_stages.png)
 
