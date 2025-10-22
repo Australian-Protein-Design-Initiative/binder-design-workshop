@@ -4011,6 +4011,12 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./connecting_to_m3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Connecting to the M3 HPC cluster</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
@@ -4053,6 +4059,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="./rfdiffusion_exercise.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">RFdiffusion Exercise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scores.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scores for assessing predicted structures</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -4183,20 +4195,28 @@ window.Quarto = {
 
 
 <p>“Here’s one we prepared earlier” - 500 designs using the RFdiffusion binder design workflow of <code>nf-binder-design</code> are in <code>/scratch2/pd27/shared/examples/nfbd/pdl1-rfd</code>.</p>
-<section id="challenge---viewing-the-rfdiffusion-pipeline-results" class="level3">
-<h3 class="anchored" data-anchor-id="challenge---viewing-the-rfdiffusion-pipeline-results">Challenge - viewing the RFdiffusion pipeline results</h3>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Challenge - viewing the RFdiffusion pipeline results
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>View the table <code>combined_scores.tsv</code> - how many designs are have a favourable <code>pae_interaction</code> score ? How about <code>plddt_binder</code> ?</p>
-<p>:::</p>
-</section>
+</div>
+</div>
 <section id="design-run-summary-and-scoring" class="level1">
 <h1>Design run summary and scoring</h1>
+<p>Designs with scores:</p>
 <ul>
 <li><code>pae_interaction &lt; 10</code></li>
 <li>binder <code>pLDDT &gt; 80</code></li>
 </ul>
-<blockquote class="blockquote">
-<p>TODO: Shift scores recap from introduction.qmd into here ?</p>
-</blockquote>
+<p>are considered to have a higher chance of binding (at &lt;10μM).</p>
+<p>You may use additional criteria, but these two scores are the primary filters for selecting and ranking designs.</p>
 <section id="other-scores" class="level2">
 <h2 class="anchored" data-anchor-id="other-scores">Other scores</h2>
 <blockquote class="blockquote">
@@ -4206,12 +4226,13 @@ window.Quarto = {
 </section>
 <section id="binder-monomer-prediction-complex-re-prediction" class="level1">
 <h1>Binder monomer prediction, complex re-prediction</h1>
-<p>Alphafold ‘initial guess’ is useful because it’s much faster than the full Alphafold workflow for efficiently filtering and ranking designs. However, it makes compromises in accuracy and can be biased but the provided complex structure used as a starting point.</p>
+<p>Alphafold ‘initial guess’ is useful because it’s much faster than the full Alphafold workflow for efficiently filtering and ranking designs. However, it makes compromises in accuracy and can be biased by the provided complex structure used as a starting point.</p>
 <p>The final step that we’ve not applied in this workshop is ‘full’ structure prediction using using Alphafold (2, or 3, or another predictor such as Boltz-2). Generally, we want to predict, from sequence alone:</p>
 <ul>
 <li><p>a re-prediction of the complex structure</p></li>
 <li><p>the binder monomer structure</p></li>
 </ul>
+<p>If the target was ‘unnaturally’ trimmed, the complex re-prediction is best done with a complete target domain.</p>
 <section id="why-predict-the-binder-monomer-from-sequence-alone" class="level3">
 <h3 class="anchored" data-anchor-id="why-predict-the-binder-monomer-from-sequence-alone">Why predict the binder monomer (from sequence alone) ?</h3>
 <p>If we are aiming for a stable high affinity binder, we typically want the binder monomer to be the same structure when free and bound (binders that undergo conformational changes upon binding are interesting, but typically not what we are chasing here).</p>

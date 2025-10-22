@@ -213,7 +213,7 @@
     "href": "bindcraft_background.html",
     "title": "BindCraft Background",
     "section": "",
-    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign.\nThe trajectory is split into four stages, where in each stage the probability distribution of the sequence at each position predicted by the Alphafold2 model is made increasingly discrete.\nie, we go from ‘fuzzy’ this many possible residues at a position, to fixing on the highest probability residue.\n\n\n\nFrom Martin Pacesa and Lennart Nickel’s presentation https://www.youtube.com/watch?v=u5yijcBsonw\n\n\nThe final ‘semi-greedy’ stage tests the impact of randomly mutating a small fraction of positions (based on a PSSM derived from the sequence logits)",
+    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign.\nThe trajectory is split into four stages, where in each stage the probability distribution of the sequence at each position predicted by the Alphafold2 model is made increasingly discrete.\nie, we go from a ‘fuzzy’ sequence with many possible residues at a position, to fixing on the highest probability residue.\n\n\n\nFrom Martin Pacesa and Lennart Nickel’s presentation https://www.youtube.com/watch?v=u5yijcBsonw\n\n\nThe final ‘semi-greedy’ stage tests the impact of randomly mutating a small fraction of positions (based on a PSSM derived from the sequence logits)",
     "crumbs": [
       "BindCraft",
       "BindCraft Background"
@@ -224,7 +224,7 @@
     "href": "bindcraft_background.html#bindcraft-methodology-overview",
     "title": "BindCraft Background",
     "section": "",
-    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign.\nThe trajectory is split into four stages, where in each stage the probability distribution of the sequence at each position predicted by the Alphafold2 model is made increasingly discrete.\nie, we go from ‘fuzzy’ this many possible residues at a position, to fixing on the highest probability residue.\n\n\n\nFrom Martin Pacesa and Lennart Nickel’s presentation https://www.youtube.com/watch?v=u5yijcBsonw\n\n\nThe final ‘semi-greedy’ stage tests the impact of randomly mutating a small fraction of positions (based on a PSSM derived from the sequence logits)",
+    "text": "Pacesa et al, Nature, 2025 - One-shot design of functional protein binders with BindCraft\n\n\n\nFigure 1a from Pacesa el al 2025 (https://doi.org/10.1038/s41586-025-09429-6) - a high level overview of the BindCraft design pipeline\n\n\nHallucination with the Alphafold2 model as implemented by ColabDesign.\nThe trajectory is split into four stages, where in each stage the probability distribution of the sequence at each position predicted by the Alphafold2 model is made increasingly discrete.\nie, we go from a ‘fuzzy’ sequence with many possible residues at a position, to fixing on the highest probability residue.\n\n\n\nFrom Martin Pacesa and Lennart Nickel’s presentation https://www.youtube.com/watch?v=u5yijcBsonw\n\n\nThe final ‘semi-greedy’ stage tests the impact of randomly mutating a small fraction of positions (based on a PSSM derived from the sequence logits)",
     "crumbs": [
       "BindCraft",
       "BindCraft Background"
@@ -239,6 +239,112 @@
     "crumbs": [
       "BindCraft",
       "BindCraft Background"
+    ]
+  },
+  {
+    "objectID": "scores.html",
+    "href": "scores.html",
+    "title": "Scores for assessing predicted structures",
+    "section": "",
+    "text": "Scores, so many scores\nIt’s worth recapping many of the different scores that Alphafold (and other related structure prediction tools) generally use to assess confidence, since these are also key scores that are used for generating and filtering de novo binder designs.\n\npLDDT - predicted “local distance test”\n\nbased on the lDDT-Cα score for comparing local Cα distances between predicted and experimental structures\n‘Real’ lDDT-Cα scores are based on the average fraction of preserved distances between each Cα atom in four distance thresholds of 0.5 Å, 1 Å, 2 Å, and 4 Å\nAlphafold2 was trained to predict lDDT-Cα as a measure of local confidence by using real lDDT values between ground truth experimental structures and its predictions.\n\n\n\n\n\n\n\nNotepLDDT Interpretation\n\n\n\nRange: 0 → 100 (or sometimes expressed as 0.0 → 1.0).\nHigher is more confident.\n\n\n\n\npAE - predicted aligned error\n\nthe confidence in the relative position of each residue pair in the predicted structure, measured in Ångströms (Å)\nthe expected positional error at residue X, if the predicted and ground truth structures were aligned on residue Y.\nUsually visualized as a 2D heatmap of the predicted aligned error for each residue pair.\n\n\n\n\n\n\n\nNotepAE Interpretation\n\n\n\nRange: 0.0 → ~30 Å (Ångströms)\nNot a single value, but often averaged over groups of residue pairs (intra or inter-chain).\nLower suggests a more accurate prediction.\n\n\n\n\npae_interaction - inter-chain predicted aligned error\n\nsometimes called iPAE, or i_pAE\nThe average PAE score for inter-chain residue pairs in the PAE matrix, between target and binder.\nEg, the average pAE every pair that is not and intra-domain PAE score.\na measure of confidence in the relative arrangement of the target and binder.\nthe ‘other’ iPAE\n\nothers have used the name iPAE defined as the median PAE of interface residues (where interface residues are those &lt; 3.5 Å from the binding partner). The tools in the workshop don’t use this score.\n\n\n\n\n\n\n\n\nNotepae_interaction Interpretation\n\n\n\nRange: 0.0 → 100 (or sometimes expressed as 0.0 → 1.0).\nHigher is more confident.\n\n\n\n\n\n\n\n\n\n\nPAE Matrix for pae_interaction\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nResidue Index (Rows)\n0\nBinder\nTarget\n\n\nResidue Index (Columns)\n0\nBinder\nTarget\n\n\nIntra-Binder PAE\npae_interaction1\npae_interaction2\nIntra-Target PAE\n\n\n\n  \n    paeinteraction = mean( paeinteraction1 + paeinteraction2 )\n  \n\n\n\n\n\n\n\npTM - predicted template modelling (TM) score\n\nan overall measure of structure accuracy - Alphafold2 (ptm) models, and Alphafold Multimer models, are trained to predict TM-score between the predicted and experimental structures.\nthe pTM score is derived from the values in the pAE matrix\nThe original non-predicted TM-score is based on the C\\(\\alpha\\) distances between the predicted and experimental structures, with poorly superimposing C\\(\\alpha\\) atoms downweighted, and a scaling factor to normalise for the length of the protein (for the best superimposition, that maximises the TM-score).\nTM-score is less sensitive to outliers than RMSD (flexible loops and tails have a smaller impact), and independent of protein length\n\n\n\n\n\n\n\nNotepTM Interpretation\n\n\n\nRange: 0.0 → 1.0\nHigher is more confident\n\n\\(&lt; ~0.17\\) is completely random\n\\(&gt; 0.5\\) is likely the same fold\n\\(1.0\\) is an identical structure\n\n\n\n\n\nipTM - interface predicted template modelling (TM) score\n\nlike the pTM score, but considers only pairs of residues between chains, not within chains (inter-chain pairs only)\na measure of confidence in the relative arrangement of the target and binder.\na variant, ipSAE, proposed by Roland Dunbrack, is calculated in a similar way to ipTM but only considers the most confident pAE pairs in the calculation (ef pAE &lt; 10). This reduces the impact of low confidence ‘disordered’ regions on the ipTM score.\n\n\n\n\n\n\n\nNoteipTM Interpretation\n\n\n\nRange: 0.0 → 1.0\nHigher is more confident\n\n\\(&gt; 0.6\\), might be a real complex\n\\(&gt; 0.8\\), probably a real complex\n\n\n\n\n\nC\\(\\alpha\\)-RMSD - root mean square deviation of C\\(\\alpha\\) atoms\n\ncalculated between two superimposed structures - the average distance (Å) between all selected C\\(\\alpha\\) atoms in the two structures\ncan be sensitive to outliers (flexible loops and tails), but often outliers are excluded from the calculation (eg ChimeraX ‘matchmaker’ reports RMSD values for ‘pruned’ and ‘all’ pairs of atoms)\ndepends non-linearly on protein length (longer proteins will tend to have higher RMSD values)\n\n\n\n\n\n\n\nNoteRMSD (C\\(\\alpha\\)) Interpretation\n\n\n\nRange: 0.0 Å → … ∞ Å ?\nLower is more confident\n\n\n\n\n\n\n\n\n\nTipPredicting affinity\n\n\n\nTo date, none of these scores (or others) have been found to strongly associate with binding affinity in the high affinity ranges (&lt;&lt;10 μM) that we are usually interested in.\nMany do tend to associate with boolean binding/non-binding (eg predicting less than or greater than 10 μM affinity), so they are still useful for guiding and filtering designs in silico.\n\n\n\n\n\nResources\n\nEBI Alphafold tutorial: good practical overviews of pLDDT, pAE, TM, pTM, ipTM.\n\n\n\n\n\nReuseCC BY 4.0",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "Scores for assessing predicted structures"
+    ]
+  },
+  {
+    "objectID": "rfdiffusion_background.html",
+    "href": "rfdiffusion_background.html",
+    "title": "RFdiffusion Background",
+    "section": "",
+    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for ‘hallucinating’ the backbone of a designed binder for a target structure\nProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n‘Full’ Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "RFdiffusion Background"
+    ]
+  },
+  {
+    "objectID": "rfdiffusion_background.html#background",
+    "href": "rfdiffusion_background.html#background",
+    "title": "RFdiffusion Background",
+    "section": "",
+    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for ‘hallucinating’ the backbone of a designed binder for a target structure\nProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n‘Full’ Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes",
+    "crumbs": [
+      "RFdiffusion (& ProteinMPNN)",
+      "RFdiffusion Background"
+    ]
+  },
+  {
+    "objectID": "structure_prediction.html",
+    "href": "structure_prediction.html",
+    "title": "Structure prediction",
+    "section": "",
+    "text": "Structure prediction\nOnce sequences have been generated for the backbone design via inverse folding, we want to predict more accurately if this binder sequence is likely to fold into the correct structure.\nThis allows us to assess the quality of the proposed protein-protein interface.\n\nAlphafold scores: pLDDT, PAE, pae_interaction, TM, pTM, ipTM, oh my !\n\nhttps://www.ebi.ac.uk/training/online/courses/alphafold/\n\n\naf2_initial_guess vs. Alphafold2 (vs. ColabFold modes vs. other structure prediction tools)\n\n\n\n\nReuseCC BY 4.0"
+  },
+  {
+    "objectID": "connecting_to_m3.html",
+    "href": "connecting_to_m3.html",
+    "title": "Connecting to the M3 HPC cluster",
+    "section": "",
+    "text": "We will use M3 “Strudel” Remote Desktops (docs) today, so everyone gets their own GPU on a compute node. We will run everything on that compute node, rather than submitting additional jobs to the SLURM queue.\n\nLogin at https://m3-desktop.erc.monash.edu/\n\nChoose “M3 with AAF login”\n\nIf you M3 account is associated with an institutional email address, use the orange AAF login button\nIf your M3 account is associated with a Google/gmail address, use the Google login button\n\n\nSelect VS Code Server in the sidebar.\nSelect T4, 4 hours.\nEdit the “Advanced Options” and add: --reservation=oct27workshop to the SBATCH command.\nPress Launch.\nWait a few seconds, then press “Connect” under the “Pending/Running VS Code Servers” section.\n\nWatch out for popup window blocking from the browser - allow the popup if it was blocked\n\n\nOnce you have the VS Code session running, click on the ‘two bits of paper’ icon in the sidebar, click Open Folder, and enter /scratch2/pd27/.\nYou can open a new Terminal with Ctrl+Shift+` (backtick), or find “Terminal -&gt; New Terminal” in the hamburger menu.\nInstall these VS Code extensions (the ‘four squares’ icon in the sidebar, or press Ctrl+Shift+X):\n\nProtein Viewer ( ArianJamasb.protein-viewer ) - Molstar inside vscode\n“CSV” ( ReprEng.csv )\nRainbow CSV ( mechatroner.rainbow-csv )\nLive Preview ( ms-vscode.live-server )\n\n\n\n\nSuggested vscode extensions\n\n\nNow let’s create your user directory where you’ll work today. In the Terminal, run:\nmkdir -p /scratch2/pd27/users/${USER}\ncd /scratch2/pd27/users/${USER}\n\n\n\nReuseCC BY 4.0",
+    "crumbs": [
+      "Workshop",
+      "Connecting to the M3 HPC cluster"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Protein binder design workshop: RFdiffusion and BindCraft",
+    "section": "",
+    "text": "Important links\n\nTODO: Insert link to shared Google Doc / Slack channel / other in here. The Google doc, editable by all participants, can be used as a jumping off point for other dynamic links and administrative info we may need to update during the workshop (like the VM login details). It can also be used also be used by participants for posting challenge solutions.\n\n\n\nSchedule\n\n\n\nTime\nEvent\n\n\n\n\n1:00\nWelcome, introduction and setup\n\n\n1:30\nRFdiffusion\n\n\n2:30\nBreak\n\n\n2:45\nBindCraft\n\n\n3:45\nBreak\n\n\n4:00\nExperimental validation\n\n\n4:30\nWrap-up and discussion\n\n\n4:45\nEnd 🎉\n\n\n\n\n\n\n\n\n\n\nCautionChallenge - 3 mins - introduce yourself !\n\n\n\nWithin your table, fairly rapidly, introduce yourself:\n\nName ?\nWhat do you do ?\nWhat are you watching on &lt;insert streaming service&gt; at the moment ?\n\n\n\n\n\n\nAcknowledgements\nMany thanks to Monash eResearch HPC team for providing the compute resources and associated support for this workshop.\nThankyou to the extrodinary effort of the workshop team and helpers in making this workshop happen.\n\n\n\n\nReuseCC BY 4.0",
+    "crumbs": [
+      "Workshop",
+      "Protein binder design workshop: RFdiffusion and BindCraft"
+    ]
+  },
+  {
+    "objectID": "introduction.html",
+    "href": "introduction.html",
+    "title": "Introduction",
+    "section": "",
+    "text": "Introduction\nPost-Alphafold2, new deep learning methods in de novo protein design have emerged with unprecedented success rates for folding and activity generated sequences.\nThis workshop aims to explore one key design goal - generating small proteins in silico that bind to a target protein with high affinity and specificity.\nWe will use two leading methods - one based on RFdiffusion, one and using BindCraft.\n\n\n\n\nReuseCC BY 4.0",
+    "crumbs": [
+      "Workshop",
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "target_preparation.html",
+    "href": "target_preparation.html",
+    "title": "Target preparation",
+    "section": "",
+    "text": "So, you want to de novo design a binder for a target protein …",
+    "crumbs": [
+      "Target Preparation",
+      "Target preparation"
+    ]
+  },
+  {
+    "objectID": "target_preparation.html#things-to-consider",
+    "href": "target_preparation.html#things-to-consider",
+    "title": "Target preparation",
+    "section": "Things to consider",
+    "text": "Things to consider\n\nDo I have an experimental structure of the target ?\n\nIs it high quality / well defined in the regions required ?\nIf I don’t have an experimental structure, are computational models (eg Alphafold) reliable for this target - do I believe them based on other data, biology ?\n\nIs this a good experimental/clinical target ?\n\nWhat characteristics should be designed binders have to be better/cheaper/safer/unique relative to existing tools or therapies ?\nIn the assay or biological system, will the target surfaces be accessible, or how will my binder get there ?\n\nHow will produce and test my de novo binders ?\n\nDo I have a reliable medium-high throughput assay ?",
+    "crumbs": [
+      "Target Preparation",
+      "Target preparation"
+    ]
+  },
+  {
+    "objectID": "target_preparation.html#truncation-trimming-cropping",
+    "href": "target_preparation.html#truncation-trimming-cropping",
+    "title": "Target preparation",
+    "section": "Truncation, trimming, cropping",
+    "text": "Truncation, trimming, cropping\n\n“Truncating a target is an art.” – Nathaniel Bennett, RFdiffusion README.md\n\nFor RFdiffusion, runtime scales at O(N^2) where N is the number of residues.\nFor BindCraft, 500 residues (target+binder) uses ~30Gb GPU memory.\nIt is very common, and good practise, to remove parts of the target coordinates to speed up computation of binders, and make better use of in-demand GPU resources. Sometimes truncation is the difference between practical (24G VRAM), possible (A100-80G or GH200-96G) and not (yet) possible ( &gt;141G VRAM on a single device).\n\nTry to keep distinct (sub)domains intact\nTry to avoid exposing the hydrophobic core\nDon’t truncate too close to your proposed binding interface and hotspots\n\n\n\n\n\n\n\nCautionChallenge - truncate PD-L1\n\n\n\nGrab the cooridinates for the PD-1/PD-L1 complex 3BIK (legacy PDB format).\nWe want to use PD-L1 (chain A) as our target and block the binding of PD-1 (chain B).\nPropose a truncated version of PD-L1 (chain A) we could use to design a de novo binder against.\n\nYou can use ChimeraX/Pymol/whatever if you have it, or just edit the PDB file in a text editor to keep just the ATOM records for the chain and residue ranges you want to keep.\n\nSave the truncated coordinates as PDL1.pdb\n\n\n\nHotspot selection\nIn the context of de novo binder design, a ‘hotspot’ is residue on the target that is likely to make favourable interactions with residues on the de novo binder. Hotspots help guide the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on in silico success rates.\nFor RFdiffusion, 3–6 hotspots are recommended (RFdiffusion attempts to put between 0 and 20% of these hotspots, at random, within 10Å of a binder Cβ atom, while making any other contacts that appear statistically plausible to the model).\nFor BindCraft, zero to X hotspots. Starting with a small number (1 - 3 ?) of hotspots is probably best.\nAromatic and hydrophobic residues (F, Y, W, I, L, M) tend to make the best hotspots, but you don’t need to restrict your choices to only these residue types.\n\n\n\n\n\n\nCautionChallenge - PD-L1 hotspots\n\n\n\nLook at the residues at the interface of PD-1/PD-L1 in 3BIK.\nPropose three residues on PD-L1 (chain A) we might choose as hotspots to design a de novo binder to block interaction of PD-1.",
+    "crumbs": [
+      "Target Preparation",
+      "Target preparation"
     ]
   },
   {
@@ -305,90 +411,6 @@
     "crumbs": [
       "RFdiffusion (& ProteinMPNN)",
       "RFdiffusion Exercise"
-    ]
-  },
-  {
-    "objectID": "target_preparation.html",
-    "href": "target_preparation.html",
-    "title": "Target preparation",
-    "section": "",
-    "text": "So, you want to de novo design a binder for a target protein …",
-    "crumbs": [
-      "Target Preparation",
-      "Target preparation"
-    ]
-  },
-  {
-    "objectID": "target_preparation.html#things-to-consider",
-    "href": "target_preparation.html#things-to-consider",
-    "title": "Target preparation",
-    "section": "Things to consider",
-    "text": "Things to consider\n\nDo I have an experimental structure of the target ?\n\nIs it high quality / well defined in the regions required ?\nIf I don’t have an experimental structure, are computational models (eg Alphafold) reliable for this target - do I believe them based on other data, biology ?\n\nIs this a good experimental/clinical target ?\n\nWhat characteristics should be designed binders have to be better/cheaper/safer/unique relative to existing tools or therapies ?\nIn the assay or biological system, will the target surfaces be accessible, or how will my binder get there ?\n\nHow will produce and test my de novo binders ?\n\nDo I have a reliable medium-high throughput assay ?",
-    "crumbs": [
-      "Target Preparation",
-      "Target preparation"
-    ]
-  },
-  {
-    "objectID": "target_preparation.html#truncation-trimming-cropping",
-    "href": "target_preparation.html#truncation-trimming-cropping",
-    "title": "Target preparation",
-    "section": "Truncation, trimming, cropping",
-    "text": "Truncation, trimming, cropping\n\n“Truncating a target is an art.” – Nathaniel Bennett, RFdiffusion README.md\n\nFor RFdiffusion, runtime scales at O(N^2) where N is the number of residues.\nFor BindCraft, 500 residues (target+binder) uses ~30Gb GPU memory.\nIt is very common, and good practise, to remove parts of the target coordinates to speed up computation of binders, and make better use of in-demand GPU resources. Sometimes truncation is the difference between practical (24G VRAM), possible (A100-80G or GH200-96G) and not (yet) possible ( &gt;141G VRAM on a single device).\n\nTry to keep distinct (sub)domains intact\nTry to avoid exposing the hydrophobic core\nDon’t truncate too close to your proposed binding interface and hotspots\n\n\n\n\n\n\n\nCautionChallenge - truncate PD-L1\n\n\n\nGrab the cooridinates for the PD-1/PD-L1 complex 3BIK (legacy PDB format).\nWe want to use PD-L1 (chain A) as our target and block the binding of PD-1 (chain B).\nPropose a truncated version of PD-L1 (chain A) we could use to design a de novo binder against.\n(Save the truncated coordinates as PDL1.pdb)\n\n\n\nHotspot selection\nIn the context of de novo binder design, a ‘hotspot’ is residue on the target that is likely to make favourable interactions with residues on the de novo binder. Hotspots help guide the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on in silico success rates.\nFor RFdiffusion, 3–6 hotspots are recommended (RFdiffusion attempts to put between 0 and 20% of these hotspots, at random, within 10Å of a binder Cβ atom, while making any other contacts that appear statistically plausible to the model).\nFor BindCraft, zero to X hotspots. Starting with a small number (1 - 3 ?) of hotspots is probably best.\nAromatic and hydrophobic residues (F, Y, W, I, L, M) tend to make the best hotspots, but you don’t need to restrict your choices to only these residue types.\n\n\n\n\n\n\nCautionChallenge - PD-L1 hotspots\n\n\n\nLook at the residues at the interface of PD-1/PD-L1 in 3BIK.\nPropose three residues on PD-L1 (chain A) we might choose as hotspots to design a de novo binder to block interaction of PD-1.",
-    "crumbs": [
-      "Target Preparation",
-      "Target preparation"
-    ]
-  },
-  {
-    "objectID": "introduction.html",
-    "href": "introduction.html",
-    "title": "Introduction",
-    "section": "",
-    "text": "Introduction\nPost-Alphafold2, new deep learning methods in de novo protein design have emerged with unprecedented success rates for folding and activity generated sequences.\nThis workshop aims to explore one key design goal - generating small proteins in silico that bind to a target protein with high affinity and specificity.\nWe will use two leading methods - one based on RFdiffusion, one and using BindCraft.\n\n\nScores, so many scores\nIt’s worth recapping many of the different scores that Alphafold (and other related structure prediction tools) generally use to assess confidence, since these are also key scores that are used for generating and filtering de novo binder designs.\n\npLDDT - predicted “local distance test”\n\nbased on the lDDT-Cα score for comparing local Cα distances between predicted and experimental structures\n‘Real’ lDDT-Cα scores are based on the average fraction of preserved distances between each Cα atom in four distance thresholds of 0.5 Å, 1 Å, 2 Å, and 4 Å\nAlphafold2 was trained to predict lDDT-Cα as a measure of local confidence by using real lDDT values between ground truth experimental structures and its predictions.\n\n\n\n\n\n\n\nNotepLDDT Interpretation\n\n\n\nRange: 0 → 100 (or sometimes expressed as 0.0 → 1.0).\nHigher is more confident.\n\n\n\n\nPAE - predicted aligned error\n\nthe confidence in the relative position of each residue pair in the predicted structure, measured in Ångströms (Å)\nthe expected positional error at residue X, if the predicted and ground truth structures were aligned on residue Y.\nUsually visualized as a 2D heatmap of the predicted aligned error for each residue pair.\n\n\n\n\n\n\n\nNotePAE Interpretation\n\n\n\nRange: 0.0 → ~30 Å (Ångströms)\nNot a single value, but often averaged over groups of residue pairs (intra or inter-chain).\nLower suggests a more accurate prediction.\n\n\n\n\npae_interaction - inter-chain predicted aligned error\n\nsometimes called iPAE, or i_pAE\nThe average PAE score for inter-chain residue pairs in the PAE matrix, between target and binder.\nEg, the average pAE every pair that is not and intra-domain PAE score.\na measure of confidence in the relative arrangement of the target and binder.\n\n\n\n\n\n\n\nNotepae_interaction Interpretation\n\n\n\nRange: 0.0 → 100 (or sometimes expressed as 0.0 → 1.0).\nHigher is more confident.\n\n\n\n\n\n\n\n\n\n\nPAE Matrix for pae_interaction\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nResidue Index (Rows)\n0\nBinder\nTarget\n\n\nResidue Index (Columns)\n0\nBinder\nTarget\n\n\nIntra-Binder PAE\npae_interaction1\npae_interaction2\nIntra-Target PAE\n\n\n\n  \n    paeinteraction = mean( paeinteraction1 + paeinteraction2 )\n  \n\n\n\n\n\n\nthe ‘other’ iPAE\n\nothers have used the name iPAE defined as the median PAE of interface residues (where interface residues are those &lt; 3.5 Å from the binding partner).\nthe tools in the workshop don’t use this score\n\n\n\n\npTM - predicted template modelling (TM) score\n\nan overall measure of structure accuracy - Alphafold2 (ptm) models, and Alphafold Multimer models, are trained to predict TM-score between the predicted and experimental structures.\nThe original non-predicted TM-score is based on the C\\(\\alpha\\) distances between the predicted and experimental structures, with poorly superimposing C\\(\\alpha\\) atoms downweighted, and a scaling factor to normalise for the length of the protein (for the best superimposition, that maximises the TM-score).\nTM-score is less sensitive to outliers than RMSD (flexible loops and tails have a smaller impact), and independent of protein length\n\n\n\n\n\n\n\nNotepTM Interpretation\n\n\n\nRange: 0.0 → 1.0\nHigher is more confident - \\(&lt; ~0.17\\) is completely random\n\n\\(&gt; 0.5\\) is likely the same fold\n\\(1.0\\) is an identical structure ```\n\n\n\n\n\nipTM - interface predicted template modelling (TM) score\n\nlike the pTM score, but considers only pairs of residues between chains, not within chains (inter-chain pairs only)\na measure of confidence in the relative arrangement of the target and binder.\n\n\n\n\n\n\n\nNoteipTM Interpretation\n\n\n\nRange: 0.0 → 1.0\nHigher is more confident\n\n\\(&gt; 0.6\\), might be a real complex\n\\(&gt; 0.8\\), probably a real complex\n\n\n\n\n\nC\\(\\alpha\\)-RMSD - root mean square deviation of C\\(\\alpha\\) atoms\n\ncalculated between two superimposed structures\ncan be sensitive to outliers (flexible loops and tails), but often outliers are excluded from the calculation (eg ChimeraX ‘matchmaker’ reports RMSD values for ‘pruned’ and ‘all’ pairs of atoms)\ndepends non-linearly on protein length (longer proteins will tend to have higher RMSD values)\n\n\n\n\n\n\n\nNoteRMSD (C\\(\\alpha\\)) Interpretation\n\n\n\nRange: 0.0 → … ∞ ?\nLower is more confident\n\n\n\n\n\n\n\n\n\nTipPredicting affinity\n\n\n\nTo date, none of these scores (or others) have been found to strongly associate with binding affinity in the high affinity ranges (≫10 μM) we are usually interested in.\nMany do tend to associate with boolean binding/non-binding (eg predicting less than or greater than 10 μM affinity), so they are still useful for guiding and filtering designs in silico.\n\n\n\n\n\nResources\n\nEBI Alphafold tutorial: good practical overviews of pLDDT, PAE, TM, pTM, ipTM.\n\n\n\n\n\nReuseCC BY 4.0",
-    "crumbs": [
-      "Workshop",
-      "Introduction"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Protein binder design workshop: RFdiffusion and BindCraft",
-    "section": "",
-    "text": "Important links\n\nTODO: Insert link to shared Google Doc / Slack channel / other in here. The Google doc, editable by all participants, can be used as a jumping off point for other dynamic links and administrative info we may need to update during the workshop (like the VM login details). It can also be used also be used by participants for posting challenge solutions.\n\n\n\nSchedule\n\n\n\nTime\nEvent\n\n\n\n\n1:00\nWelcome and introduction\n\n\n1:30\nRFdiffusion\n\n\n2:30\nBreak\n\n\n2:45\nBindCraft\n\n\n3:45\nBreak\n\n\n4:00\nExperimental validation\n\n\n4:30\nWrap-up and discussion\n\n\n4:45\nEnd 🎉\n\n\n\n\n\n\nAcknowledgements\nMany thanks to Monash eResearch HPC team for providing the compute resources and associated support for this workshop.\n\n\n\n\nReuseCC BY 4.0",
-    "crumbs": [
-      "Workshop",
-      "Protein binder design workshop: RFdiffusion and BindCraft"
-    ]
-  },
-  {
-    "objectID": "structure_prediction.html",
-    "href": "structure_prediction.html",
-    "title": "Structure prediction",
-    "section": "",
-    "text": "Structure prediction\nOnce sequences have been generated for the backbone design via inverse folding, we want to predict more accurately if this binder sequence is likely to fold into the correct structure.\nThis allows us to assess the quality of the proposed protein-protein interface.\n\nAlphafold scores: pLDDT, PAE, pae_interaction, TM, pTM, ipTM, oh my !\n\nhttps://www.ebi.ac.uk/training/online/courses/alphafold/\n\n\naf2_initial_guess vs. Alphafold2 (vs. ColabFold modes vs. other structure prediction tools)\n\n\n\n\nReuseCC BY 4.0"
-  },
-  {
-    "objectID": "rfdiffusion_background.html",
-    "href": "rfdiffusion_background.html",
-    "title": "RFdiffusion Background",
-    "section": "",
-    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for ‘hallucinating’ the backbone of a designed binder for a target structure\nProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n‘Full’ Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion Background"
-    ]
-  },
-  {
-    "objectID": "rfdiffusion_background.html#background",
-    "href": "rfdiffusion_background.html#background",
-    "title": "RFdiffusion Background",
-    "section": "",
-    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for ‘hallucinating’ the backbone of a designed binder for a target structure\nProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n‘Full’ Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes",
-    "crumbs": [
-      "RFdiffusion (& ProteinMPNN)",
-      "RFdiffusion Background"
     ]
   },
   {
@@ -517,7 +539,7 @@
     "href": "bash_apptainer_crash_course.html",
     "title": "Foundational skills: Bash shell and Apptainer crash course",
     "section": "",
-    "text": "The Unix shell\nIf you need a refresher on the basics of the Unix shell, there are already great resources available, please see one of:\n\n“The Shell” at Linux Journey\n“Terminal basics” at sandbox.bio\nIntroduction to Unix (at Andrew Robinson / LaTrobe University)\n\n\n\nApptainer\nFor an in-depth workshop, see Reproducible computational environments using containers: Introduction to Apptainer.\nHere’s a crash course.\nSetting your cache path - this is where Apptainer will download container images to:\nexport APPTAINER_CACHEDIR=$HOME/.apptainer/apptainer_cache\nDownloading a container image:\napptainer pull docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\nDownloading a container image to a (large) file anywhere:\napptainer pull bindcraft.sif docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\n… this will create a self-contained file called bindcraft.sif in your current directory. You can run things inside the container like:\napptainer exec bindcraft.sif python --version\nWe will continue to use the image in APPTAIENR_CACHEDIR, instead: rm bindcraft.sif\n\nStarting a shell session ‘inside’ a container:\napptainer shell docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\nThis is useful for ‘exploring’ what’s inside the container. For example, while ‘inside’ the BindCraft container, try:\ncd /app/BindCraft\nls settigns_advanced/\nType exit or press Ctrl-D to return to your regular shell.\n\nRather than writing the image URL every time, docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 every time, let’s set it as a shell variable - this makes the commands below easier to read:\nexport BINDCRAFT_IMAGE=\"docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\"\nRunning a command in a container:\napptainer exec $BINDCRAFT_IMAGE python --version\nMounting (‘binding’) a directory so it’s visible inside a container - eg -B ~/my_data:\napptainer exec -B ~/my_data $BINDCRAFT_IMAGE ls ~/my_data\nMounting (‘binding’) a directory at a different path inside a container - eg -B ~/my_data:/data:\napptainer exec -B ~/my_data:/data $BINDCRAFT_IMAGE ls ~/my_data\nTry to pretend there is no container:\n# Add this to your .bashrc or .zshrc to make it permanent\nalias bindcraft='apptainer exec $BINDCRAFT_IMAGE'\n\nbindcraft --help\n\n\n\n\nReuseCC BY 4.0",
+    "text": "The Unix shell\nIf you need a refresher on the basics of the Unix shell, there are already great resources available, please see one of:\n\n“The Shell” at Linux Journey\n“Terminal basics” at sandbox.bio\nIntroduction to Unix (at Andrew Robinson / LaTrobe University)\n\n\n\nApptainer\nFor an in-depth workshop, see Reproducible computational environments using containers: Introduction to Apptainer.\nHere’s a crash course.\nSetting your cache path - this is where Apptainer will download container images to:\nexport APPTAINER_CACHEDIR=$HOME/.apptainer/apptainer_cache\n\n# Side note: Nextflow can use it's own environment variable for the Apptainer cache\n# export NXF_APPTAINER_CACHEDIR=$APPTAINER_CACHEDIR\nDownloading a container image:\napptainer pull docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\nDownloading a container image to a (large) file anywhere:\napptainer pull bindcraft.sif docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\n… this will create a self-contained file called bindcraft.sif in your current directory. You can run things inside the container like:\napptainer exec bindcraft.sif python --version\nWe will continue to use the image in APPTAIENR_CACHEDIR, instead: rm bindcraft.sif\n\nStarting a shell session ‘inside’ a container:\napptainer shell docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\nThis is useful for ‘exploring’ what’s inside the container. For example, while ‘inside’ the BindCraft container, try:\ncd /app/BindCraft\nls settigns_advanced/\nType exit or press Ctrl-D to return to your regular shell.\n\nRather than writing the image URL every time, docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12 every time, let’s set it as a shell variable - this makes the commands below easier to read:\nexport BINDCRAFT_IMAGE=\"docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12\"\nRunning a command in a container:\napptainer exec $BINDCRAFT_IMAGE python --version\nMounting (‘binding’) a directory so it’s visible inside a container - eg -B ~/my_data:\napptainer exec -B ~/my_data $BINDCRAFT_IMAGE ls ~/my_data\nMounting (‘binding’) a directory at a different path inside a container - eg -B ~/my_data:/data:\napptainer exec -B ~/my_data:/data $BINDCRAFT_IMAGE ls ~/my_data\nTry to pretend there is no container:\n# Add this to your .bashrc or .zshrc to make it permanent\nalias bindcraft='apptainer exec $BINDCRAFT_IMAGE'\n\nbindcraft --help\n\n\n\n\nReuseCC BY 4.0",
     "crumbs": [
       "Appendix",
       "Foundational skills: Bash shell and Apptainer crash course"

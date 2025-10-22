@@ -3907,6 +3907,12 @@ vertical-align: -.125em;
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./connecting_to_m3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Connecting to the M3 HPC cluster</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
@@ -3949,6 +3955,12 @@ vertical-align: -.125em;
   <div class="sidebar-item-container"> 
   <a href="./rfdiffusion_exercise.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">RFdiffusion Exercise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scores.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scores for assessing predicted structures</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -4092,7 +4104,10 @@ vertical-align: -.125em;
 <p>For an in-depth workshop, see <a href="https://carpentries-incubator.github.io/apptainer-introduction/">Reproducible computational environments using containers: Introduction to Apptainer</a>.</p>
 <p>Here’s a crash course.</p>
 <p>Setting your cache path - this is where Apptainer will download container images to:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">APPTAINER_CACHEDIR</span><span class="op">=</span><span class="va">$HOME</span>/.apptainer/apptainer_cache</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">APPTAINER_CACHEDIR</span><span class="op">=</span><span class="va">$HOME</span>/.apptainer/apptainer_cache</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Side note: Nextflow can use it&#39;s own environment variable for the Apptainer cache</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># export NXF_APPTAINER_CACHEDIR=$APPTAINER_CACHEDIR</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Downloading a container image:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">apptainer</span> pull docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Downloading a container image to a (large) file anywhere:</p>
