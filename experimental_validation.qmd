@@ -8,7 +8,7 @@ format:
 
 So, you've designed some _de novo_ binders. You've filtered them based on some _in silico_ scores and other criteria to your preferences and have a ranked set of ~96 sequences.
 
-## Gene synethesis, protein purfication and experimental assays
+## Gene synthesis, protein purfication and experimental assays
 
 What next ? You'll need to consider:
 
