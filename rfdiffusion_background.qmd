@@ -21,6 +21,19 @@ We will start by using the RFdiffusion binder design protocol, as described in t
 This method combines:
 
 - RFdiffusion for 'hallucinating' the backbone of a designed binder for a target structure
+
+<!--
+![Diffusion for binder design, from Figure 2, Yim _et al_ 2024 https://doi.org/10.1002/wcms.1711, CC-BY-NC 4.0](assets/images/diffusion_wcms1711-toc-0001-m.jpg)
+-->
+
+![Diffusion, from Fig 1 of Watson _et al_ 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0](assets/images/watson_diffusion.jpg)
+
+![Generative binder design via denoising, Fig 1 of Watson _et al_ 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0](assets/images/watson_binder_diffusion.jpg)
+
 - ProteinMPNN for 'inverse folding' to generate a sequence for the binder backbone
+
 - Alphafold2 'initial guess' structure prediction to quickly score binders _in silico_ 
+
+![From this presentation https://www.youtube.com/watch?v=828WPIIOwaA by Brian Trippe, Columbia University](assets/images/trippe_rfd_pmpnn_design_protocol.jpg)
+
 - 'Full' Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes
