@@ -15,7 +15,8 @@ We will use [M3 "Strudel" Remote Desktops](https://m3-desktop.erc.monash.edu/) (
 
 - Select **VS Code Server** in the sidebar.
 - Select **T4**, **4 hours**. 
-- Edit the **"Advanced Options"** and add: `--reservation=oct27workshop` to the SBATCH command.
+- Edit the **"Advanced Options"** and change the custom SBATCh command to: `sbatch --qos=desktopq --partition=desktop --gres=gpu:T4:1 --mem=100G --ntasks=6 --constraint=r9 --reservation=oct27workshop`.
+   - (In particular, make sure you have `--reservation=oct27workshop` and `--gres=gpu:T4:1`)
 - Press **Launch**.
 - Wait a few seconds, then press **"Connect"** under the "Pending/Running VS Code Servers" section.
   - Watch out for popup window blocking from the browser - allow the popup if it was blocked
@@ -23,6 +24,13 @@ We will use [M3 "Strudel" Remote Desktops](https://m3-desktop.erc.monash.edu/) (
 Once you have the VS Code session running, click on the _'two bits of paper'_ icon in the sidebar, click Open Folder, and enter `/scratch2/pd27/`.
 
 You can open a new Terminal with `` Ctrl+Shift+` `` (backtick), or find "Terminal -> New Terminal" in the hamburger menu.
+
+Now let's create your user directory where you'll work today. In the Terminal, run:
+
+```bash
+mkdir -p /scratch2/pd27/users/${USER}
+cd /scratch2/pd27/users/${USER}
+```
 
 Install these VS Code extensions (the _'four squares'_ icon in the sidebar, or press `Ctrl+Shift+X`):
 
@@ -33,9 +41,7 @@ Install these VS Code extensions (the _'four squares'_ icon in the sidebar, or p
 
 ![Suggested vscode extensions](assets/images/vscode-extensions.png)
 
-Now let's create your user directory where you'll work today. In the Terminal, run:
 
-```bash
-mkdir -p /scratch2/pd27/users/${USER}
-cd /scratch2/pd27/users/${USER}
-```
+----
+
+![](assets/images/vscode_guide.svg)
