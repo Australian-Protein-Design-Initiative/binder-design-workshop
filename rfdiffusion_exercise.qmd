@@ -26,24 +26,24 @@ Here's version of the PDL1 domain we cropped in the previous exercise: [PDL1.pdb
 On your server, let's create a directory for our RFDiffusion work and upload this PDB file to `input/PDL1.pdb`:
 
 ```bash
-# Start by creating a directory where we will work - this may be your home directory,
-# but in this case each participant should create a specifc path with their username in the workshop scratch space
-mkdir -p /scratch2/pd27/users/${USER}
-cd /scratch2/pd27/users/${USER}
+# We should already have a user directory
+#mkdir -p /scratch2/pd27/users/${USER}
+#cd /scratch2/pd27/users/${USER}
 
+cd /scratch2/pd27/users/${USER}
 mkdir -p exercises/rfd/input
 cd exercises/rfd
 
 # check your working directory
 pwd
 
-# see what files and directories you have so far
+# see what files and directories you have here
 tree -L 2
 ```
 
-Upload your trimmed PDL1 PDB file to `/scratch2/pd27/users/${USER}/exercises/rfd/input/PDL1.pdb` (using `rsync`, `scp` or your preferred method).
+If you have the trimmed PDL1.pdb file on your computer, upload it to `/scratch2/pd27/users/${USER}/exercises/rfd/input/PDL1.pdb` by dragging and dropping it onto the file explorer in vscode.
 
-If you'd like to use a pre-prepared `PDL1.pdb` rather than your own, run:
+If you'd like to use a pre-prepared `PDL1.pdb` rather than your own, in the Termainl run:
 ```bash
 wget -O input/PDL1.pdb https://australian-protein-design-initiative.github.io/binder-design-workshop/exercises/rfd/input/PDL1.pdb
 ```
@@ -164,6 +164,10 @@ For binder design, manually setting `inference.ckpt_override_path=/models/rfdiff
 Given backbone coordinates of a protein (or protein complex), ProteinMPNN generates a sequence with sidechain conformations compatible with the fold and interface with the target.
 
 ```bash
+# First, make sure we are in the right directory
+cd /scratch2/pd27/users/${USER}/exercises/rfd
+pwd
+
 # Load the dl_binder_design (ProteinMPNN) module that is pre-installed on the M3 HPC cluster
 # This puts the script `dl_interface_design.py` (from https://github.com/nrbennet/dl_binder_design/blob/main/mpnn_fr/dl_interface_design.py) on your PATH
 #
@@ -184,7 +188,7 @@ You may choose to generate more (five ?) or just one.
 
 We `-omit_AAs C` to avoid cysteine residues in the generated sequences - this prevents solubility and folding issues sometimes often with disulfide bonds or unintended disulfide mediated dimers during downstream expression and purification.
 
-The `dl_binder_design` version of ProteinMPNN with the `-relax_cycles` option can go through several cycles of sequence prediction and relaxtion using Rosetta FastRelax to improve the compatibility of the sequence generated. `-relax_cycles` > 0 doesn't work with `-seqs_per_struct` > 1 - if you want to generate more than one sequence AND use `-relax_cycles 3`, you'll need to run `dl_interface_design.py` several times.
+The `dl_binder_design` uses 'ProteinMPNN-FastRelax', where the `-relax_cycles` option specifies to run cycles of sequence prediction and relaxtion using Rosetta FastRelax to improve the compatibility of the sequence generated. `-relax_cycles` > 0 doesn't work with `-seqs_per_struct` > 1 - if you want to generate more than one sequence AND use `-relax_cycles 3` (or 5 ?), you'll need to run `dl_interface_design.py` several times.
 
 Other useful options:
 
@@ -194,6 +198,8 @@ Other useful options:
 
 
 ProteinMPNN detects the GPU on our compute node, but it isn't appreciably faster on GPU - if running in a separate job, no need to waste a GPU for this.
+
+You can look at one of the output PDB files in `output/proteinmpnn/` using the vscode Protein Viewer - click on the backbone near the hotspot and you'll see sidechains are modeled.
 
 ## Alphafold2 initial guess - scoring by prediction
 
@@ -221,7 +227,9 @@ On a T4 GPU, each AF2 initial guess structure for these complexes takes ~1.3 min
 > Look at `output/af2_initial_guess/pdl1_test.scores.cs` - this file contains a range of scores to assess the quality of this 'quick and dirty' structure prediction. In particular, we are interested in designs with scores:
 >
 > - `pae_interaction < 10`
+>
 > _and_
+>
 > - `plddt_binder > 80`
 
 # nf-binder-design : putting it all together

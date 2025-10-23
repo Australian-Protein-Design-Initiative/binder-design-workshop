@@ -12,6 +12,7 @@ _So, you want to de novo design a binder for a target protein ..._
 
 - Do I have an experimental structure of the target ?
   - Is it high quality / well defined **in the regions required** ?
+  - Do you need add / rebuild missing loops ?
   - If I don't have an experimental structure, are computational models (eg Alphafold) reliable for this target - **do I believe them based on other data, biology** ?
 - Is this a good experimental/clinical target ?
     - What characteristics should be designed binders have to be better/cheaper/safer/unique relative to existing tools or therapies ?
@@ -33,12 +34,24 @@ It is very common, and good practise, to remove parts of the target coordinates 
 - Try to keep distinct (sub)domains intact
 - Try to avoid exposing the hydrophobic core
 - Don't truncate too close to your proposed binding interface and hotspots
+- Ensure all residues are complete (don't remove just half the atoms for a residue)
 
 ::: {.callout-caution}
 
 ### Challenge - truncate PD-L1
 
+Open the vscocde Terminal (``Ctrl+Shift+` ``) and make a new directory for your work:
+
+```bash
+mkdir -p /scratch2/pd27/users/${USER}/exercises/trimming
+cd /scratch2/pd27/users/${USER}/exercises/trimming
+```
+
 Grab the cooridinates for the PD-1/PD-L1 complex [3BIK](https://www.rcsb.org/structure/3BIK) (legacy PDB format).
+
+```bash
+wget https://files.rcsb.org/download/3BIK.pdb
+```
 
 We want to use PD-L1 (chain A) as our target and block the binding of PD-1 (chain B).
 

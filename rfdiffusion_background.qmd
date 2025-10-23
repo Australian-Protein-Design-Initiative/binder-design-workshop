@@ -30,9 +30,10 @@ This method combines:
 
 ![Generative binder design via denoising, Fig 1 of Watson _et al_ 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0](assets/images/watson_binder_diffusion.jpg)
 
-- ProteinMPNN for 'inverse folding' to generate a sequence for the binder backbone
+- ProteinMPNN-FastRelax for 'inverse folding' to generate a sequence for the binder backbone
 
-- Alphafold2 'initial guess' structure prediction to quickly score binders _in silico_ 
+- Alphafold2 'initial guess' structure prediction to quickly score binders _in silico_
+  - To make predictions faster, Alphafold2 'initial guess' doesn't use the multiple sequence alignment (MSA) input and provides the initial target+binder complex coordinates as a starting point in the first recycle.
 
 ![From this presentation https://www.youtube.com/watch?v=828WPIIOwaA by Brian Trippe, Columbia University](assets/images/trippe_rfd_pmpnn_design_protocol.jpg)
 

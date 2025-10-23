@@ -6,14 +6,14 @@ format:
     embed-resources: true
 ---
 
-"Here's one we prepared earlier" - 500 designs using the RFdiffusion binder design workflow of `nf-binder-design` are in `/scratch2/pd27/shared/examples/nfbd/pdl1-rfd`.
+"Here's one we prepared earlier" - 500 designs using the RFdiffusion binder design workflow of `nf-binder-design` are in `/scratch2/pd27/shared/examples/full_runs/pdl1-rfd`.
 
 ::: {.callout-caution}
 
 ### Challenge - viewing the RFdiffusion pipeline results
 
 View the table `combined_scores.tsv` - how many designs are have a favourable `pae_interaction` score ?
-How about `plddt_binder` ?
+How about if we apply a second threshold on `plddt_binder` ?
 
 :::
 
@@ -22,6 +22,9 @@ How about `plddt_binder` ?
 Designs with scores:
 
 - `pae_interaction < 10`
+
+_and_
+
 - binder `pLDDT > 80`
 
 are considered to have a higher chance of binding (at <10μM).
@@ -31,7 +34,10 @@ You may use additional criteria, but these two scores are the primary filters fo
 
 ## Other scores
 
-> TODO: Rosetta gG energy ?
+- `rg` - radius of gyration - a quick way to filter out extended designs
+  - eg long single- or dual-helix designs that often make contact with the target with only a small region of the total binder.
+
+- `interface_dG` - Rosetta interface dG energy - David Baker-associated publications sometimes use this as a filter. 
 
 # Binder monomer prediction, complex re-prediction
 
