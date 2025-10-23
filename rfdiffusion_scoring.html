@@ -4194,7 +4194,7 @@ window.Quarto = {
 </header>
 
 
-<p>“Here’s one we prepared earlier” - 500 designs using the RFdiffusion binder design workflow of <code>nf-binder-design</code> are in <code>/scratch2/pd27/shared/examples/nfbd/pdl1-rfd</code>.</p>
+<p>“Here’s one we prepared earlier” - 500 designs using the RFdiffusion binder design workflow of <code>nf-binder-design</code> are in <code>/scratch2/pd27/shared/examples/full_runs/pdl1-rfd</code>.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -4205,7 +4205,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>View the table <code>combined_scores.tsv</code> - how many designs are have a favourable <code>pae_interaction</code> score ? How about <code>plddt_binder</code> ?</p>
+<p>View the table <code>combined_scores.tsv</code> - how many designs are have a favourable <code>pae_interaction</code> score ? How about if we apply a second threshold on <code>plddt_binder</code> ?</p>
 </div>
 </div>
 <section id="design-run-summary-and-scoring" class="level1">
@@ -4213,15 +4213,22 @@ window.Quarto = {
 <p>Designs with scores:</p>
 <ul>
 <li><code>pae_interaction &lt; 10</code></li>
+</ul>
+<p><em>and</em></p>
+<ul>
 <li>binder <code>pLDDT &gt; 80</code></li>
 </ul>
 <p>are considered to have a higher chance of binding (at &lt;10μM).</p>
 <p>You may use additional criteria, but these two scores are the primary filters for selecting and ranking designs.</p>
 <section id="other-scores" class="level2">
 <h2 class="anchored" data-anchor-id="other-scores">Other scores</h2>
-<blockquote class="blockquote">
-<p>TODO: Rosetta gG energy ?</p>
-</blockquote>
+<ul>
+<li><code>rg</code> - radius of gyration - a quick way to filter out extended designs
+<ul>
+<li>eg long single- or dual-helix designs that often make contact with the target with only a small region of the total binder.</li>
+</ul></li>
+<li><code>interface_dG</code> - Rosetta interface dG energy - David Baker-associated publications sometimes use this as a filter.</li>
+</ul>
 </section>
 </section>
 <section id="binder-monomer-prediction-complex-re-prediction" class="level1">

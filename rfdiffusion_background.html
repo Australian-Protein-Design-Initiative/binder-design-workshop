@@ -4085,8 +4085,11 @@ vertical-align: -.125em;
 </figure>
 </div>
 <ul>
-<li><p>ProteinMPNN for ‘inverse folding’ to generate a sequence for the binder backbone</p></li>
-<li><p>Alphafold2 ‘initial guess’ structure prediction to quickly score binders <em>in silico</em></p></li>
+<li><p>ProteinMPNN-FastRelax for ‘inverse folding’ to generate a sequence for the binder backbone</p></li>
+<li><p>Alphafold2 ‘initial guess’ structure prediction to quickly score binders <em>in silico</em></p>
+<ul>
+<li>To make predictions faster, Alphafold2 ‘initial guess’ doesn’t use the multiple sequence alignment (MSA) input and provides the initial target+binder complex coordinates as a starting point in the first recycle.</li>
+</ul></li>
 </ul>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
