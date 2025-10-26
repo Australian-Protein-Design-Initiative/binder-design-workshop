@@ -8,10 +8,10 @@ format:
 
 # Important links
 
-> **TODO:** Insert link to shared Google Doc / Slack channel / other in here.
-> The Google doc, editable by all participants, can be used as a jumping off point for other dynamic links and administrative info we may need to update during the workshop (like the VM login details). It can also be used also be used by participants for posting challenge solutions.
+This Google doc, editable by all participants, can be used as a jumping off point for other links and administrative info we may need to update during the workshop - we will also use it for challenge answers: [https://docs.google.com/document/d/1MH1l2fAm7Jans7nREmLlhtOO-BCFsFRhtw_1RSLGGi0/edit?usp=sharing](https://docs.google.com/document/d/1MH1l2fAm7Jans7nREmLlhtOO-BCFsFRhtw_1RSLGGi0/edit?usp=sharing)
 
-# Schedule
+
+# Tentative schedule
 
 | Time | Event |
 |------|-------|
@@ -44,4 +44,16 @@ Within your table, fairly rapidly, introduce yourself:
 
 Many thanks to Monash eResearch HPC team for providing the compute resources and associated support for this workshop.
 
-Thankyou to the extraordinary effort of the workshop team and helpers in making this workshop happen.
+Thankyou for the extraordinary efforts of the workshop team and helpers, especially organizers:
+
+- Rebecca Bamert
+- Jovita D’Silva
+- Cyntia Taveneau
+- Daniel Fox
+
+And helpers / beta testers:
+
+- Roland Calvert
+- Daniel Fox
+- James Lingford
+- Anish Mulchandani

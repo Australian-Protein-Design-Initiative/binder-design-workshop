@@ -38,3 +38,13 @@ This method combines:
 ![From this presentation https://www.youtube.com/watch?v=828WPIIOwaA by Brian Trippe, Columbia University](assets/images/trippe_rfd_pmpnn_design_protocol.jpg)
 
 - 'Full' Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes
+
+----
+
+::: {.callout-caution}
+
+### Software licensing
+
+    Note: RFdiffusion (and BindCraft) depend on PyRosetta/Rosetta, which is free for non-commercial use. Commercial use requires a paid license agreement with University of Washington - see https://github.com/RosettaCommons/rosetta/blob/main/LICENSE.md and https://rosettacommons.org/software/licensing-faq/
+
+:::
