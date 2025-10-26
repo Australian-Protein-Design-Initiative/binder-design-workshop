@@ -4123,7 +4123,7 @@ vertical-align: -.125em;
 <h2 class="anchored" data-anchor-id="configuring-a-pipeline---nextflow.config">Configuring a pipeline - nextflow.config</h2>
 <p>Most Nextflow pipelines (especially nf-core flavoured ones), come with sensible pre-configured defaults, but you’ll often need to override or modify some of the settings for your particular computing environment, data and preferences.</p>
 <p>We will assume here we are running on an HPC cluster using SLURM. Nextflow submits <code>sbatch</code> jobs to the SLURM queue on your behalf, and needs to specify resources and partition settings for each job.</p>
-<p>You can override defaults by creating a <code>nextflow.config</code> file in the working directory where you run the pipeline. The most common thing you’ll need to do is modify the resources and parition settings for a specific task (‘process’ in Nextflow terminology).</p>
+<p>You can override defaults by creating a <code>nextflow.config</code> file in the working directory where you run the pipeline. The most common thing you’ll need to do is modify the resources and partition settings for a specific task (‘process’ in Nextflow terminology).</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode groovy code-with-copy"><code class="sourceCode groovy"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// nextflow.config</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>process <span class="op">{</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    withName<span class="op">:</span> BINDCRAFT <span class="op">{</span></span>
@@ -4133,7 +4133,7 @@ vertical-align: -.125em;
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        cpus <span class="op">=</span> <span class="dv">16</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Everything else SLURM sbatch specific goes in clusterOptions</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// eg, speficying a specific GPU partition</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// eg, specifying a specific GPU partition</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        clusterOptions <span class="op">=</span> <span class="st">&quot;--gres=gpu:1 --partition=gpu&quot;</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -4203,10 +4203,10 @@ vertical-align: -.125em;
 </section>
 <section id="troubleshooting-errors-failures" class="level2">
 <h2 class="anchored" data-anchor-id="troubleshooting-errors-failures">Troubleshooting errors / failures</h2>
-<p>A typical ‘production’ pipeline invocation will run hundreds or thousands of tasks accord many compute nodes. There’s always a chance some will fail. Nextflow does a good job of retrying failed tasks, but after too many failures the pipeline will quit.</p>
+<p>A typical ‘production’ pipeline invocation will run hundreds or thousands of tasks across many compute nodes. There’s always a chance some will fail. Nextflow does a good job of retrying failed tasks, but after too many failures the pipeline will quit.</p>
 <p>Nextflow keeps intermediate files used for resuming a pipeline run in the <code>work</code> directory.</p>
 <p>When a process fails, the logs will have a task id like <code>e6/aa312b4</code> and will indicate a path into the <code>work</code> directory like: <code>work/e6/aa312b4a1da1edaed1ed23d12</code> - this folder is the working directory for that particular (failed) task.</p>
-<p>That <code>work/xx/yyyyy</code> directory will contain the files <code>.command.log</code>, <code>.command.err</code>, <code>.command.out</code> (the stdout and stderr logs), <code>.command.sh</code> (the script that was run) amoung other files. You can use these to diagnose what went wrong - often it’s a particular process that needs more memory (RAM) or time assigned via <code>nextflow.config</code> (the scheduler killed the SLURM job), or the process failed due to a bad input file.</p>
+<p>That <code>work/xx/yyyyy</code> directory will contain the files <code>.command.log</code>, <code>.command.err</code>, <code>.command.out</code> (the stdout and stderr logs), <code>.command.sh</code> (the script that was run) among other files. You can use these to diagnose what went wrong - often it’s a particular process that needs more memory (RAM) or time assigned via <code>nextflow.config</code> (the scheduler killed the SLURM job), or the process failed due to a bad input file.</p>
 </section>
 <section id="after-the-run" class="level2">
 <h2 class="anchored" data-anchor-id="after-the-run">After the run</h2>

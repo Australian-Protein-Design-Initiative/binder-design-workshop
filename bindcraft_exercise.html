@@ -4287,7 +4287,8 @@ window.Quarto = {
 <p>as well as:</p>
 <ul>
 <li><code>failure_csv.csv</code> - a CSV file summarizing the stage where a design failed to pass a filter</li>
-<li><code>Trajectory/</code> - various non-accepted trajectories <code>MPNN/</code> - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters</li>
+<li><code>Trajectory/</code> - various non-accepted trajectories</li>
+<li><code>MPNN/</code> - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters</li>
 <li><code>trajectory_stats.csv</code> and <code>mpnn_design_stats.csv</code> - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage</li>
 </ul>
 <p>We will focus on understanding the key outputs here in the next section.</p>
@@ -4295,7 +4296,7 @@ window.Quarto = {
 </section>
 <section id="bindcraft-with-nf-binder-design-more-convenient-parallel-runs" class="level1">
 <h1>BindCraft with nf-binder-design : more convenient parallel runs</h1>
-<p>In practice, rather than running a single BindCraft run, you will probably want to run multiple BindCraft runs in parallel across multiple GPUs to speed things up. We’ve added simple BindCraft support to <code>nf-binder-design</code> so you more easily run multiple BindCraft runs in parallel on an HPC cluster.</p>
+<p>In practice, rather than running a single BindCraft run, you will probably want to run multiple BindCraft runs in parallel across multiple GPUs to speed things up. We’ve added simple BindCraft support to <code>nf-binder-design</code> so you can more easily run multiple BindCraft runs in parallel on an HPC cluster.</p>
 <p>First, let’s create a directory for our <code>nf-binder-design</code> work and copy the <code>PDL1.pdb</code> file to it:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /scratch2/pd27/users/<span class="va">${USER}</span>/exercises/bindcraft-nfbd/input</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /scratch2/pd27/users/<span class="va">${USER}</span>/exercises/bindcraft-nfbd</span>
@@ -4328,7 +4329,7 @@ window.Quarto = {
 <blockquote class="blockquote">
 <p>We only have a single ‘local’ GPU per participant for the workshop, however with a few tweaks the above command will work just the same but run on many GPUs in parallel (eg, <code>-profile slurm,m3</code> or <code>-profile slurm,m3_bdi</code>, or a <code>-c nextflow.config</code> tailored to your HPC cluster and available partitions etc)</p>
 </blockquote>
-<p>One difference with the <code>nf-binder-design</code> wrapper around BindCraft is that we set <code>--bindcraft_n_traj</code> as the number of trajectories (design <em>attempts</em>) we want to run, rather than the number of accepted designs to stop after (<code>number_of_final_designs</code>). This maps better to short HPC jobs where each jobs has a defined time limit.</p>
+<p>One difference with the <code>nf-binder-design</code> wrapper around BindCraft is that we set <code>--bindcraft_n_traj</code> as the number of trajectories (design <em>attempts</em>) we want to run, rather than the number of accepted designs to stop after (<code>number_of_final_designs</code>). This maps better to short HPC jobs where each job has a defined time limit.</p>
 <p>The BindCraft CSV files (eg <code>final_design_stats.csv</code>) are output to <code>results/bindcraft/</code>, along with an HTML report summarizing these results visually with some plots. Accepted structures are saved to <code>results/bindcraft/accepted</code>, and each single-trajectory BindCraft run is saved to <code>results/bindcraft/batches/</code>.</p>
 <section id="recommendations" class="level2">
 <h2 class="anchored" data-anchor-id="recommendations">Recommendations</h2>
@@ -4336,7 +4337,7 @@ window.Quarto = {
 <li>Choose some hotspots based on the strategies we’ve learned.</li>
 <li>Run between 100 and 300 trajectories (<code>--bindcraft_n_traj 300</code>) to assess the ‘acceptance rate’
 <ul>
-<li>If you are getting a reasonable acceptance rate, &gt; ~%1, do a second run setting <code>--bindcraft_n_traj</code> to a value that should generate ~100 accepted designs</li>
+<li>If you are getting a reasonable acceptance rate, &gt; ~1%, do a second run setting <code>--bindcraft_n_traj</code> to a value that should generate ~100 accepted designs</li>
 <li>If you are getting less than ~1% acceptance rate, you may need to change your hotspots, modify target trimming or use a different target structure, or (cautiously) use advanced presets.</li>
 </ul></li>
 </ul>

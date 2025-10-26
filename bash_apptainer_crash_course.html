@@ -4106,7 +4106,7 @@ vertical-align: -.125em;
 <p>Setting your cache path - this is where Apptainer will download container images to:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">APPTAINER_CACHEDIR</span><span class="op">=</span><span class="va">$HOME</span>/.apptainer/apptainer_cache</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Side note: Nextflow can use it&#39;s own environment variable for the Apptainer cache</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Side note: Nextflow can use its own environment variable for the Apptainer cache</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># export NXF_APPTAINER_CACHEDIR=$APPTAINER_CACHEDIR</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Downloading a container image:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">apptainer</span> pull docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -4114,13 +4114,13 @@ vertical-align: -.125em;
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">apptainer</span> pull bindcraft.sif docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>… this will create a self-contained file called <code>bindcraft.sif</code> in your current directory. You can run things inside the container like:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">apptainer</span> exec bindcraft.sif python <span class="at">--version</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>We will continue to use the image in APPTAIENR_CACHEDIR, instead: <code>rm bindcraft.sif</code></p>
+<p>We will continue to use the image in APPTAINER_CACHEDIR, instead: <code>rm bindcraft.sif</code></p>
 <hr>
 <p>Starting a shell session ‘inside’ a container:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">apptainer</span> shell docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This is useful for ‘exploring’ what’s inside the container. For example, while ‘inside’ the BindCraft container, try:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /app/BindCraft</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> settigns_advanced/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> settings_advanced/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Type <code>exit</code> or press <code>Ctrl-D</code> to return to your regular shell.</p>
 <hr>
 <p>Rather than writing the image URL every time, <code>docker://ghcr.io/australian-protein-design-initiative/containers/bindcraft:05702c4_nv-cuda12</code> every time, let’s set it as a shell variable - this makes the commands below easier to read:</p>

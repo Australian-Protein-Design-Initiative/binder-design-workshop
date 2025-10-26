@@ -4111,7 +4111,7 @@ z-index: 1;
 <li>Do I have an experimental structure of the target ?
 <ul>
 <li>Is it high quality / well defined <strong>in the regions required</strong> ?</li>
-<li>Do you need add / rebuild missing loops ?</li>
+<li>Do you need to add / rebuild missing loops ?</li>
 <li>If I don’t have an experimental structure, are computational models (eg Alphafold) reliable for this target - <strong>do I believe them based on other data, biology</strong> ?</li>
 </ul></li>
 <li>Is this a good experimental/clinical target ?
@@ -4119,7 +4119,7 @@ z-index: 1;
 <li>What characteristics should be designed binders have to be better/cheaper/safer/unique relative to existing tools or therapies ?</li>
 <li>In the assay or biological system, <strong>will the target surfaces be accessible</strong>, or how will my binder get there ?</li>
 </ul></li>
-<li>How will produce and test my <em>de novo</em> binders ?
+<li>How will I produce and test my <em>de novo</em> binders ?
 <ul>
 <li>Do I have a reliable medium-high throughput assay ?</li>
 </ul></li>
@@ -4149,10 +4149,10 @@ z-index: 1;
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Open the vscocde Terminal (<code>Ctrl+Shift+`</code>) and make a new directory for your work:</p>
+<p>Open the vscode Terminal (<code>Ctrl+Shift+`</code>) and make a new directory for your work:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /scratch2/pd27/users/<span class="va">${USER}</span>/exercises/trimming</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /scratch2/pd27/users/<span class="va">${USER}</span>/exercises/trimming</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Grab the cooridinates for the PD-1/PD-L1 complex <a href="https://www.rcsb.org/structure/3BIK">3BIK</a> (legacy PDB format).</p>
+<p>Grab the coordinates for the PD-1/PD-L1 complex <a href="https://www.rcsb.org/structure/3BIK">3BIK</a> (legacy PDB format).</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://files.rcsb.org/download/3BIK.pdb</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>We want to use PD-L1 (chain A) as our target and block the binding of PD-1 (chain B).</p>
 <p>Propose a truncated version of PD-L1 (chain A) we could use to design a <em>de novo</em> binder against.</p>
@@ -4164,7 +4164,7 @@ z-index: 1;
 </div>
 <section id="hotspot-selection" class="level3">
 <h3 class="anchored" data-anchor-id="hotspot-selection">Hotspot selection</h3>
-<p>In the context of <em>de novo</em> binder design, a ‘hotspot’ is residue on the target that is likely to make favourable interactions with residues on the <em>de novo</em> binder. Hotspots help <em>guide</em> the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on <em>in silico</em> success rates.</p>
+<p>In the context of <em>de novo</em> binder design, a ‘hotspot’ is a residue on the target that is likely to make favourable interactions with residues on the <em>de novo</em> binder. Hotspots help <em>guide</em> the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on <em>in silico</em> success rates.</p>
 <p>For RFdiffusion, 3–6 hotspots are recommended (RFdiffusion attempts to put between 0 and 20% of these hotspots, at random, within 10Å of a binder Cβ atom, while making any other contacts that appear statistically plausible to the model).</p>
 <p>For BindCraft, zero to X hotspots. Starting with a small number (1 - 3 ?) of hotspots is probably best.</p>
 <p><em>Aromatic</em> and hydrophobic residues (F, Y, W, I, L, M) tend to make the best hotspots, but you don’t need to restrict your choices to <em>only</em> these residue types.</p>
