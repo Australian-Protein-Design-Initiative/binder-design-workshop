@@ -6,7 +6,7 @@ format:
     embed-resources: true
 ---
 
-We've run 400 BindCraft trajectories for PDL1 using `nf-binder-design` -the results are in `/scratch2/pd27/shared/examples/nfbd/pdl1-bindcraft` - this reflects a more realistic number of trajectories for a 'production run'.
+We've run 400 BindCraft trajectories for PDL1 using `nf-binder-design` - the results are in `/scratch2/pd27/shared/examples/nfbd/pdl1-bindcraft` - this reflects a more realistic number of trajectories for a 'production run'.
 
 ::: {.callout-caution}
 
@@ -16,7 +16,7 @@ View the table `final_design_stats.csv` - how many accepted designs do we have ?
 
 What do the designs with almost the same name, but different `_mpnn{n}` suffixes have in common ?
 
-View a the the PDB files in `Accepted/`. Examine the target-binder interface of some designs with high and low ipTM scores.
+View the PDB files in `Accepted/`. Examine the target-binder interface of some designs with high and low ipTM scores.
 
 :::
 
@@ -80,7 +80,7 @@ DesignTime,Notes,TargetSettings,Filters,AdvancedSettings
 
 #### Default filters
 
-Designs that satisfy these critera are kept as 'Accepted':
+Designs that satisfy these criteria are kept as 'Accepted':
 
 - **AlphaFold2 Metrics**
     - `Average_pLDDT` > 0.8
@@ -117,7 +117,7 @@ Here's a figure from the BindCraft paper that gives some insight:
 
 Each target required different numbers of trajectories, with a wide range in _in silico_ acceptance rates, to achieve the suggested "100 accepted designs to select 20 for assay" benchmark. **Part f** shows the impact of binder length range alone on _in silico_ success rates. 
 
-What we **don't** see here is the trajactories run testing alternative target structures, trimmings and hotspot combinations - expect to run many more trajectories than you'll ultimately require for your final 'production' run.
+What we **don't** see here is the trajectories run testing alternative target structures, trimmings and hotspot combinations - expect to run many more trajectories than you'll ultimately require for your final 'production' run.
 
 The two key parameters you should adjust to get more 'accepted' designs are:
 

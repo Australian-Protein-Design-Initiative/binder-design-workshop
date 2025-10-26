@@ -66,7 +66,7 @@ These tips are taken directly from the [BindCraft wiki page](https://github.com/
     - To stop early and rank current designs, kill the jobs, set the design count lower than what's in the `Accepted` folder, and rerun.
         
 - **Run Time:** Can vary from a few **hours** to several **weeks** on a single GPU, depending on target difficulty and complex size. 
-  - "Easy" targets might only require ~100 trajectories, difficult ones might required 1000 - 10,000.
+  - "Easy" targets might only require ~100 trajectories, difficult ones might require 1000 - 10,000.
   -  It's possible for difficult targets to yield no successful designs.
 
 ---
@@ -195,7 +195,7 @@ These tips are taken directly from the [BindCraft wiki page](https://github.com/
 
 #### Default filters
 
-Designs that satisfy these critera are kept as 'Accepted':
+Designs that satisfy these criteria are kept as 'Accepted':
 
 - **AlphaFold2 Metrics**
     - `Average_pLDDT` > 0.8

@@ -76,14 +76,14 @@ as well as:
 
 - `failure_csv.csv` - a CSV file summarizing the stage where a design failed to pass a filter
 - `Trajectory/` - various non-accepted trajectories
-`MPNN/` - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters
+- `MPNN/` - PDB files of alternative ProteinMPNN designs for each trajectory that passed the initial filters
 - `trajectory_stats.csv` and `mpnn_design_stats.csv` - scores for trajectories / designs at the initial hallucination stage and the ProteinMPNN sequence generation stage
 
 We will focus on understanding the key outputs here in the next section.
 
 # BindCraft with nf-binder-design : more convenient parallel runs
 
-In practice, rather than running a single BindCraft run, you will probably want to run multiple BindCraft runs in parallel across multiple GPUs to speed things up. We've added simple BindCraft support to `nf-binder-design` so you more easily run multiple BindCraft runs in parallel on an HPC cluster.
+In practice, rather than running a single BindCraft run, you will probably want to run multiple BindCraft runs in parallel across multiple GPUs to speed things up. We've added simple BindCraft support to `nf-binder-design` so you can more easily run multiple BindCraft runs in parallel on an HPC cluster.
 
 First, let's create a directory for our `nf-binder-design` work and copy the `PDL1.pdb` file to it:
 ```bash
@@ -122,7 +122,7 @@ nextflow run Australian-Protein-Design-Initiative/nf-binder-design/bindcraft.nf 
 
 > We only have a single 'local' GPU per participant for the workshop, however with a few tweaks the above command will work just the same but run on many GPUs in parallel (eg, `-profile slurm,m3` or `-profile slurm,m3_bdi`, or a `-c nextflow.config` tailored to your HPC cluster and available partitions etc)
 
-One difference with the `nf-binder-design` wrapper around BindCraft is that we set `--bindcraft_n_traj` as the number of trajectories (design _attempts_) we want to run, rather than the number of accepted designs to stop after (`number_of_final_designs`). This maps better to short HPC jobs where each jobs has a defined time limit.
+One difference with the `nf-binder-design` wrapper around BindCraft is that we set `--bindcraft_n_traj` as the number of trajectories (design _attempts_) we want to run, rather than the number of accepted designs to stop after (`number_of_final_designs`). This maps better to short HPC jobs where each job has a defined time limit.
 
 The BindCraft CSV files (eg `final_design_stats.csv`) are output to `results/bindcraft/`, along with an HTML report summarizing these results visually with some plots. Accepted structures are saved to `results/bindcraft/accepted`, and each single-trajectory BindCraft run is saved to `results/bindcraft/batches/`.
 
@@ -130,7 +130,7 @@ The BindCraft CSV files (eg `final_design_stats.csv`) are output to `results/bin
 
 - Choose some hotspots based on the strategies we've learned.
 - Run between 100 and 300 trajectories (`--bindcraft_n_traj 300`) to assess the 'acceptance rate'
-    - If you are getting a reasonable acceptance rate, > ~%1, do a second run setting `--bindcraft_n_traj` to a value that should generate ~100 accepted designs
+    - If you are getting a reasonable acceptance rate, > ~1%, do a second run setting `--bindcraft_n_traj` to a value that should generate ~100 accepted designs
     - If you are getting less than ~1% acceptance rate, you may need to change your hotspots, modify target trimming or use a different target structure, or (cautiously) use advanced presets.
 
 The percentage acceptance rate is:

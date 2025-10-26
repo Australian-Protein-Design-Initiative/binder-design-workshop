@@ -12,7 +12,7 @@ format:
 
 ### Challenge - viewing the RFdiffusion pipeline results
 
-View the table `combined_scores.tsv` - how many designs are have a favourable `pae_interaction` score ?
+View the table `combined_scores.tsv` - how many designs have a favourable `pae_interaction` score ?
 How about if we apply a second threshold on `plddt_binder` ?
 
 :::
@@ -55,7 +55,7 @@ If the target was 'unnaturally' trimmed, the complex re-prediction is best done 
 
 If we are aiming for a stable high affinity binder, we typically want the binder monomer to be the same structure when free and bound (binders that undergo conformational changes upon binding are interesting, but typically not what we are chasing here).
 
-> **What to do:** compare the C$\alpha$ RMSD of the 'free' binder monomer with the 'bound' binder. If the RMSD is significantly different (> ~3.5 Å ?) then we will typcially discard this binder design.
+> **What to do:** compare the C$\alpha$ RMSD of the 'free' binder monomer with the 'bound' binder. If the RMSD is significantly different (> ~3.5 Å ?) then we will typically discard this binder design.
 
 
 ### Why re-predict the binder+target complex structure ?

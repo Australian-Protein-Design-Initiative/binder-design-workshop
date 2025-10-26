@@ -12,12 +12,12 @@ _So, you want to de novo design a binder for a target protein ..._
 
 - Do I have an experimental structure of the target ?
   - Is it high quality / well defined **in the regions required** ?
-  - Do you need add / rebuild missing loops ?
+  - Do you need to add / rebuild missing loops ?
   - If I don't have an experimental structure, are computational models (eg Alphafold) reliable for this target - **do I believe them based on other data, biology** ?
 - Is this a good experimental/clinical target ?
     - What characteristics should be designed binders have to be better/cheaper/safer/unique relative to existing tools or therapies ?
     - In the assay or biological system, **will the target surfaces be accessible**, or how will my binder get there ?
-- How will produce and test my _de novo_ binders ?
+- How will I produce and test my _de novo_ binders ?
   - Do I have a reliable medium-high throughput assay ?
 
 
@@ -40,14 +40,14 @@ It is very common, and good practise, to remove parts of the target coordinates 
 
 ### Challenge - truncate PD-L1
 
-Open the vscocde Terminal (``Ctrl+Shift+` ``) and make a new directory for your work:
+Open the vscode Terminal (``Ctrl+Shift+` ``) and make a new directory for your work:
 
 ```bash
 mkdir -p /scratch2/pd27/users/${USER}/exercises/trimming
 cd /scratch2/pd27/users/${USER}/exercises/trimming
 ```
 
-Grab the cooridinates for the PD-1/PD-L1 complex [3BIK](https://www.rcsb.org/structure/3BIK) (legacy PDB format).
+Grab the coordinates for the PD-1/PD-L1 complex [3BIK](https://www.rcsb.org/structure/3BIK) (legacy PDB format).
 
 ```bash
 wget https://files.rcsb.org/download/3BIK.pdb
@@ -65,7 +65,7 @@ Save the truncated coordinates as `PDL1.pdb`
 
 ### Hotspot selection
 
-In the context of _de novo_ binder design, a 'hotspot' is residue on the target that is likely to make favourable interactions with residues on the _de novo_ binder. Hotspots help _guide_ the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on _in silico_ success rates.
+In the context of _de novo_ binder design, a 'hotspot' is a residue on the target that is likely to make favourable interactions with residues on the _de novo_ binder. Hotspots help _guide_ the location and characteristics of the binder-target interface and can have a large (not always predictable) impact on _in silico_ success rates.
 
 For RFdiffusion, 3–6 hotspots are recommended (RFdiffusion attempts to put between 0 and 20% of these hotspots, at random, within 10Å of a binder Cβ atom, while making any other contacts that appear statistically plausible to the model).
 

@@ -28,11 +28,11 @@ The foundation of these tools are available under under permissive open source l
 
 **For this workshop, you don't need to install anything.** We've set things up to run in Apptainer containers that are already downloaded.
 
-Installing these packges typically takes hours, and troubleshooting research software installation is a topic for an entirely different wokshop.
+Installing these packages typically takes hours, and troubleshooting research software installation is a topic for an entirely different workshop.
 
 :::
 
-You'll want a Linux based operating system. You do not nessecarily need admin / sudo permissions.
+You'll want a Linux based operating system. You do not necessarily need admin / sudo permissions.
 
 Methods, roughly in order of preference:
 

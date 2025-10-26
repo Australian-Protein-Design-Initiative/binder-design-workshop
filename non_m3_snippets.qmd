@@ -8,7 +8,7 @@ format:
 
 # Running without using pre-installed HPC modules
 
-If you are running the command from this tutorial on a computer other than the Monash M3 HPC cluster, you won't nessecarily have the same pre-installed modules (eg `module load`).
+If you are running the command from this tutorial on a computer other than the Monash M3 HPC cluster, you won't necessarily have the same pre-installed modules (eg `module load`).
 
 Here are more detailed snippets that contain the additional Apptainer prefixes required for each command to use the containers available via our container registry on Github.
 
@@ -22,7 +22,7 @@ You'll also need Nextflow for the `nf-binder-design` examples - see [Appendix: F
 # This prefix `PREFIX_RFD` is here to run RFDiffusion via an Apptainer container. 
 # It should work anywhere where Apptainer is installed. You'll need an NVIDIA GPU. 
 
-# This version pull the container image from the Github Package Registry - it should work on any system with apptainer installed. The first time it's run there's an initial delay while the container image is downloaded.
+# This version pulls the container image from the Github Package Registry - it should work on any system with apptainer installed. The first time it's run there's an initial delay while the container image is downloaded.
 PREFIX_RFD="apptainer exec --nv -B $(mktemp -d):/usr/local/lib/python3.10/dist-packages/schedules docker://ghcr.io/australian-protein-design-initiative/containers/rfdiffusion:pytorch2407 "
 
 # This version uses an Apptainer image pre-downloaded to the workshop scratch space

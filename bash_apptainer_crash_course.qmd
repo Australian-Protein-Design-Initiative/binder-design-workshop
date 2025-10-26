@@ -25,7 +25,7 @@ Setting your cache path - this is where Apptainer will download container images
 ```bash
 export APPTAINER_CACHEDIR=$HOME/.apptainer/apptainer_cache
 
-# Side note: Nextflow can use it's own environment variable for the Apptainer cache
+# Side note: Nextflow can use its own environment variable for the Apptainer cache
 # export NXF_APPTAINER_CACHEDIR=$APPTAINER_CACHEDIR
 ```
 
@@ -44,7 +44,7 @@ apptainer pull bindcraft.sif docker://ghcr.io/australian-protein-design-initiati
 apptainer exec bindcraft.sif python --version
 ```
 
-We will continue to use the image in APPTAIENR_CACHEDIR, instead: `rm bindcraft.sif`
+We will continue to use the image in APPTAINER_CACHEDIR, instead: `rm bindcraft.sif`
 
 ----
 
@@ -56,7 +56,7 @@ apptainer shell docker://ghcr.io/australian-protein-design-initiative/containers
 This is useful for 'exploring' what's inside the container. For example, while 'inside' the BindCraft container, try:
 ```bash
 cd /app/BindCraft
-ls settigns_advanced/
+ls settings_advanced/
 ```
 
 Type `exit` or press `Ctrl-D` to return to your regular shell.

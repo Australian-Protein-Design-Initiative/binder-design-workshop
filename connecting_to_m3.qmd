@@ -10,7 +10,7 @@ We will use [M3 "Strudel" Remote Desktops](https://m3-desktop.erc.monash.edu/) (
 
 - Login at [https://m3-desktop.erc.monash.edu/](https://m3-desktop.erc.monash.edu/)
   - Choose "M3 with AAF login"
-    - If you M3 account is associated with an institutional email address, use the orange AAF login button
+    - If your M3 account is associated with an institutional email address, use the orange AAF login button
     - If your M3 account is associated with a Google/gmail address, use the Google login button
 
 - Select **VS Code Server** in the sidebar.

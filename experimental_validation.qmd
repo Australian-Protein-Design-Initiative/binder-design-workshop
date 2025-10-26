@@ -8,12 +8,12 @@ format:
 
 So, you've designed some _de novo_ binders. You've filtered them based on some _in silico_ scores and other criteria to your preferences and have a ranked set of ~96 sequences.
 
-## Gene synthesis, protein purfication and experimental assays
+## Gene synthesis, protein purification and experimental assays
 
 What next ? You'll need to consider:
 
 - Affinity tag placement
-  - Most likely you'll need an affinity tag - which terminii should this be on for each design ?
+  - Most likely you'll need an affinity tag - which termini should this be on for each design ?
 - Padding for gene synthesis
   - Depending on the service provider, you may need to add additional non-coding padding sequence to your construct (eg Twist might require a minimum insert size of 300bp).
 - Expression system
@@ -22,7 +22,7 @@ What next ? You'll need to consider:
   - What vectors are available from the service provider ?
 - How will you express and purify ~96 proteins ?
 - How will you assess expression level and solubility ?
-- What level of purity, concentration and buffer conditions you need for your assay ?
+- What level of purity, concentration and buffer conditions do you need for your assay ?
 
 Many of these considerations will be familiar to experimental structural biologists, but it's worth considering the practicalities of how you will deal with scaling up from a handful of constructs to ~96 or more.
 

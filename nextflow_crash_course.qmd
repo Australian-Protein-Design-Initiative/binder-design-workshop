@@ -49,7 +49,7 @@ Most Nextflow pipelines (especially nf-core flavoured ones), come with sensible 
 
 We will assume here we are running on an HPC cluster using SLURM. Nextflow submits `sbatch` jobs to the SLURM queue on your behalf, and needs to specify resources and partition settings for each job.
 
-You can override defaults by creating a `nextflow.config` file in the working directory where you run the pipeline. The most common thing you'll need to do is modify the resources and parition settings for a specific task ('process' in Nextflow terminology).
+You can override defaults by creating a `nextflow.config` file in the working directory where you run the pipeline. The most common thing you'll need to do is modify the resources and partition settings for a specific task ('process' in Nextflow terminology).
 
 ```groovy
 // nextflow.config
@@ -61,7 +61,7 @@ process {
         cpus = 16
 
         // Everything else SLURM sbatch specific goes in clusterOptions
-        // eg, speficying a specific GPU partition
+        // eg, specifying a specific GPU partition
         clusterOptions = "--gres=gpu:1 --partition=gpu"
     }
 }
@@ -144,13 +144,13 @@ nextflow run ${PIPELINE_DIR}/bindcraft.nf \
 
 ## Troubleshooting errors / failures
 
-A typical 'production' pipeline invocation will run hundreds or thousands of tasks accord many compute nodes. There's always a chance some will fail. Nextflow does a good job of retrying failed tasks, but after too many failures the pipeline will quit.
+A typical 'production' pipeline invocation will run hundreds or thousands of tasks across many compute nodes. There's always a chance some will fail. Nextflow does a good job of retrying failed tasks, but after too many failures the pipeline will quit.
 
 Nextflow keeps intermediate files used for resuming a pipeline run in the `work` directory.
 
 When a process fails, the logs will have a task id like `e6/aa312b4` and will indicate a path into the `work` directory like: `work/e6/aa312b4a1da1edaed1ed23d12` - this folder is the working directory for that particular (failed) task.
 
-That `work/xx/yyyyy` directory will contain the files `.command.log`, `.command.err`, `.command.out` (the stdout and stderr logs), `.command.sh` (the script that was run) amoung other files. You can use these to diagnose what went wrong - often it's a particular process that needs more memory (RAM) or time assigned via `nextflow.config` (the scheduler killed the SLURM job), or the process failed due to a bad input file.
+That `work/xx/yyyyy` directory will contain the files `.command.log`, `.command.err`, `.command.out` (the stdout and stderr logs), `.command.sh` (the script that was run) among other files. You can use these to diagnose what went wrong - often it's a particular process that needs more memory (RAM) or time assigned via `nextflow.config` (the scheduler killed the SLURM job), or the process failed due to a bad input file.
 
 ## After the run
 
