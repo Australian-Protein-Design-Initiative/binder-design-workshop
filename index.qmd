@@ -57,3 +57,7 @@ And helpers / beta testers:
 - Daniel Fox
 - James Lingford
 - Anish Mulchandani
+
+----
+
+_Have suggested change to the content ?_ The Github repository for this workshop is: [https://github.com/Australian-Protein-Design-Initiative/binder-design-workshop](https://github.com/Australian-Protein-Design-Initiative/binder-design-workshop) - feel free to submit a pull request or issue.
