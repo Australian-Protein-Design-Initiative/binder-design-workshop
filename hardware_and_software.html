@@ -4061,9 +4061,27 @@ vertical-align: -.125em;
 <section id="compute-resources" class="level2">
 <h2 class="anchored" data-anchor-id="compute-resources">Compute resources</h2>
 <p><em>What kind of hardware do I need ?</em></p>
-<blockquote class="blockquote">
-<p>TODO: GPUs, the more the better. Local workstation example, HPC example, cloud example. Longer proteins require more VRAM.</p>
-</blockquote>
+<ul>
+<li><p><strong>GPUs and VRAM</strong> are the limiting factor that put an upper bound on the size of the target+binder you can work with.</p>
+<ul>
+<li>The larger the target+binder, the more VRAM you will need.</li>
+<li>Alphafold2, used for both the RFdiffusion protocol and BindCraft, is usually the most VRAM intensive step.</li>
+<li>For BindCraft:
+<ul>
+<li><strong>16 Gb</strong> VRAM (T4): ~250 residues</li>
+<li><strong>32 Gb</strong> VRAM: ~550 residues</li>
+<li><strong>80 Gb</strong> VRAM (A100-80G): ~950 residues</li>
+</ul></li>
+</ul></li>
+<li><p>Adding <strong>CPUs and RAM</strong> has minimal impact on runtime or ability to tackle larger complexes, since most operations are GPU and VRAM-constrained, and not heavily CPU-multi-threaded (except maybe FastRelax).</p></li>
+<li><p><strong>Storage</strong> - as a guide, our full nf-binder-design runs (including intermediate ‘work’ files) are:</p>
+<ul>
+<li>BindCraft, 400 trajectories: 15 Gb</li>
+<li>RFdiffusion, 500 trajectories: 14 Gb</li>
+</ul></li>
+<li><p>A <strong>local workstation</strong> with a single GPU can be useful for small test runs, finding parameters.</p></li>
+<li><p>Practically, running in parallel on <strong>HPC</strong> or the <strong>cloud</strong> (eg Azure/AWS/GCS Batch) may be required to finish a typical production run in a reasonable time.</p></li>
+</ul>
 </section>
 </section>
 <section id="software" class="level1">
@@ -4084,46 +4102,52 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>For this workshop, you don’t need to install anything.</strong> We’ve set things up to run in Apptainer containers that are already downloaded.</p>
+<p><strong>For this workshop, you don’t need to install anything.</strong> We’ve set things up to run using HPC modules (using Apptainer containers under the hood).</p>
 <p>Installing these packages typically takes hours, and troubleshooting research software installation is a topic for an entirely different workshop.</p>
 </div>
 </div>
 <p>You’ll want a Linux based operating system. You do not necessarily need admin / sudo permissions.</p>
 <p>Methods, roughly in order of preference:</p>
-</section>
-<section id="engage-your-local-hpc-or-research-cloud-admins-to-help-create-a-shared-installation-everyone-can-use." class="level2">
-<h2 class="anchored" data-anchor-id="engage-your-local-hpc-or-research-cloud-admins-to-help-create-a-shared-installation-everyone-can-use.">1. Engage your local HPC or research cloud admins to help create a shared installation everyone can use.</h2>
+<section id="engage-your-local-hpc-or-research-cloud-admins-to-help-create-a-shared-installation-everyone-can-use." class="level3">
+<h3 class="anchored" data-anchor-id="engage-your-local-hpc-or-research-cloud-admins-to-help-create-a-shared-installation-everyone-can-use.">1. Engage your local HPC or research cloud admins to help create a shared installation everyone can use.</h3>
 <p>They are often experienced in troubleshooting installation and dependency issues that can be specific to the systems they maintain.</p>
 </section>
-<section id="use-a-container" class="level2">
-<h2 class="anchored" data-anchor-id="use-a-container">2. Use a container</h2>
+<section id="use-a-container" class="level3">
+<h3 class="anchored" data-anchor-id="use-a-container">2. Use a container</h3>
 <p><a href="https://apptainer.org/">Apptainer</a> (formerly known as Singularity) simplifies deployment of software by bundling up the software and its dependencies, including a simple Linux system image, into a single container.</p>
 <p>Docker is another popular alternative, but isn’t usually available on HPC systems due to security constraints.</p>
 <p>Apptainer can run Docker images, so you rarely need Docker to run research software.</p>
 <p>All the container images used in this workshop are available <a href="https://github.com/orgs/Australian-Protein-Design-Initiative/packages?repo_name=containers">here</a> and the Dockerfile recipes used to build them are available <a href="https://github.com/Australian-Protein-Design-Initiative/containers">here</a>.</p>
 </section>
-<section id="use-a-pipeline" class="level2">
-<h2 class="anchored" data-anchor-id="use-a-pipeline">3. Use a pipeline</h2>
+<section id="use-a-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="use-a-pipeline">3. Use a pipeline</h3>
 <p>A Nextflow pipeline <a href="https://github.com/australian-protein-design-initiative/nf-binder-design">like nf-binder-design</a> can help manage running all the steps in an RFdiffusion - ProteinMPNN - Alphafold2 (or BindCraft) workflow.</p>
 <p>The best pipelines typically use publically available Apptainer containers by default, so you don’t need to think about installing each of the tools yourself.</p>
 </section>
-<section id="install-yourself" class="level2">
-<h2 class="anchored" data-anchor-id="install-yourself">4. Install yourself</h2>
-<p>Follow the instrucions at https://github.com/RosettaCommons/RFdiffusion and https://github.com/martinpacesa/BindCraft - the installation steps are well documented, but don’t always work perfectly in every environment without some troubleshooting.</p>
-<p><em>(or see step 1 above)</em></p>
+<section id="install-yourself" class="level3">
+<h3 class="anchored" data-anchor-id="install-yourself">4. Install yourself</h3>
+<p>Follow the instrucions at https://github.com/RosettaCommons/RFdiffusion and https://github.com/martinpacesa/BindCraft - the installation steps are well documented, but don’t always work perfectly in every environment without some troubleshooting. Search the (open and closed) Github issues, and forks - often these contain clues for fixing common dependency issues.</p>
 </section>
 </section>
-<section id="at-monash" class="level1">
-<h1>At Monash</h1>
+<section id="at-monash" class="level2">
+<h2 class="anchored" data-anchor-id="at-monash">At Monash</h2>
+<p>The HPC modules on the M3 HPC cluster used in this workshop will be available for everyone shortly after the workshop.</p>
 <p><code>nf-binder-design</code> has a configuration profile for the M3 HPC cluster (use <code>-profile slurm,m3</code> or <code>-profile slurm,m3_bdi</code>)</p>
 </section>
-<section id="at-unimelb" class="level1">
-<h1>At Unimelb</h1>
+<section id="at-unimelb" class="level2">
+<h2 class="anchored" data-anchor-id="at-unimelb">At Unimelb</h2>
 <blockquote class="blockquote">
 <p>TODO: Spartan ?</p>
 </blockquote>
+</section>
+<section id="at-wehi" class="level2">
+<h2 class="anchored" data-anchor-id="at-wehi">At WEHI</h2>
+<blockquote class="blockquote">
+<p>TODO: Milton ?</p>
+</blockquote>
 
 
+</section>
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section></div></main> <!-- /main -->

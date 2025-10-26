@@ -114,7 +114,7 @@
     "href": "hardware_and_software.html",
     "title": "Hardware and software requirements",
     "section": "",
-    "text": "Or, “how can I run this at home ?”\n\n\nWhat kind of hardware do I need ?\n\nTODO: GPUs, the more the better. Local workstation example, HPC example, cloud example. Longer proteins require more VRAM.",
+    "text": "Or, “how can I run this at home ?”\n\n\nWhat kind of hardware do I need ?\n\nGPUs and VRAM are the limiting factor that put an upper bound on the size of the target+binder you can work with.\n\nThe larger the target+binder, the more VRAM you will need.\nAlphafold2, used for both the RFdiffusion protocol and BindCraft, is usually the most VRAM intensive step.\nFor BindCraft:\n\n16 Gb VRAM (T4): ~250 residues\n32 Gb VRAM: ~550 residues\n80 Gb VRAM (A100-80G): ~950 residues\n\n\nAdding CPUs and RAM has minimal impact on runtime or ability to tackle larger complexes, since most operations are GPU and VRAM-constrained, and not heavily CPU-multi-threaded (except maybe FastRelax).\nStorage - as a guide, our full nf-binder-design runs (including intermediate ‘work’ files) are:\n\nBindCraft, 400 trajectories: 15 Gb\nRFdiffusion, 500 trajectories: 14 Gb\n\nA local workstation with a single GPU can be useful for small test runs, finding parameters.\nPractically, running in parallel on HPC or the cloud (eg Azure/AWS/GCS Batch) may be required to finish a typical production run in a reasonable time.",
     "crumbs": [
       "Appendix",
       "Hardware and software requirements"
@@ -125,7 +125,7 @@
     "href": "hardware_and_software.html#compute-resources",
     "title": "Hardware and software requirements",
     "section": "",
-    "text": "What kind of hardware do I need ?\n\nTODO: GPUs, the more the better. Local workstation example, HPC example, cloud example. Longer proteins require more VRAM.",
+    "text": "What kind of hardware do I need ?\n\nGPUs and VRAM are the limiting factor that put an upper bound on the size of the target+binder you can work with.\n\nThe larger the target+binder, the more VRAM you will need.\nAlphafold2, used for both the RFdiffusion protocol and BindCraft, is usually the most VRAM intensive step.\nFor BindCraft:\n\n16 Gb VRAM (T4): ~250 residues\n32 Gb VRAM: ~550 residues\n80 Gb VRAM (A100-80G): ~950 residues\n\n\nAdding CPUs and RAM has minimal impact on runtime or ability to tackle larger complexes, since most operations are GPU and VRAM-constrained, and not heavily CPU-multi-threaded (except maybe FastRelax).\nStorage - as a guide, our full nf-binder-design runs (including intermediate ‘work’ files) are:\n\nBindCraft, 400 trajectories: 15 Gb\nRFdiffusion, 500 trajectories: 14 Gb\n\nA local workstation with a single GPU can be useful for small test runs, finding parameters.\nPractically, running in parallel on HPC or the cloud (eg Azure/AWS/GCS Batch) may be required to finish a typical production run in a reasonable time.",
     "crumbs": [
       "Appendix",
       "Hardware and software requirements"
@@ -147,51 +147,40 @@
     "href": "hardware_and_software.html#installation",
     "title": "Hardware and software requirements",
     "section": "Installation",
-    "text": "Installation\n\n\n\n\n\n\nWarning\n\n\n\nFor this workshop, you don’t need to install anything. We’ve set things up to run in Apptainer containers that are already downloaded.\nInstalling these packages typically takes hours, and troubleshooting research software installation is a topic for an entirely different workshop.\n\n\nYou’ll want a Linux based operating system. You do not necessarily need admin / sudo permissions.\nMethods, roughly in order of preference:",
+    "text": "Installation\n\n\n\n\n\n\nWarning\n\n\n\nFor this workshop, you don’t need to install anything. We’ve set things up to run using HPC modules (using Apptainer containers under the hood).\nInstalling these packages typically takes hours, and troubleshooting research software installation is a topic for an entirely different workshop.\n\n\nYou’ll want a Linux based operating system. You do not necessarily need admin / sudo permissions.\nMethods, roughly in order of preference:\n\n1. Engage your local HPC or research cloud admins to help create a shared installation everyone can use.\nThey are often experienced in troubleshooting installation and dependency issues that can be specific to the systems they maintain.\n\n\n2. Use a container\nApptainer (formerly known as Singularity) simplifies deployment of software by bundling up the software and its dependencies, including a simple Linux system image, into a single container.\nDocker is another popular alternative, but isn’t usually available on HPC systems due to security constraints.\nApptainer can run Docker images, so you rarely need Docker to run research software.\nAll the container images used in this workshop are available here and the Dockerfile recipes used to build them are available here.\n\n\n3. Use a pipeline\nA Nextflow pipeline like nf-binder-design can help manage running all the steps in an RFdiffusion - ProteinMPNN - Alphafold2 (or BindCraft) workflow.\nThe best pipelines typically use publically available Apptainer containers by default, so you don’t need to think about installing each of the tools yourself.\n\n\n4. Install yourself\nFollow the instrucions at https://github.com/RosettaCommons/RFdiffusion and https://github.com/martinpacesa/BindCraft - the installation steps are well documented, but don’t always work perfectly in every environment without some troubleshooting. Search the (open and closed) Github issues, and forks - often these contain clues for fixing common dependency issues.",
     "crumbs": [
       "Appendix",
       "Hardware and software requirements"
     ]
   },
   {
-    "objectID": "hardware_and_software.html#engage-your-local-hpc-or-research-cloud-admins-to-help-create-a-shared-installation-everyone-can-use.",
-    "href": "hardware_and_software.html#engage-your-local-hpc-or-research-cloud-admins-to-help-create-a-shared-installation-everyone-can-use.",
+    "objectID": "hardware_and_software.html#at-monash",
+    "href": "hardware_and_software.html#at-monash",
     "title": "Hardware and software requirements",
-    "section": "1. Engage your local HPC or research cloud admins to help create a shared installation everyone can use.",
-    "text": "1. Engage your local HPC or research cloud admins to help create a shared installation everyone can use.\nThey are often experienced in troubleshooting installation and dependency issues that can be specific to the systems they maintain.",
+    "section": "At Monash",
+    "text": "At Monash\nThe HPC modules on the M3 HPC cluster used in this workshop will be available for everyone shortly after the workshop.\nnf-binder-design has a configuration profile for the M3 HPC cluster (use -profile slurm,m3 or -profile slurm,m3_bdi)",
     "crumbs": [
       "Appendix",
       "Hardware and software requirements"
     ]
   },
   {
-    "objectID": "hardware_and_software.html#use-a-container",
-    "href": "hardware_and_software.html#use-a-container",
+    "objectID": "hardware_and_software.html#at-unimelb",
+    "href": "hardware_and_software.html#at-unimelb",
     "title": "Hardware and software requirements",
-    "section": "2. Use a container",
-    "text": "2. Use a container\nApptainer (formerly known as Singularity) simplifies deployment of software by bundling up the software and its dependencies, including a simple Linux system image, into a single container.\nDocker is another popular alternative, but isn’t usually available on HPC systems due to security constraints.\nApptainer can run Docker images, so you rarely need Docker to run research software.\nAll the container images used in this workshop are available here and the Dockerfile recipes used to build them are available here.",
+    "section": "At Unimelb",
+    "text": "At Unimelb\n\nTODO: Spartan ?",
     "crumbs": [
       "Appendix",
       "Hardware and software requirements"
     ]
   },
   {
-    "objectID": "hardware_and_software.html#use-a-pipeline",
-    "href": "hardware_and_software.html#use-a-pipeline",
+    "objectID": "hardware_and_software.html#at-wehi",
+    "href": "hardware_and_software.html#at-wehi",
     "title": "Hardware and software requirements",
-    "section": "3. Use a pipeline",
-    "text": "3. Use a pipeline\nA Nextflow pipeline like nf-binder-design can help manage running all the steps in an RFdiffusion - ProteinMPNN - Alphafold2 (or BindCraft) workflow.\nThe best pipelines typically use publically available Apptainer containers by default, so you don’t need to think about installing each of the tools yourself.",
-    "crumbs": [
-      "Appendix",
-      "Hardware and software requirements"
-    ]
-  },
-  {
-    "objectID": "hardware_and_software.html#install-yourself",
-    "href": "hardware_and_software.html#install-yourself",
-    "title": "Hardware and software requirements",
-    "section": "4. Install yourself",
-    "text": "4. Install yourself\nFollow the instrucions at https://github.com/RosettaCommons/RFdiffusion and https://github.com/martinpacesa/BindCraft - the installation steps are well documented, but don’t always work perfectly in every environment without some troubleshooting.\n(or see step 1 above)",
+    "section": "At WEHI",
+    "text": "At WEHI\n\nTODO: Milton ?",
     "crumbs": [
       "Appendix",
       "Hardware and software requirements"
@@ -257,7 +246,7 @@
     "href": "rfdiffusion_background.html",
     "title": "RFdiffusion Background",
     "section": "",
-    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for generating the backbone of a designed binder for a target structure\n\n\n\n\n\nDiffusion, from Fig 1 of Watson et al 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0\n\n\n\n\n\nGenerative binder design via denoising, Fig 1 of Watson et al 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0\n\n\n\nProteinMPNN-FastRelax for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n\nTo make predictions faster, Alphafold2 ‘initial guess’ doesn’t use the multiple sequence alignment (MSA) input and provides the initial target+binder complex coordinates as a starting point in the first recycle.\n\n\n\n\n\nFrom this presentation https://www.youtube.com/watch?v=828WPIIOwaA by Brian Trippe, Columbia University\n\n\n\n‘Full’ Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes",
+    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for generating the backbone of a designed binder for a target structure\n\n\n\n\n\nDiffusion, from Fig 1 of Watson et al 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0\n\n\n\n\n\nGenerative binder design via denoising, Fig 1 of Watson et al 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0\n\n\n\nProteinMPNN-FastRelax for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n\nTo make predictions faster, Alphafold2 ‘initial guess’ doesn’t use the multiple sequence alignment (MSA) input and provides the initial target+binder complex coordinates as a starting point in the first recycle.\n\n\n\n\n\nFrom this presentation https://www.youtube.com/watch?v=828WPIIOwaA by Brian Trippe, Columbia University\n\n\n\n‘Full’ Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes\n\n\n\n\n\n\n\n\nCautionSoftware licensing\n\n\n\nNote: RFdiffusion (and BindCraft) depend on PyRosetta/Rosetta, which is free for non-commercial use. Commercial use requires a paid license agreement with University of Washington - see https://github.com/RosettaCommons/rosetta/blob/main/LICENSE.md and https://rosettacommons.org/software/licensing-faq/",
     "crumbs": [
       "RFdiffusion (& ProteinMPNN)",
       "RFdiffusion Background"
@@ -268,7 +257,7 @@
     "href": "rfdiffusion_background.html#background",
     "title": "RFdiffusion Background",
     "section": "",
-    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for generating the backbone of a designed binder for a target structure\n\n\n\n\n\nDiffusion, from Fig 1 of Watson et al 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0\n\n\n\n\n\nGenerative binder design via denoising, Fig 1 of Watson et al 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0\n\n\n\nProteinMPNN-FastRelax for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n\nTo make predictions faster, Alphafold2 ‘initial guess’ doesn’t use the multiple sequence alignment (MSA) input and provides the initial target+binder complex coordinates as a starting point in the first recycle.\n\n\n\n\n\nFrom this presentation https://www.youtube.com/watch?v=828WPIIOwaA by Brian Trippe, Columbia University\n\n\n\n‘Full’ Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes",
+    "text": "We will start by using the RFdiffusion binder design protocol, as described in the following papers:\n\nWatson, J.L., Juergens, D., Bennett, N.R. et al. “De novo design of protein structure and function with RFdiffusion.”, Nature, 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 - Github: https://github.com/RosettaCommons/RFdiffusion\nBennett, N.R., Coventry, B., Goreshnik, I. et al. Improving de novo protein binder design with deep learning. Nat Commun, 14, 2625 (2023). https://doi.org/10.1038/s41467-023-38328-5 - Github: https://github.com/nrbennet/dl_binder_design\nDauparas, J. et al. Robust deep learning–based protein sequence design using ProteinMPNN. Science, 378,49-56(2022). https://doi.org/10.1126/science.add2187 - Github: https://github.com/dauparas/ProteinMPNN\n\nThis method combines:\n\nRFdiffusion for generating the backbone of a designed binder for a target structure\n\n\n\n\n\nDiffusion, from Fig 1 of Watson et al 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0\n\n\n\n\n\nGenerative binder design via denoising, Fig 1 of Watson et al 2023 https://doi.org/10.1038/s41586-023-06415-8, CC-BY 4.0\n\n\n\nProteinMPNN-FastRelax for ‘inverse folding’ to generate a sequence for the binder backbone\nAlphafold2 ‘initial guess’ structure prediction to quickly score binders in silico\n\nTo make predictions faster, Alphafold2 ‘initial guess’ doesn’t use the multiple sequence alignment (MSA) input and provides the initial target+binder complex coordinates as a starting point in the first recycle.\n\n\n\n\n\nFrom this presentation https://www.youtube.com/watch?v=828WPIIOwaA by Brian Trippe, Columbia University\n\n\n\n‘Full’ Alphafold2 on best binders to check conformational stability of binder monomers, verify complexes\n\n\n\n\n\n\n\n\nCautionSoftware licensing\n\n\n\nNote: RFdiffusion (and BindCraft) depend on PyRosetta/Rosetta, which is free for non-commercial use. Commercial use requires a paid license agreement with University of Washington - see https://github.com/RosettaCommons/rosetta/blob/main/LICENSE.md and https://rosettacommons.org/software/licensing-faq/",
     "crumbs": [
       "RFdiffusion (& ProteinMPNN)",
       "RFdiffusion Background"
@@ -297,7 +286,7 @@
     "href": "index.html",
     "title": "Protein binder design workshop: RFdiffusion and BindCraft",
     "section": "",
-    "text": "Important links\n\nTODO: Insert link to shared Google Doc / Slack channel / other in here. The Google doc, editable by all participants, can be used as a jumping off point for other dynamic links and administrative info we may need to update during the workshop (like the VM login details). It can also be used also be used by participants for posting challenge solutions.\n\n\n\nSchedule\n\n\n\nTime\nEvent\n\n\n\n\n1:00\nWelcome, introduction and setup\n\n\n1:30\nRFdiffusion\n\n\n2:30\nBreak\n\n\n2:45\nBindCraft\n\n\n3:45\nBreak\n\n\n4:00\nExperimental validation\n\n\n4:30\nWrap-up and discussion\n\n\n4:45\nEnd 🎉\n\n\n\n\n\n\n\n\n\n\nCautionChallenge - 3 mins - introduce yourself !\n\n\n\nWithin your table, fairly rapidly, introduce yourself:\n\nName ?\nWhat do you do ?\nWhat are you watching on &lt;insert streaming service&gt; at the moment ?\n\n\n\n\n\n\nAcknowledgements\nMany thanks to Monash eResearch HPC team for providing the compute resources and associated support for this workshop.\nThankyou to the extraordinary effort of the workshop team and helpers in making this workshop happen.\n\n\n\n\nReuseCC BY 4.0",
+    "text": "Important links\nThis Google doc, editable by all participants, can be used as a jumping off point for other links and administrative info we may need to update during the workshop - we will also use it for challenge answers: https://docs.google.com/document/d/1MH1l2fAm7Jans7nREmLlhtOO-BCFsFRhtw_1RSLGGi0/edit?usp=sharing\n\n\nTentative schedule\n\n\n\nTime\nEvent\n\n\n\n\n1:00\nWelcome, introduction and setup\n\n\n1:30\nRFdiffusion\n\n\n2:30\nBreak\n\n\n2:45\nBindCraft\n\n\n3:45\nBreak\n\n\n4:00\nExperimental validation\n\n\n4:30\nWrap-up and discussion\n\n\n4:45\nEnd 🎉\n\n\n\n\n\n\n\n\n\n\nCautionChallenge - 3 mins - introduce yourself !\n\n\n\nWithin your table, fairly rapidly, introduce yourself:\n\nName ?\nWhat do you do ?\nWhat are you watching on &lt;insert streaming service&gt; at the moment ?\n\n\n\n\n\n\nAcknowledgements\nMany thanks to Monash eResearch HPC team for providing the compute resources and associated support for this workshop.\nThankyou for the extraordinary efforts of the workshop team and helpers, especially organizers:\n\nRebecca Bamert\nJovita D’Silva\nCyntia Taveneau\nDaniel Fox\n\nAnd helpers / beta testers:\n\nRoland Calvert\nDaniel Fox\nJames Lingford\nAnish Mulchandani\n\n\n\n\n\nReuseCC BY 4.0",
     "crumbs": [
       "Workshop",
       "Protein binder design workshop: RFdiffusion and BindCraft"
