@@ -4102,9 +4102,9 @@ vertical-align: -.125em;
 </ul></li>
 <li>Select <strong>VS Code Server</strong> in the sidebar.</li>
 <li>Select <strong>T4</strong>, <strong>4 hours</strong>.</li>
-<li>Edit the <strong>“Advanced Options”</strong> and change the custom SBATCh command to: <code>sbatch --qos=desktopq --partition=desktop --gres=gpu:T4:1 --mem=100G --ntasks=6 --constraint=r9 --reservation=oct27workshop</code>.
+<li>Edit the <strong>“Advanced Options”</strong> and change the custom SBATCh command to: <code>sbatch --qos=desktopq --partition=desktop --gres=gpu:T4:1 --mem=100G --ntasks=6 --constraint=r9 --reservation=oct27workshop --account=pd27</code>.
 <ul>
-<li>(In particular, make sure you have <code>--reservation=oct27workshop</code> and <code>--gres=gpu:T4:1</code>)</li>
+<li>(In particular, make sure you have <code>--reservation=oct27workshop</code>, <code>--account=pd27</code> and <code>--gres=gpu:T4:1</code>)</li>
 </ul></li>
 <li>Press <strong>Launch</strong>.</li>
 <li>Wait a few seconds, then press <strong>“Connect”</strong> under the “Pending/Running VS Code Servers” section.
