@@ -47,7 +47,7 @@ Normally you'd like to generate more than a single design (maybe `"number_of_fin
 ## Run BindCraft
 
 ```bash
-module load bindcraft/.05702c4
+module load bindcraft/05702c4
  
 bindcraft.py \
     --settings settings.json \

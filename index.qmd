@@ -6,9 +6,10 @@ format:
     embed-resources: true
 ---
 
-# Important links
-
-This Google doc, editable by all participants, can be used as a jumping off point for other links and administrative info we may need to update during the workshop - we will also use it for challenge answers: [https://docs.google.com/document/d/1MH1l2fAm7Jans7nREmLlhtOO-BCFsFRhtw_1RSLGGi0/edit?usp=sharing](https://docs.google.com/document/d/1MH1l2fAm7Jans7nREmLlhtOO-BCFsFRhtw_1RSLGGi0/edit?usp=sharing)
+> This workshop was last run on 20th October, 2025 at Monash Caulfield campus, with attendees from Monash University (Clayton Campus and MIPS), The University of Melbourne (including the Bio21 Institute) and the Walter and Eliza Hall Institute.
+>
+> The content assumes access to the M3 HPC cluster at Monash University and can used on that platform for users with access to the 'rosetta' license group.
+> If you are following along on another platform and you accept the [Rosetta non-commercial use license](https://rosettacommons.org/software/licensing-faq/), the [Apptainer wrapper commands for any system](non_m3_snippets.qmd) section can be adapted to run these examples on any system.
 
 
 # Tentative schedule
@@ -44,7 +45,9 @@ Within your table, fairly rapidly, introduce yourself:
 
 Many thanks to Monash eResearch HPC team for providing the compute resources and associated support for this workshop.
 
-Thankyou for the extraordinary efforts of the workshop team and helpers, especially organizers:
+Also, many thanks to [Twist Bioscience](https://www.twistbioscience.com/) for sponsoring the event.
+
+The extraordinary efforts of the workshop team and helpers, especially organizers, made this workshop possible:
 
 - Rebecca Bamert
 - Jovita D’Silva
