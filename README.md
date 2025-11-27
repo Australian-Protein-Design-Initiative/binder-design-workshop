@@ -1,5 +1,7 @@
 # De novo protein binder design workshop
 
+⮞⮞ [Workshop](https://australian-protein-design-initiative.github.io/binder-design-workshop/) ⮜⮜
+
 ## Setup
 
 ```bash
